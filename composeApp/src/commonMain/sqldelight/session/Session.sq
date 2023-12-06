@@ -1,0 +1,21 @@
+CREATE TABLE session (
+    id TEXT NOT NULL PRIMARY KEY,
+    date TEXT NOT NULL,
+    startAmount TEXT,
+    endAmount TEXT
+);
+
+insertSession:
+INSERT OR
+REPLACE INTO
+session(id, date, startAmount, endAmount)
+VALUES ?;
+
+getSessionById:
+SELECT * FROM session WHERE id = ?;
+
+getSessions:
+SELECT * FROM session;
+
+clear:
+DELETE FROM session;

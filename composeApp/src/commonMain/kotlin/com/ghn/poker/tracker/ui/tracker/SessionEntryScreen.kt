@@ -70,7 +70,7 @@ fun SessionEntryScreen(
 @Composable
 private fun InputRow(label: String, content: @Composable () -> Unit) {
     Row(
-        Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -80,10 +80,7 @@ private fun InputRow(label: String, content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun TextEntryField(
-    value: String,
-    onValueChange: (String) -> Unit
-) {
+private fun TextEntryField(value: String, onValueChange: (String) -> Unit) {
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
