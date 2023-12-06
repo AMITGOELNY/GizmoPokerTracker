@@ -39,6 +39,11 @@ android-sqldelight-driver = { module = "app.cash.sqldelight:android-driver", ver
 ios-sqldelight-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelightVersion" }
 jvm-sqldelight-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelightVersion" }
 
+koinAndroid = { module = "io.insert-koin:koin-android", version = "3.5.0" }
+koinComposeAndroidx = { module = "io.insert-koin:koin-androidx-compose", version = "3.5.0" }
+koinCompose = { module = "io.insert-koin:koin-compose", version = "1.1.0" }
+koinCore = { module = "io.insert-koin:koin-core", version = "3.5.0" }
+
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.1" }
 kermit = { module = "co.touchlab:kermit", version = "2.0.2" }
 
@@ -47,6 +52,6 @@ jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "11.3.1" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.0.2" }
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.6.1" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelightVersion" }
