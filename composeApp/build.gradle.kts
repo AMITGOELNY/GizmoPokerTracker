@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
@@ -31,22 +32,32 @@ kotlin {
     
     sourceSets {
         val desktopMain by getting
-        
+
+        commonMain.dependencies {
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material)
+
+            @OptIn(ExperimentalComposeLibrary::class)
+            implementation(compose.components.resources)
+        }
+
         androidMain.dependencies {
             implementation(libs.compose.ui)
             implementation(libs.compose.material)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
+
+            implementation(libs.android.sqldelight.driver)
         }
+
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+            implementation(libs.jvm.sqldelight.driver)
         }
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            @OptIn(ExperimentalComposeLibrary::class)
-            implementation(compose.components.resources)
+
+        iosMain.dependencies {
+            implementation(libs.ios.sqldelight.driver)
         }
     }
 }
@@ -99,6 +110,24 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.ghn.poker.tracker"
             packageVersion = "1.0.0"
+        }
+    }
+}
+
+sqldelight {
+    databases {
+        create("GizmoPokerDb") {
+            packageName.set("com.ghn.poker.tracker")
+            schemaOutputDirectory.set(file("src/commonMain/sqldelight/databases"))
+            verifyMigrations.set(true)
+        }
+    }
+}
+
+kover {
+    filters {
+        classes {
+            excludes += listOf()
         }
     }
 }

@@ -19,4 +19,3 @@ dependencyResolutionManagement {
 }
 
 include(":composeApp")
-
