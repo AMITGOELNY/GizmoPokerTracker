@@ -14,7 +14,7 @@ fun GizmoTheme(content: @Composable () -> Unit) {
             colors = colors,
             shapes = Shapes,
 //            typography = typography,
-            content = content
+            content = content,
         )
     }
 }

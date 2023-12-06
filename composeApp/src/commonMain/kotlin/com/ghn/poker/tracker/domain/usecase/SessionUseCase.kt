@@ -6,6 +6,6 @@ interface SessionUseCase {
     suspend fun insertSession(
         date: LocalDateTime,
         startAmount: Double?,
-        endAmount: Double?,
+        endAmount: Double?
     )
 }

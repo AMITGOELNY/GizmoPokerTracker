@@ -32,9 +32,7 @@ import com.ghn.poker.tracker.ui.shared.PrimaryButton
 import com.ghn.poker.tracker.ui.theme.Dimens
 
 @Composable
-fun SessionEntryScreen(
-    viewModel: SessionEntryViewModel = SessionEntryViewModel()
-) {
+fun SessionEntryScreen(viewModel: SessionEntryViewModel = SessionEntryViewModel()) {
     var startAmount by remember { mutableStateOf("") }
     var endAmount by remember { mutableStateOf("") }
     val state = viewModel.state.collectAsState().value
@@ -68,7 +66,10 @@ fun SessionEntryScreen(
 }
 
 @Composable
-private fun InputRow(label: String, content: @Composable () -> Unit) {
+private fun InputRow(
+    label: String,
+    content: @Composable () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -80,22 +81,27 @@ private fun InputRow(label: String, content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun TextEntryField(value: String, onValueChange: (String) -> Unit) {
+private fun TextEntryField(
+    value: String,
+    onValueChange: (String) -> Unit
+) {
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         decorationBox = { innerTextField ->
             Row(
-                modifier = Modifier
-                    .width(120.dp)
-                    .border(1.dp, MaterialTheme.colors.primary, MaterialTheme.shapes.medium)
-                    .background(Color(0xffF6F6F6), MaterialTheme.shapes.medium)
-                    .padding(
-                        vertical = Dimens.grid_0_5,
-                        horizontal = Dimens.grid_1
-                    ), // inner padding,
-                verticalAlignment = Alignment.CenterVertically
+                modifier =
+                    Modifier
+                        .width(120.dp)
+                        .border(1.dp, MaterialTheme.colors.primary, MaterialTheme.shapes.medium)
+                        .background(Color(0xffF6F6F6), MaterialTheme.shapes.medium)
+                        .padding(
+                            vertical = Dimens.grid_0_5,
+                            horizontal = Dimens.grid_1,
+                        ),
+                // inner padding,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box {
                     innerTextField()

@@ -32,24 +32,26 @@ fun PrimaryButton(
     content: @Composable (RowScope.() -> Unit)? = null,
 ) {
     TextButton(
-        modifier = modifier
-            .then(if (fillMaxWidth) Modifier.fillMaxWidth() else Modifier)
-            .height(Dimens.grid_6_5),
+        modifier =
+            modifier
+                .then(if (fillMaxWidth) Modifier.fillMaxWidth() else Modifier)
+                .height(Dimens.grid_6_5),
         onClick = onClick,
         shape = RoundedCornerShape(Dimens.grid_3),
         enabled = isEnabled,
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colors.primary.copy(alpha = if (showLoading) .5f else 1f),
-            disabledBackgroundColor = MaterialTheme.colors.primary.copy(alpha = .5f),
+        colors =
+            ButtonDefaults.buttonColors(
+                backgroundColor = MaterialTheme.colors.primary.copy(alpha = if (showLoading) .5f else 1f),
+                disabledBackgroundColor = MaterialTheme.colors.primary.copy(alpha = .5f),
 //            contentColor = MaterialTheme.colors.buttonTextColor,
 //            disabledContentColor = MaterialTheme.colors.buttonTextColor.copy(alpha = .5f)
-        ),
-        contentPadding = contentPadding
+            ),
+        contentPadding = contentPadding,
     ) {
         Box(contentAlignment = Alignment.Center) {
             Row(
                 modifier = Modifier.alpha(if (showLoading) 0f else 1f),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 content?.let { content ->
                     content()

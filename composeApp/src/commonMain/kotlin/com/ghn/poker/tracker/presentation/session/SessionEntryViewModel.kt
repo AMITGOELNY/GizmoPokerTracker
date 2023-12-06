@@ -14,7 +14,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 class SessionEntryViewModel : BaseViewModel() {
-
     private val _state = MutableStateFlow(SessionEntryState())
     val state = _state.asStateFlow()
 
@@ -57,8 +56,11 @@ data class SessionEntryState(
 
 sealed class SessionEntryAction {
     data class UpdateDate(val date: LocalDateTime) : SessionEntryAction()
+
     data class UpdateStartAmount(val startAmount: Double?) : SessionEntryAction()
+
     data class UpdateEndAmount(val endAmount: Double?) : SessionEntryAction()
+
     data class UpdateLocation(val location: String?) : SessionEntryAction()
 }
 
