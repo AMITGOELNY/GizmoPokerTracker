@@ -40,6 +40,9 @@ kotlin {
 
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
+
+            implementation(libs.datetime)
+            implementation(libs.kermit)
         }
 
         androidMain.dependencies {

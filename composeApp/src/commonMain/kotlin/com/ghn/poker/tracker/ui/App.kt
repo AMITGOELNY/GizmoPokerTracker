@@ -8,7 +8,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.ghn.poker.tracker.ui.theme.GizmoTheme
 import com.ghn.poker.tracker.ui.tracker.TrackerLandingPage
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @Composable
 fun App() {
