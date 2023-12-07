@@ -1,6 +1,7 @@
 package com.ghn.poker.tracker.presentation.session
 
 import co.touchlab.kermit.Logger
+import com.ghn.poker.tracker.domain.usecase.SessionUseCase
 import com.ghn.poker.tracker.presentation.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,12 +13,16 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class SessionEntryViewModel : BaseViewModel() {
+class SessionEntryViewModel : BaseViewModel(), KoinComponent {
     private val _state = MutableStateFlow(SessionEntryState())
     val state = _state.asStateFlow()
 
     private val viewStateTrigger = MutableSharedFlow<SessionEntryAction>(replay = 1)
+
+    private val useCase: SessionUseCase by inject<SessionUseCase>()
 
     init {
         viewModelScope.launch {
@@ -26,16 +31,25 @@ class SessionEntryViewModel : BaseViewModel() {
                 .collect { action ->
                     when (action) {
                         is SessionEntryAction.UpdateDate -> TODO()
-                        is SessionEntryAction.UpdateEndAmount -> TODO()
-                        is SessionEntryAction.UpdateLocation -> TODO()
                         is SessionEntryAction.UpdateStartAmount -> updateStartAmount(action)
+                        is SessionEntryAction.UpdateEndAmount -> updateEndAmount(action)
+                        is SessionEntryAction.UpdateLocation -> TODO()
+                        is SessionEntryAction.SaveSession -> saveSession()
                     }
                 }
         }
     }
 
+    private suspend fun saveSession() {
+        useCase.insertSession(state.value.date, state.value.startAmount, state.value.endAmount)
+    }
+
     private fun updateStartAmount(action: SessionEntryAction.UpdateStartAmount) {
         _state.update { it.copy(startAmount = action.startAmount) }
+    }
+
+    private fun updateEndAmount(action: SessionEntryAction.UpdateEndAmount) {
+        _state.update { it.copy(startAmount = action.endAmount) }
     }
 
     fun dispatch(action: SessionEntryAction) {
@@ -51,7 +65,7 @@ data class SessionEntryState(
     val coordinates: GeoCoordinates? = null
 ) {
     val saveEnabled: Boolean
-        get() = (startAmount == null && endAmount == null).not()
+        get() = true// (startAmount == null && endAmount == null).not()
 }
 
 sealed class SessionEntryAction {
@@ -62,6 +76,8 @@ sealed class SessionEntryAction {
     data class UpdateEndAmount(val endAmount: Double?) : SessionEntryAction()
 
     data class UpdateLocation(val location: String?) : SessionEntryAction()
+
+    data object SaveSession : SessionEntryAction()
 }
 
 data class GeoCoordinates(val latitude: Double, val longitude: Double)

@@ -61,7 +61,11 @@ fun SessionEntryScreen(viewModel: SessionEntryViewModel = SessionEntryViewModel(
             }
         }
         Spacer(Modifier.weight(1f))
-        PrimaryButton("Save Session", isEnabled = state.saveEnabled, onClick = {})
+        PrimaryButton(
+            buttonText = "Save Session",
+            isEnabled = state.saveEnabled,
+            onClick = { viewModel.dispatch(SessionEntryAction.SaveSession) }
+        )
     }
 }
 
