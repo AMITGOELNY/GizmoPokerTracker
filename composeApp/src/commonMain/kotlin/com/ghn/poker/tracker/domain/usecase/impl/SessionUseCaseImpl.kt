@@ -1,9 +1,11 @@
 package com.ghn.poker.tracker.domain.usecase.impl
 
 import com.ghn.poker.tracker.domain.repository.SessionRepository
+import com.ghn.poker.tracker.domain.usecase.SessionData
 import com.ghn.poker.tracker.domain.usecase.SessionUseCase
 import kotlinx.datetime.LocalDateTime
 import org.koin.core.annotation.Factory
+import session.Session
 
 @Factory([SessionUseCase::class])
 class SessionUseCaseImpl(
@@ -16,4 +18,18 @@ class SessionUseCaseImpl(
     ) {
         sessionRepository.insertSession(date, startAmount, endAmount)
     }
+
+    override suspend fun getSessions(): List<SessionData> {
+        val sessions = sessionRepository.getSessions()
+        return sessions.toSessionData()
+    }
 }
+
+private fun List<Session>.toSessionData(): List<SessionData> =
+    map {
+        SessionData(
+            date = LocalDateTime.parse(it.date),
+            startAmount = it.startAmount,
+            endAmount = it.endAmount
+        )
+    }

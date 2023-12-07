@@ -11,7 +11,7 @@ class SessionDao(databaseProvider: DatabaseProvider) {
         dbRef.sessionQueries.insertSession(session)
     }
 
-    suspend fun getParticipants(): List<Session> {
+    suspend fun getSessions(): List<Session> {
         return dbRef.sessionQueries.getSessions().executeAsList()
     }
 }

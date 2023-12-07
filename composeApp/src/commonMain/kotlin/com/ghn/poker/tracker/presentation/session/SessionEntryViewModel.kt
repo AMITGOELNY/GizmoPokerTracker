@@ -65,7 +65,7 @@ data class SessionEntryState(
     val coordinates: GeoCoordinates? = null
 ) {
     val saveEnabled: Boolean
-        get() = true// (startAmount == null && endAmount == null).not()
+        get() = true // (startAmount == null && endAmount == null).not()
 }
 
 sealed class SessionEntryAction {

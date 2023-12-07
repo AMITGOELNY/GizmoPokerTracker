@@ -27,6 +27,6 @@ class SessionRepositoryImpl(
     }
 
     override suspend fun getSessions(): List<Session> {
-        return emptyList()
+        return dao.getSessions()
     }
 }
