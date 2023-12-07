@@ -17,6 +17,8 @@ androidx-material = "1.10.0"
 androidx-test-junit = "1.1.5"
 androidx-espresso-core = "3.5.1"
 
+koinVersion = "3.5.2-RC1"
+koinKspVersion = "1.3.0"
 sqldelightVersion = "2.0.1"
 
 [libraries]
@@ -39,10 +41,10 @@ android-sqldelight-driver = { module = "app.cash.sqldelight:android-driver", ver
 ios-sqldelight-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelightVersion" }
 jvm-sqldelight-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelightVersion" }
 
-koinAndroid = { module = "io.insert-koin:koin-android", version = "3.5.0" }
-koinComposeAndroidx = { module = "io.insert-koin:koin-androidx-compose", version = "3.5.0" }
 koinCompose = { module = "io.insert-koin:koin-compose", version = "1.1.0" }
-koinCore = { module = "io.insert-koin:koin-core", version = "3.5.0" }
+koinCore = { module = "io.insert-koin:koin-core", version.ref = "koinVersion" }
+koinAnnotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinKspVersion" }
+koinCompiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinKspVersion" }
 
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.1" }
 kermit = { module = "co.touchlab:kermit", version = "2.0.2" }

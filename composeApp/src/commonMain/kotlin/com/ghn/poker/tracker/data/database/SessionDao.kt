@@ -1,7 +1,9 @@
 package com.ghn.poker.tracker.data.database
 
+import org.koin.core.annotation.Single
 import session.Session
 
+@Single([SessionDao::class])
 class SessionDao(databaseProvider: DatabaseProvider) {
     private val dbRef = databaseProvider.database
 

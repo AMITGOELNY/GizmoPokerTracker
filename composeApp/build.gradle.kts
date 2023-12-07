@@ -1,5 +1,6 @@
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -29,6 +30,10 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
         }
+
+        iosTarget.binaries.forEach { nativeBinary ->
+            nativeBinary.linkerOpts.add("-lsqlite3")
+        }
     }
 
     sourceSets {
@@ -44,6 +49,10 @@ kotlin {
 
             implementation(libs.datetime)
             implementation(libs.kermit)
+
+//            api(libs.koinCompose)
+            api(libs.koinCore)
+            implementation(libs.koinAnnotations)
         }
 
         androidMain.dependencies {
@@ -64,6 +73,21 @@ kotlin {
             implementation(libs.ios.sqldelight.driver)
         }
     }
+}
+
+dependencies {
+    add("kspCommonMainMetadata", "io.insert-koin:koin-ksp-compiler:1.3.0")
+//    add("kspJvm", "io.insert-koin:koin-ksp-compiler:1.3.0")
+}
+
+tasks.withType<KotlinCompile<*>>().configureEach {
+    if (name != "kspCommonMainKotlinMetadata") {
+        dependsOn("kspCommonMainKotlinMetadata")
+    }
+}
+
+kotlin.sourceSets.commonMain {
+    kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
 }
 
 android {
@@ -126,6 +150,7 @@ sqldelight {
             verifyMigrations.set(true)
         }
     }
+    linkSqlite.set(true)
 }
 
 kover {

@@ -4,8 +4,10 @@ import com.ghn.poker.tracker.data.database.SessionDao
 import com.ghn.poker.tracker.domain.repository.SessionRepository
 import com.ghn.poker.tracker.util.randomUUID
 import kotlinx.datetime.LocalDateTime
+import org.koin.core.annotation.Single
 import session.Session
 
+@Single([SessionRepository::class])
 class SessionRepositoryImpl(
     private val dao: SessionDao
 ) : SessionRepository {
