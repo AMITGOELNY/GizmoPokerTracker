@@ -1,7 +1,8 @@
 package com.ghn.poker.tracker.presentation
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 
 /**
@@ -12,7 +13,7 @@ import kotlinx.coroutines.cancel
  */
 actual abstract class BaseViewModel {
 
-    actual val viewModelScope: CoroutineScope = MainScope()
+    actual val viewModelScope: CoroutineScope = CoroutineScope( SupervisorJob() + Dispatchers.IO)
 
     /**
      * Override this to do any cleanup immediately before the internal
