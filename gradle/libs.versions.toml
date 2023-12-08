@@ -21,6 +21,11 @@ koinVersion = "3.5.2-RC1"
 koinKspVersion = "1.3.0"
 sqldelightVersion = "2.0.1"
 
+# Server
+jdbc_sqlite = "3.43.2.2"
+jooq = "3.18.7"
+logbackVersion="1.4.11"
+
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -49,6 +54,15 @@ koinCompiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koi
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.1" }
 kermit = { module = "co.touchlab:kermit", version = "2.0.2" }
 
+# Server
+jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
+jooq-kotlin = { module = "org.jooq:jooq-kotlin", version.ref = "jooq" }
+jooq-coroutines = { module = "org.jooq:jooq-kotlin-coroutines", version.ref = "jooq" }
+jooq-test = { module = "org.jooq:jooq-test", version.ref = "jooq" }
+jooq-test-kotlin = { module = "org.jooq:jooq-test-kotlin", version.ref = "jooq" }
+flyway-core = { module = "org.flywaydb:flyway-core", version = "9.22.3" }
+jdbc-sqlite = { module = "org.xerial:sqlite-jdbc", version = "3.43.2.2" }
+
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -58,3 +72,5 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.0.2" }
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.6.1" }
 ksp = { id = "com.google.devtools.ksp", version = "1.9.21-1.0.15" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelightVersion" }
+jooq = { id = "nu.studer.jooq", version = "8.2" }
+flyway = { id = "org.flywaydb.flyway", version = "10.1.0" }

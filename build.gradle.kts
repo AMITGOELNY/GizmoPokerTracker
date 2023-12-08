@@ -10,6 +10,17 @@ plugins {
     alias(libs.plugins.kover)
 }
 
+buildscript {
+    repositories {
+        maven("https://repo1.maven.org/maven2/")
+        gradlePluginPortal()
+        google()
+    }
+    dependencies {
+        classpath(libs.jdbc.sqlite)
+    }
+}
+
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     apply(plugin = "org.jetbrains.kotlinx.kover")
