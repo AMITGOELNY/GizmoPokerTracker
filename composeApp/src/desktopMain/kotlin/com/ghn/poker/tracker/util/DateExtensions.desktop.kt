@@ -1,7 +1,8 @@
 package com.ghn.poker.tracker.util
 
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.toJavaLocalDateTime
+import java.time.format.DateTimeFormatter
 
-internal actual fun LocalDateTime.format(format: String): String? {
-    TODO("Not yet implemented")
-}
+actual fun LocalDateTime.format(format: String): String? =
+    DateTimeFormatter.ofPattern(format).format(this.toJavaLocalDateTime())
