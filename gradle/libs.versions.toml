@@ -74,3 +74,4 @@ ksp = { id = "com.google.devtools.ksp", version = "1.9.21-1.0.15" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelightVersion" }
 jooq = { id = "nu.studer.jooq", version = "8.2" }
 flyway = { id = "org.flywaydb.flyway", version = "10.1.0" }
+shadowjar = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }

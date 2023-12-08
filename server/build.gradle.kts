@@ -8,6 +8,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.21"
     alias(libs.plugins.jooq)
     alias(libs.plugins.flyway)
+    alias(libs.plugins.shadowjar)
 }
 
 val dbUrl = "jdbc:sqlite:${buildDir.resolve("reference.db")}"
