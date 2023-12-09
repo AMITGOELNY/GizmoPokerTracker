@@ -44,13 +44,14 @@ kotlin {
 //            implementation(project(":common"))
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
+            implementation(compose.material3)
+            implementation(compose.animation)
 
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
-
             implementation(libs.datetime)
             implementation(libs.kermit)
+            implementation(libs.precompose)
 
             implementation(libs.bundles.commonKtor)
 //            api(libs.koinCompose)

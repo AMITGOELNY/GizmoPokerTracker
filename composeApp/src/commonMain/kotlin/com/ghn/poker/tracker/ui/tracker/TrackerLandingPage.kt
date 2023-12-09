@@ -1,11 +1,11 @@
 package com.ghn.poker.tracker.ui.tracker
 
 import androidx.compose.animation.Animatable
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,9 +16,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,14 +39,17 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun TrackerLandingPage() {
-    SessionList()
+fun TrackerLandingPage(onCreateSessionClick: () -> Unit) {
+    SessionList(onCreateSessionClick)
 //    SessionEntryScreen()
 }
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun SessionList(viewModel: SessionListViewModel = SessionListViewModel()) {
+fun SessionList(
+    onCreateSessionClick: () -> Unit,
+    viewModel: SessionListViewModel = SessionListViewModel()
+) {
     val state = viewModel.state.collectAsState().value
     val color = remember { Animatable(Color.Gray) }
     LaunchedEffect(Unit) {
@@ -52,59 +59,82 @@ fun SessionList(viewModel: SessionListViewModel = SessionListViewModel()) {
         }
     }
 
-    LazyColumn(Modifier.fillMaxSize()) {
-        item {
-            Spacer(Modifier.height(20.dp))
+    Box {
+        LazyColumn(Modifier.fillMaxSize()) {
+            item {
+                Spacer(Modifier.height(20.dp))
+            }
+
+            when (val sessions = state.sessions) {
+                LoadableDataState.Empty ->
+                    item {
+                        CircularProgressIndicator()
+                    }
+
+                LoadableDataState.Error -> TODO()
+                is LoadableDataState.Loaded -> {
+                    items(sessions.data) { session ->
+
+                        Column(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = Dimens.grid_2_5)
+                                    .border(
+                                        width = 0.3.dp,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        shape = RoundedCornerShape(size = 6.dp)
+                                    )
+                                    .shadow(
+                                        elevation = 16.dp,
+                                        spotColor = Color(0x24384F6F),
+                                        ambientColor = Color(0x24384F6F)
+                                    )
+                                    .padding(vertical = Dimens.grid_2_5, horizontal = Dimens.grid_1_5),
+                            //                            .background(MaterialTheme.colors.onBackground),
+//                        horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement =
+                                Arrangement.spacedBy(
+                                    space = Dimens.grid_1,
+                                    alignment = Alignment.CenterVertically
+                                )
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Image(painterResource("magic-city-casino.xml"), null)
+                                Text("$3545", color = Color.Green)
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Text(session.formattedDate)
+                                Text("start")
+                                Text(session.startAmount.orEmpty())
+                            }
+                        }
+                        Spacer(Modifier.height(Dimens.grid_2))
+                    }
+                }
+
+                LoadableDataState.Loading -> {
+                    item {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
         }
 
-        when (val sessions = state.sessions) {
-            LoadableDataState.Empty ->
-                item {
-                    CircularProgressIndicator()
-                }
-            LoadableDataState.Error -> TODO()
-            is LoadableDataState.Loaded -> {
-                items(sessions.data) { session ->
-
-                    Column(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = Dimens.grid_2_5)
-                                .border(
-                                    width = 0.3.dp,
-                                    color = MaterialTheme.colors.primary,
-                                    shape = RoundedCornerShape(size = 6.dp)
-                                )
-                                .shadow(
-                                    elevation = 16.dp,
-                                    spotColor = Color(0x24384F6F),
-                                    ambientColor = Color(0x24384F6F)
-                                )
-                                .padding(vertical = Dimens.grid_2_5, horizontal = 12.dp),
-                        //                            .background(MaterialTheme.colors.onBackground),
-//                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
-                    ) {
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Image(painterResource("magic-city-casino.xml"), null)
-                            Text("$3545", color = Color.Green)
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text(session.formattedDate)
-                            Text("start")
-                            Text(session.startAmount.orEmpty())
-                        }
-                    }
-                    Spacer(Modifier.height(Dimens.grid_2))
-                }
-            }
-
-            LoadableDataState.Loading -> {
-                item {
-                    CircularProgressIndicator()
-                }
-            }
+        SmallFloatingActionButton(
+            onClick = onCreateSessionClick,
+            modifier =
+                Modifier.align(Alignment.BottomEnd).padding(
+                    bottom = Dimens.grid_2_5,
+                    end = Dimens.grid_2_5
+                ),
+            containerColor = MaterialTheme.colorScheme.primary,
+//            contentColor = MaterialTheme.colorScheme.secondary
+        ) {
+            Icon(Icons.Filled.Add, "Small floating action button.")
         }
     }
 }

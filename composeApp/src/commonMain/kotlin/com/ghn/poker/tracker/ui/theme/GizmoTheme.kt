@@ -1,6 +1,6 @@
 package com.ghn.poker.tracker.ui.theme
 
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 
 @Composable
@@ -11,7 +11,7 @@ fun GizmoTheme(content: @Composable () -> Unit) {
 
     ProvideDimens(dimensions = sw360Dimensions) {
         MaterialTheme(
-            colors = colors,
+            colorScheme = colors,
             shapes = Shapes,
 //            typography = typography,
             content = content,

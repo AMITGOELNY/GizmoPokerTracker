@@ -13,8 +13,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,41 +39,78 @@ import com.ghn.poker.tracker.presentation.session.SessionEntryViewModel
 import com.ghn.poker.tracker.ui.shared.PrimaryButton
 import com.ghn.poker.tracker.ui.theme.Dimens
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SessionEntryScreen(viewModel: SessionEntryViewModel = SessionEntryViewModel()) {
+fun SessionEntryScreen(
+    onBackClick: () -> Unit,
+    viewModel: SessionEntryViewModel = SessionEntryViewModel()
+) {
     var startAmount by remember { mutableStateOf("") }
     var endAmount by remember { mutableStateOf("") }
     val state = viewModel.state.collectAsState().value
 
-    Column(
-        modifier = Modifier.fillMaxSize().padding(Dimens.grid_2_5),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(Dimens.grid_2)
-    ) {
-        Text("Enter session Date")
-        InputRow("Date") {
-            Text(state.date.date.toString())
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            CenterAlignedTopAppBar(
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        navigationIconContentColor = MaterialTheme.colorScheme.primary
+                    ),
+                modifier = Modifier.fillMaxWidth(),
+                title = {
+                    Text(
+                        text = "Create Session",
+//                        style = MaterialTheme.typography.p3.copy(fontWeight = FontWeight.Medium),
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.Rounded.ArrowBack,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            )
         }
-
-        InputRow("BuyIn Amount") {
-            TextEntryField(startAmount) { amount ->
-                viewModel.dispatch(SessionEntryAction.UpdateStartAmount(amount.toDoubleOrNull()))
-                startAmount = amount
+    ) { padding ->
+        Column(
+            modifier =
+                Modifier.fillMaxWidth()
+                    .padding(horizontal = Dimens.grid_2_5)
+                    .padding(bottom = Dimens.grid_2_5)
+                    .padding(padding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(Dimens.grid_2)
+        ) {
+            InputRow("Date") {
+                Text(state.date.date.toString())
             }
-        }
 
-        InputRow("End Amount") {
-            TextEntryField(endAmount) { amount ->
-                viewModel.dispatch(SessionEntryAction.UpdateEndAmount(amount.toDoubleOrNull()))
-                endAmount = amount
+            InputRow("BuyIn Amount") {
+                TextEntryField(startAmount) { amount ->
+                    viewModel.dispatch(SessionEntryAction.UpdateStartAmount(amount.toDoubleOrNull()))
+                    startAmount = amount
+                }
             }
+
+            InputRow("End Amount") {
+                TextEntryField(endAmount) { amount ->
+                    viewModel.dispatch(SessionEntryAction.UpdateEndAmount(amount.toDoubleOrNull()))
+                    endAmount = amount
+                }
+            }
+            Spacer(Modifier.weight(1f))
+            PrimaryButton(
+                buttonText = "Save Session",
+                isEnabled = state.saveEnabled,
+                onClick = { viewModel.dispatch(SessionEntryAction.SaveSession) }
+            )
         }
-        Spacer(Modifier.weight(1f))
-        PrimaryButton(
-            buttonText = "Save Session",
-            isEnabled = state.saveEnabled,
-            onClick = { viewModel.dispatch(SessionEntryAction.SaveSession) }
-        )
     }
 }
 
@@ -74,11 +119,7 @@ private fun InputRow(
     label: String,
     content: @Composable () -> Unit
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
         Text(label)
         content()
     }
@@ -98,13 +139,9 @@ private fun TextEntryField(
                 modifier =
                     Modifier
                         .width(120.dp)
-                        .border(1.dp, MaterialTheme.colors.primary, MaterialTheme.shapes.medium)
+                        .border(1.dp, MaterialTheme.colorScheme.primary, MaterialTheme.shapes.medium)
                         .background(Color(0xffF6F6F6), MaterialTheme.shapes.medium)
-                        .padding(
-                            vertical = Dimens.grid_0_5,
-                            horizontal = Dimens.grid_1,
-                        ),
-                // inner padding,
+                        .padding(vertical = Dimens.grid_0_5, horizontal = Dimens.grid_1),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box {

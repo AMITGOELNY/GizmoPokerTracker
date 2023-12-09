@@ -8,11 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,8 +41,8 @@ fun PrimaryButton(
         enabled = isEnabled,
         colors =
             ButtonDefaults.buttonColors(
-                backgroundColor = MaterialTheme.colors.primary.copy(alpha = if (showLoading) .5f else 1f),
-                disabledBackgroundColor = MaterialTheme.colors.primary.copy(alpha = .5f),
+                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = if (showLoading) .5f else 1f),
+                disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = .5f),
 //            contentColor = MaterialTheme.colors.buttonTextColor,
 //            disabledContentColor = MaterialTheme.colors.buttonTextColor.copy(alpha = .5f)
             ),
