@@ -3,19 +3,12 @@ package com.ghn.plugins
 import com.ghn.common.models.SessionDTO
 import com.ghn.gizmodb.tables.pojos.SessionDb
 import com.ghn.gizmodb.tables.references.SESSION
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.Application
-import io.ktor.server.application.call
-import io.ktor.server.application.install
-import io.ktor.server.plugins.autohead.AutoHeadResponse
-import io.ktor.server.request.receive
-import io.ktor.server.response.respond
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.get
-import io.ktor.server.routing.post
-import io.ktor.server.routing.route
-import io.ktor.server.routing.routing
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.autohead.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import org.jooq.DSLContext
 import java.time.LocalDateTime
 
@@ -33,7 +26,7 @@ fun Route.sessionRouting(db: DSLContext) {
     route("/sessions") {
         get {
             val sessionsDb = db.fetch(SESSION).into(SessionDb::class.java)
-            val sessions = sessionsDb.map(SessionDb::toSessions)
+            val sessions = sessionsDb.map(SessionDb::toSession)
             call.respond(sessions)
         }
 
@@ -44,10 +37,44 @@ fun Route.sessionRouting(db: DSLContext) {
             newRecord.store()
             call.respond(HttpStatusCode.OK)
         }
+
+        route("/{id}") {
+            get {
+                val id = call.parameters["id"].toString()
+                val session =
+                    db.selectFrom(SESSION)
+                        .where(SESSION.ID.eq(id))
+                        .fetch()
+                        .firstOrNull()
+                        ?.into(SessionDb::class.java)
+                if (session != null) {
+                    call.respond(session.toSession())
+                } else {
+                    call.respond(HttpStatusCode.BadRequest, "Session not found for id: $id")
+                }
+            }
+
+            delete {
+                val id = call.parameters["id"].toString()
+                try {
+                    val success =
+                        db.deleteFrom(SESSION)
+                            .where(SESSION.ID.eq(id))
+                            .execute()
+                    if (success != 0) {
+                        call.respond(HttpStatusCode.OK)
+                    } else {
+                        call.respond(HttpStatusCode.NotAcceptable)
+                    }
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, "Delete session failed for id: $id")
+                }
+            }
+        }
     }
 }
 
-private fun SessionDb.toSessions() =
+private fun SessionDb.toSession() =
     SessionDTO(
         id = id,
         date = date.toString(),
