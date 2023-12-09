@@ -1,3 +1,12 @@
+[bundles]
+
+commonKtor = [
+    "ktor-client-core",
+    "ktor-client-logging",
+    "ktor-client-negotiation",
+    "ktor-client-serialization"
+]
+
 [versions]
 kotlin = "1.9.21"
 
@@ -21,6 +30,8 @@ koinVersion = "3.5.2-RC1"
 koinKspVersion = "1.3.0"
 kotlinxSerializationJson = "1.6.2"
 sqldelightVersion = "2.0.1"
+
+ktorVersion = "2.3.7"
 
 # Server
 jdbc_sqlite = "3.43.2.2"
@@ -55,6 +66,14 @@ koinCompiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koi
 
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.1" }
 kermit = { module = "co.touchlab:kermit", version = "2.0.2" }
+
+# Ktor
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersion" }
+ktor-client-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorVersion" }
+ktor-client-ios = {module = "io.ktor:ktor-client-ios", version.ref = "ktorVersion" }
+ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorVersion" }
+ktor-client-okhttp = {module = "io.ktor:ktor-client-okhttp", version.ref = "ktorVersion" }
 
 # Server
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }

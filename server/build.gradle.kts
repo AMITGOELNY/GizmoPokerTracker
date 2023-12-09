@@ -4,7 +4,7 @@ import org.jooq.meta.jaxb.Logging
 
 plugins {
     kotlin("jvm")
-    id("io.ktor.plugin") version "2.3.7"
+    id("io.ktor.plugin") version libs.versions.ktorVersion.get()
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.21"
     alias(libs.plugins.jooq)
     alias(libs.plugins.flyway)

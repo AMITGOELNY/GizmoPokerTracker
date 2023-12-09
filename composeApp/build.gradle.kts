@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.sqldelight)
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.21"
 }
 
 kotlin {
@@ -40,6 +41,7 @@ kotlin {
         val desktopMain by getting
 
         commonMain.dependencies {
+//            implementation(project(":common"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
@@ -50,6 +52,7 @@ kotlin {
             implementation(libs.datetime)
             implementation(libs.kermit)
 
+            implementation(libs.bundles.commonKtor)
 //            api(libs.koinCompose)
             api(libs.koinCore)
             implementation(libs.koinAnnotations)
@@ -62,15 +65,18 @@ kotlin {
             implementation(libs.androidx.activity.compose)
 
             implementation(libs.android.sqldelight.driver)
+            implementation(libs.ktor.client.okhttp)
         }
 
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.jvm.sqldelight.driver)
+            implementation(libs.ktor.client.okhttp)
         }
 
         iosMain.dependencies {
             implementation(libs.ios.sqldelight.driver)
+            implementation(libs.ktor.client.ios)
         }
     }
 }

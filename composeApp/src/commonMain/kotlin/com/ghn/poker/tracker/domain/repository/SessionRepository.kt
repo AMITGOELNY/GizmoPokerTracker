@@ -1,7 +1,7 @@
 package com.ghn.poker.tracker.domain.repository
 
+import com.ghn.poker.tracker.data.repository.Session
 import kotlinx.datetime.LocalDateTime
-import session.Session
 
 interface SessionRepository {
     suspend fun insertSession(

@@ -15,6 +15,8 @@ fun initKoin(appModule: () -> Module): KoinApplication =
             RepositoryModule().module,
             UseCaseModule().module,
             DatabaseModule().module,
+            SourcesModule().module,
+            APIModule().module,
         ).also {
             Logger.d("KMM Koin init Complete")
         }
@@ -31,5 +33,13 @@ class UseCaseModule
 @org.koin.core.annotation.Module
 @ComponentScan("com.ghn.poker.tracker.data.database")
 class DatabaseModule
+
+@org.koin.core.annotation.Module
+@ComponentScan("com.ghn.poker.tracker.data.sources")
+class SourcesModule
+
+@org.koin.core.annotation.Module
+@ComponentScan("com.ghn.poker.tracker.data.api")
+class APIModule
 
 internal expect val platformModule: Module
