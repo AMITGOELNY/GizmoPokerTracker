@@ -1,14 +1,21 @@
 package com.ghn.plugins
 
+import com.ghn.common.models.SessionDTO
 import com.ghn.gizmodb.tables.pojos.SessionDb
 import com.ghn.gizmodb.tables.references.SESSION
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.plugins.autohead.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import kotlinx.serialization.Serializable
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.Application
+import io.ktor.server.application.call
+import io.ktor.server.application.install
+import io.ktor.server.plugins.autohead.AutoHeadResponse
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
 import org.jooq.DSLContext
 import java.time.LocalDateTime
 
@@ -31,7 +38,7 @@ fun Route.sessionRouting(db: DSLContext) {
         }
 
         post {
-            val userSession = call.receive<Session>()
+            val userSession = call.receive<SessionDTO>()
             val newRecord = db.newRecord(SESSION)
             newRecord.from(userSession.toSessionDb())
             newRecord.store()
@@ -41,25 +48,17 @@ fun Route.sessionRouting(db: DSLContext) {
 }
 
 private fun SessionDb.toSessions() =
-    Session(
+    SessionDTO(
         id = id,
         date = date.toString(),
         startAmount = startamount,
         endAmount = endamount,
     )
 
-private fun Session.toSessionDb() =
+private fun SessionDTO.toSessionDb() =
     SessionDb(
         id = id,
         date = LocalDateTime.now(),
         startamount = startAmount,
         endamount = endAmount,
     )
-
-@Serializable
-data class Session(
-    val id: String,
-    val date: String,
-    val startAmount: String?,
-    val endAmount: String?,
-)

@@ -16,3 +16,4 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 gizmopoker.db
+docker-compose.yml
