@@ -1,6 +1,8 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
-    kotlin("jvm")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.21"
+    kotlin("multiplatform")
+    alias(libs.plugins.serialization)
 }
 
 java {
@@ -8,6 +10,22 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-dependencies {
-    implementation(libs.kotlinx.serialization.json)
+kotlin {
+    jvm()
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+    sourceSets {
+        val commonMain by getting {
+            kotlin.srcDir(layout.buildDirectory.dir("generated-src/jooq/main"))
+            dependencies {
+                api(libs.datetime)
+                implementation(libs.kotlinx.serialization.json)
+            }
+        }
+    }
+}
+
+tasks.withType<KotlinCompile> {
+    mustRunAfter(":server:generateJooq")
 }

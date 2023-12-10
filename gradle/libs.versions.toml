@@ -79,6 +79,7 @@ ktor-client-okhttp = {module = "io.ktor:ktor-client-okhttp", version.ref = "ktor
 
 # Server
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
+jooq-codegen = { module = "org.jooq:jooq-codegen", version.ref = "jooq" }
 jooq-kotlin = { module = "org.jooq:jooq-kotlin", version.ref = "jooq" }
 jooq-coroutines = { module = "org.jooq:jooq-kotlin-coroutines", version.ref = "jooq" }
 jooq-test = { module = "org.jooq:jooq-test", version.ref = "jooq" }
@@ -100,3 +101,4 @@ jooq = { id = "nu.studer.jooq", version = "8.2" }
 flyway = { id = "org.flywaydb.flyway", version = "10.1.0" }
 shadowjar = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
 jetbrainsKotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

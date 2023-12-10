@@ -20,4 +20,5 @@ dependencyResolutionManagement {
 
 include(":composeApp")
 include(":server")
+include(":server:jooq-generator")
 include(":common")
