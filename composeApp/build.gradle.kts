@@ -135,6 +135,8 @@ android {
     dependencies {
         debugImplementation(libs.compose.ui.tooling)
     }
+
+    sourceSets["main"].res.srcDirs("src/androidMain/res", "src/commonMain/resources")
 }
 
 compose.desktop {

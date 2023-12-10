@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.ghn.poker.tracker.domain.usecase.netAmountColor
 import com.ghn.poker.tracker.presentation.session.LoadableDataState
 import com.ghn.poker.tracker.presentation.session.SessionListViewModel
 import com.ghn.poker.tracker.ui.theme.Dimens
@@ -61,10 +62,6 @@ fun SessionList(
 
     Box {
         LazyColumn(Modifier.fillMaxSize()) {
-            item {
-                Spacer(Modifier.height(20.dp))
-            }
-
             when (val sessions = state.sessions) {
                 LoadableDataState.Empty ->
                     item {
@@ -103,8 +100,12 @@ fun SessionList(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Image(painterResource("magic-city-casino.xml"), null)
-                                Text("$3545", color = Color.Green)
+                                Image(
+                                    painter = painterResource(res = "magic-city-casino.xml"),
+                                    contentDescription = null,
+                                    modifier = Modifier.height(18.dp)
+                                )
+                                Text(session.netProfit, color = session.netAmountColor)
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(session.formattedDate)
