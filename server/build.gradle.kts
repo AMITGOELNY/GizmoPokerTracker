@@ -88,7 +88,7 @@ jooq {
                                 ForcedType().apply {
                                     includeTypes = "DATETIME"
                                     userType = "kotlinx.datetime.Instant"
-                                    converter = "com.ghn.database.JooqInstantConverter"
+                                    binding = "com.ghn.database.JooqInstantBinding"
                                 },
                             )
                         )
@@ -103,6 +103,7 @@ jooq {
                         isPojosEqualsAndHashCode = false
                         isPojosAsKotlinDataClasses = true
                         isKotlinNotNullPojoAttributes = true
+                        isJavaTimeTypes = false
                     }
                     target.apply {
                         packageName = "com.ghn.gizmodb"

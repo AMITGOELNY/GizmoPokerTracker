@@ -27,5 +27,8 @@ kotlin {
 }
 
 tasks.withType<KotlinCompile> {
-    mustRunAfter(":server:generateJooq")
+    mustRunAfter(
+        ":server:generateJooq",
+        ":server:movePojos"
+    )
 }
