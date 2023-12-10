@@ -5,7 +5,7 @@ import org.jooq.meta.jaxb.Logging
 plugins {
     kotlin("jvm")
     id("io.ktor.plugin") version libs.versions.ktorVersion.get()
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.21"
+    alias(libs.plugins.serialization)
     alias(libs.plugins.jooq)
     alias(libs.plugins.flyway)
     alias(libs.plugins.shadowjar)
@@ -57,8 +57,10 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${libs.versions.kotlin.get()}")
 
+    implementation(libs.datetime)
     implementation(libs.flyway.core)
     jooqGenerator(libs.jdbc.sqlite)
+    jooqGenerator(projects.server.jooqGenerator)
     implementation(libs.jdbc.sqlite)
 }
 
@@ -73,7 +75,7 @@ jooq {
                     url = dbUrl
                 }
                 generator.apply {
-                    name = "org.jooq.codegen.KotlinGenerator"
+                    name = "JooqGenerator"
                     database.apply {
                         name = "org.jooq.meta.sqlite.SQLiteDatabase"
                         excludes =
@@ -81,48 +83,54 @@ jooq {
                                 // Exclude flyway migration tables
                                 "flyway_.*",
                             ).joinToString("|")
+                        forcedTypes.addAll(
+                            listOf(
+                                ForcedType().apply {
+                                    includeTypes = "DATETIME"
+                                    userType = "kotlinx.datetime.Instant"
+                                    converter = "com.ghn.database.JooqInstantConverter"
+                                },
+                            )
+                        )
                     }
                     generate.apply {
                         isDaos = false
                         isRecords = true
+                        // Pojos as simple data classes
+                        isSerializablePojos = false
                         isImmutablePojos = true
+                        isPojosToString = false
+                        isPojosEqualsAndHashCode = false
                         isPojosAsKotlinDataClasses = true
                         isKotlinNotNullPojoAttributes = true
-                        isKotlinNotNullRecordAttributes = true
-                        isKotlinNotNullInterfaceAttributes = true
                     }
                     target.apply {
-                        packageName = "com.ghn.gizmodb" // TODO: Your java package name
+                        packageName = "com.ghn.gizmodb"
                     }
-                    strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"
-
-                    strategy.withMatchers(
-                        Matchers()
-                            .withTables(
-                                MatchersTableType()
-                                    .withTableClass(
-                                        MatcherRule()
-                                            .withTransform(MatcherTransformType.PASCAL)
-                                            .withExpression("$0_table")
-                                    )
-                                    .withPojoClass(
-                                        MatcherRule()
-                                            .withTransform(MatcherTransformType.PASCAL)
-                                            .withExpression("$0_db")
-                                    )
-                            )
-                    )
+                    strategy.name = "JooqStrategy"
                 }
             }
         }
     }
 }
 
-tasks.named<JooqGenerate>("generateJooq") {
+tasks.create<Copy>("movePojos") {
+    val pojosTree = fileTree(layout.buildDirectory.dir("generated-src/jooq/main")) {
+        include("**/models/**")
+    }
+    from(pojosTree)
+    into(rootProject.file("common/build/generated-src/jooq/main"))
+    doLast {
+        pojosTree.forEach { if (it.isFile) it.delete() }
+    }
+}
+
+tasks.getByName<JooqGenerate>("generateJooq") {
     inputs.dir(migrationPath)
     allInputsDeclared.set(true)
     dependsOn("flywayMigrate")
     doFirst { Thread.sleep(2000) }
+    finalizedBy("movePojos")
 }
 
 tasks.getByName<JavaExec>("run") {
