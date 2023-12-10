@@ -1,5 +1,6 @@
 package com.ghn.poker.tracker.data.sources.remote
 
+import com.ghn.gizmodb.common.models.SessionDTO
 import com.ghn.poker.tracker.data.api.KtorProvider
 import io.ktor.client.call.body
 import io.ktor.client.request.get

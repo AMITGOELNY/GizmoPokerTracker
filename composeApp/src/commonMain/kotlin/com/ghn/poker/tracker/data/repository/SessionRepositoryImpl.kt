@@ -34,9 +34,9 @@ class SessionRepositoryImpl(
             Logger.d { "session date: ${it.date}" }
             Session(
                 id = it.id,
-                date = it.date,
-                startAmount = it.startAmount,
-                endAmount = it.endAmount,
+                date = it.date.toString(),
+                startAmount = it.startamount,
+                endAmount = it.endamount,
             )
         }
 
