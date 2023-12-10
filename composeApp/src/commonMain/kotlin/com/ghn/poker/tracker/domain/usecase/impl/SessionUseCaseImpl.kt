@@ -28,7 +28,7 @@ class SessionUseCaseImpl(
 private fun List<Session>.toSessionData(): List<SessionData> =
     map {
         SessionData(
-            date = LocalDateTime.parse(it.date),
+            date = it.date,
             startAmount = it.startAmount,
             endAmount = it.endAmount
         )

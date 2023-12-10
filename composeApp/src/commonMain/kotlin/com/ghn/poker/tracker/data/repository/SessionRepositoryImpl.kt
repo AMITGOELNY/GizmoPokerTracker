@@ -5,6 +5,7 @@ import com.ghn.poker.tracker.data.database.SessionDao
 import com.ghn.poker.tracker.data.sources.remote.SessionRemoteDataSource
 import com.ghn.poker.tracker.domain.repository.SessionRepository
 import com.ghn.poker.tracker.util.randomUUID
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import org.koin.core.annotation.Single
 
@@ -34,7 +35,7 @@ class SessionRepositoryImpl(
             Logger.d { "session date: ${it.date}" }
             Session(
                 id = it.id,
-                date = it.date.toString(),
+                date = it.date,
                 startAmount = it.startamount,
                 endAmount = it.endamount,
             )
@@ -46,7 +47,7 @@ class SessionRepositoryImpl(
 
 data class Session(
     val id: String,
-    val date: String,
+    val date: Instant,
     val startAmount: String?,
     val endAmount: String?,
 )

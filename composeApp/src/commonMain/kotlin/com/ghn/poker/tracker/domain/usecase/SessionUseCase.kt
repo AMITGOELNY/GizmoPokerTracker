@@ -5,7 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.ghn.poker.tracker.util.DAY_MONTH_AND_YEAR_FORMAT
 import com.ghn.poker.tracker.util.format
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 interface SessionUseCase {
     suspend fun insertSession(
@@ -18,19 +21,25 @@ interface SessionUseCase {
 }
 
 data class SessionData(
-    val date: LocalDateTime,
+    val date: Instant,
     val startAmount: String?,
     val endAmount: String?,
 ) {
     val formattedDate: String
-        get() = date.format(DAY_MONTH_AND_YEAR_FORMAT).orEmpty()
+        get() {
+            val localDatetime = date.toLocalDateTime(TimeZone.currentSystemDefault())
+            return localDatetime.format(DAY_MONTH_AND_YEAR_FORMAT).orEmpty()
+        }
 
     val netProfit: String
         get() =
             when {
                 startAmount != null || endAmount != null -> {
                     val profit =
-                        (endAmount?.toDoubleOrNull() ?: 0.0) - (startAmount?.toDoubleOrNull() ?: 0.0)
+                        (endAmount?.toDoubleOrNull() ?: 0.0) - (
+                            startAmount?.toDoubleOrNull()
+                                ?: 0.0
+                        )
                     val prefix = if (profit < 0.0) "-" else ""
                     "$prefix$" +
                         (
