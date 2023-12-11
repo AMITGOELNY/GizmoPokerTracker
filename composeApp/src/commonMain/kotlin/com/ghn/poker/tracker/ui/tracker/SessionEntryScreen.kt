@@ -53,11 +53,10 @@ fun SessionEntryScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             CenterAlignedTopAppBar(
-                colors =
-                    TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        navigationIconContentColor = MaterialTheme.colorScheme.primary
-                    ),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.primary
+                ),
                 modifier = Modifier.fillMaxWidth(),
                 title = {
                     Text(
@@ -79,11 +78,10 @@ fun SessionEntryScreen(
         }
     ) { padding ->
         Column(
-            modifier =
-                Modifier.fillMaxWidth()
-                    .padding(horizontal = Dimens.grid_2_5)
-                    .padding(bottom = Dimens.grid_2_5)
-                    .padding(padding),
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = Dimens.grid_2_5)
+                .padding(bottom = Dimens.grid_2_5)
+                .padding(padding),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(Dimens.grid_2)
         ) {
@@ -137,11 +135,11 @@ private fun TextEntryField(
         decorationBox = { innerTextField ->
             Row(
                 modifier =
-                    Modifier
-                        .width(120.dp)
-                        .border(1.dp, MaterialTheme.colorScheme.primary, MaterialTheme.shapes.medium)
-                        .background(Color(0xffF6F6F6), MaterialTheme.shapes.medium)
-                        .padding(vertical = Dimens.grid_0_5, horizontal = Dimens.grid_1),
+                Modifier
+                    .width(120.dp)
+                    .border(1.dp, MaterialTheme.colorScheme.primary, MaterialTheme.shapes.medium)
+                    .background(Color(0xffF6F6F6), MaterialTheme.shapes.medium)
+                    .padding(vertical = Dimens.grid_0_5, horizontal = Dimens.grid_1),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box {

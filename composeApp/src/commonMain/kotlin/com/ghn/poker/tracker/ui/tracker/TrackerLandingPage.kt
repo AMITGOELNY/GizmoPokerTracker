@@ -73,28 +73,26 @@ fun SessionList(
                     items(sessions.data) { session ->
 
                         Column(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = Dimens.grid_2_5)
-                                    .border(
-                                        width = 0.3.dp,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        shape = RoundedCornerShape(size = 6.dp)
-                                    )
-                                    .shadow(
-                                        elevation = 16.dp,
-                                        spotColor = Color(0x24384F6F),
-                                        ambientColor = Color(0x24384F6F)
-                                    )
-                                    .padding(vertical = Dimens.grid_2_5, horizontal = Dimens.grid_1_5),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = Dimens.grid_2_5)
+                                .border(
+                                    width = 0.3.dp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = RoundedCornerShape(size = 6.dp)
+                                )
+                                .shadow(
+                                    elevation = 16.dp,
+                                    spotColor = Color(0x24384F6F),
+                                    ambientColor = Color(0x24384F6F)
+                                )
+                                .padding(vertical = Dimens.grid_2_5, horizontal = Dimens.grid_1_5),
                             //                            .background(MaterialTheme.colors.onBackground),
 //                        horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement =
-                                Arrangement.spacedBy(
-                                    space = Dimens.grid_1,
-                                    alignment = Alignment.CenterVertically
-                                )
+                            verticalArrangement = Arrangement.spacedBy(
+                                space = Dimens.grid_1,
+                                alignment = Alignment.CenterVertically
+                            )
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -127,11 +125,10 @@ fun SessionList(
 
         SmallFloatingActionButton(
             onClick = onCreateSessionClick,
-            modifier =
-                Modifier.align(Alignment.BottomEnd).padding(
-                    bottom = Dimens.grid_2_5,
-                    end = Dimens.grid_2_5
-                ),
+            modifier = Modifier.align(Alignment.BottomEnd).padding(
+                bottom = Dimens.grid_2_5,
+                end = Dimens.grid_2_5
+            ),
             containerColor = MaterialTheme.colorScheme.primary,
 //            contentColor = MaterialTheme.colorScheme.secondary
         ) {

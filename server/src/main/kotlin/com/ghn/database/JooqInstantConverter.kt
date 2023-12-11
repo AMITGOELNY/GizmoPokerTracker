@@ -1,3 +1,4 @@
+@file:Suppress("ktlint")
 package com.ghn.database
 
 
@@ -12,7 +13,6 @@ import java.sql.Timestamp
 
 @Suppress("UNUSED")
 private class JooqInstantConverter : Converter<Timestamp, Instant> {
-
     override fun fromType(): Class<Timestamp> = Timestamp::class.java
 
     override fun toType(): Class<Instant> = Instant::class.java
@@ -29,6 +29,7 @@ private class JooqInstantConverter : Converter<Timestamp, Instant> {
 @Suppress("UNUSED")
 class JooqInstantBinding : AbstractBinding<Timestamp, Instant>() {
     private val convert = JooqInstantConverter()
+
     override fun converter(): Converter<Timestamp, Instant> {
         return convert
     }

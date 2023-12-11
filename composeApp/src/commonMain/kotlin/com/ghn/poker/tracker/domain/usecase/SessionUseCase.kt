@@ -35,19 +35,11 @@ data class SessionData(
         get() =
             when {
                 startAmount != null || endAmount != null -> {
-                    val profit =
-                        (endAmount?.toDoubleOrNull() ?: 0.0) - (
-                            startAmount?.toDoubleOrNull()
-                                ?: 0.0
-                        )
+                    val start = startAmount?.toDoubleOrNull() ?: 0.0
+                    val end = endAmount?.toDoubleOrNull() ?: 0.0
+                    val profit = end - start
                     val prefix = if (profit < 0.0) "-" else ""
-                    "$prefix$" +
-                        (
-                            (endAmount?.toDoubleOrNull() ?: 0.0) - (
-                                startAmount?.toDoubleOrNull()
-                                    ?: 0.0
-                            )
-                        ).toString()
+                    "$prefix$$profit"
                 }
 
                 else -> "N/A"

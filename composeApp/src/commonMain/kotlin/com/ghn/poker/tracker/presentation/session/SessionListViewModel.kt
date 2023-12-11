@@ -25,12 +25,11 @@ class SessionListViewModel : BaseViewModel(), KoinComponent {
             val sessions = useCase.getSessions()
             _state.update {
                 it.copy(
-                    sessions =
-                        if (sessions.isNotEmpty()) {
-                            LoadableDataState.Loaded(sessions)
-                        } else {
-                            LoadableDataState.Empty
-                        }
+                    sessions = if (sessions.isNotEmpty()) {
+                        LoadableDataState.Loaded(sessions)
+                    } else {
+                        LoadableDataState.Empty
+                    }
                 )
             }
 //            viewStateTrigger

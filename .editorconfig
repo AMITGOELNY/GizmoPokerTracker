@@ -1,7 +1,9 @@
 [*.{kt,kts}]
+ktlint_code_style = intellij_idea
 indent_size=4
 ktlint_standard_function-naming = disabled
 ktlint_standard_no-wildcard-imports = disabled
 ktlint_standard_trailing-comma-on-call-site = disabled
 ktlint_standard_trailing-comma-on-declaration-site = disabled
 ktlint_standard_no-line-break-before-assignment = enabled
+ktlint_standard_multiline-expression-wrapping = disabled

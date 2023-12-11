@@ -38,19 +38,17 @@ fun App() {
                 modifier = Modifier.fillMaxSize(),
                 topBar = {
                     CenterAlignedTopAppBar(
-                        colors =
-                            TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.background,
-                                navigationIconContentColor = MaterialTheme.colorScheme.primary
-                            ),
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            navigationIconContentColor = MaterialTheme.colorScheme.primary
+                        ),
                         modifier = Modifier.fillMaxWidth(),
                         title = {
                             Text(
                                 text = "GiZMO POKER",
-                                style =
-                                    MaterialTheme.typography.title200.copy(
-                                        color = Color(0xFFCCCCCC)
-                                    )
+                                style = MaterialTheme.typography.title200.copy(
+                                    color = Color(0xFFCCCCCC)
+                                )
                             )
                         }
                     )
