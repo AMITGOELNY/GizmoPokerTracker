@@ -47,10 +47,10 @@ fun App() {
                             Text(
                                 text = "GiZMO POKER",
                                 style = MaterialTheme.typography.title200.copy(
-                                    color = Color(0xFFCCCCCC)
+                                    color = Color(0xFFAFA21D)
                                 )
                             )
-                        }
+                        },
                     )
                 }
             ) { padding ->

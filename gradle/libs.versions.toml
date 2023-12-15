@@ -84,6 +84,7 @@ jooq-kotlin = { module = "org.jooq:jooq-kotlin", version.ref = "jooq" }
 jooq-coroutines = { module = "org.jooq:jooq-kotlin-coroutines", version.ref = "jooq" }
 jooq-test = { module = "org.jooq:jooq-test", version.ref = "jooq" }
 jooq-test-kotlin = { module = "org.jooq:jooq-test-kotlin", version.ref = "jooq" }
+bouncyCastle = { module = "org.bouncycastle:bcprov-jdk15on", version = "1.70" }
 flyway-core = { module = "org.flywaydb:flyway-core", version = "9.22.3" }
 jdbc-sqlite = { module = "org.xerial:sqlite-jdbc", version = "3.43.2.2" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }

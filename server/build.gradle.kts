@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import nu.studer.gradle.jooq.JooqGenerate
 import org.jooq.meta.jaxb.*
 import org.jooq.meta.jaxb.Logging
@@ -50,13 +51,15 @@ dependencies {
     implementation("io.ktor:ktor-server-cors-jvm")
     implementation("io.ktor:ktor-server-auto-head-response-jvm")
     implementation("io.ktor:ktor-server-sessions-jvm")
-    implementation("io.ktor:ktor-server-auth-jvm")
     implementation("io.ktor:ktor-server-netty-jvm")
+    implementation("io.ktor:ktor-server-auth-jvm")
+    implementation("io.ktor:ktor-server-auth-jwt-jvm")
     implementation("ch.qos.logback:logback-classic:${libs.versions.logbackVersion.get()}")
     implementation("io.ktor:ktor-server-config-yaml:2.3.7")
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${libs.versions.kotlin.get()}")
 
+    implementation(libs.bouncyCastle)
     implementation(libs.datetime)
     implementation(libs.flyway.core)
     jooqGenerator(libs.jdbc.sqlite)
@@ -139,5 +142,13 @@ tasks.getByName<JavaExec>("run") {
         "DATABASE_URL",
         properties["databaseUrl"] ?: environment["DATABASE_URL"]
             ?: "sqlite:${rootDir.resolve("gizmopoker.db")}"
+    )
+    val localProperties = gradleLocalProperties(rootDir)
+    val secret = localProperties.getProperty("SECRET_JWT", "")
+    environment(
+        /* name = */
+        "SECRET_JWT",
+        /* value = */
+        secret ?: environment["SECRET_JWT"] ?: ""
     )
 }

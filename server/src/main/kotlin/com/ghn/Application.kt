@@ -18,10 +18,9 @@ fun runMigrations(
     connectionString: String,
     logger: Logger? = null
 ): Boolean {
-    val flyway =
-        Flyway.configure()
-            .loggers("slf4j")
-            .dataSource(connectionString, null, null).load()
+    val flyway = Flyway.configure()
+        .loggers("slf4j")
+        .dataSource(connectionString, null, null).load()
     return try {
         flyway.migrate()
         true
@@ -32,13 +31,15 @@ fun runMigrations(
 }
 
 fun Application.module() {
+    val secret = environment.config.property("ktor.SECRET_JWT").getString()
+    log.debug("secret: $secret")
+    JwtConfig.initialize(secret)
     val dbUrl = "jdbc:${environment.config.property("ktor.databaseUrl").getString()}"
     runMigrations(dbUrl)
-    val source =
-        SQLiteConnectionPoolDataSource().apply {
-            url = dbUrl
-            check(url.isNotBlank())
-        }
+    val source = SQLiteConnectionPoolDataSource().apply {
+        url = dbUrl
+        check(url.isNotBlank())
+    }
 
     val db = DSL.using(source, SQLDialect.SQLITE)
     configureSerialization()

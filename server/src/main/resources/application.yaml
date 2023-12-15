@@ -1,5 +1,6 @@
 ktor:
     databaseUrl: "$DATABASE_URL:"
+    SECRET_JWT: "$SECRET_JWT:"
     application:
         modules:
             - com.ghn.ApplicationKt.module

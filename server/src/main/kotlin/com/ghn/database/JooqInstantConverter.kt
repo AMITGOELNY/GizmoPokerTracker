@@ -1,7 +1,6 @@
 @file:Suppress("ktlint")
 package com.ghn.database
 
-
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
