@@ -42,6 +42,7 @@ import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.title200
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.koinInject
 
 @Composable
 fun TrackerLandingPage(onCreateSessionClick: () -> Unit) {
@@ -52,9 +53,9 @@ fun TrackerLandingPage(onCreateSessionClick: () -> Unit) {
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SessionList(
-    onCreateSessionClick: () -> Unit,
-    viewModel: SessionListViewModel = SessionListViewModel()
+    onCreateSessionClick: () -> Unit
 ) {
+    val viewModel: SessionListViewModel = koinInject<SessionListViewModel>()
     val state = viewModel.state.collectAsState().value
     val color = remember { Animatable(Color.Gray) }
     LaunchedEffect(Unit) {

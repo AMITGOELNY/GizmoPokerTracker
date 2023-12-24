@@ -1,10 +1,12 @@
 package com.ghn.poker.tracker.di
 
 import co.touchlab.kermit.Logger
+import com.ghn.poker.tracker.presentation.session.SessionListViewModel
 import org.koin.core.KoinApplication
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
+import org.koin.dsl.module
 import org.koin.ksp.generated.module
 
 fun initKoin(appModule: () -> Module): KoinApplication =
@@ -17,6 +19,7 @@ fun initKoin(appModule: () -> Module): KoinApplication =
             DatabaseModule().module,
             SourcesModule().module,
             APIModule().module,
+            sharedViewModelModule
         ).also {
             Logger.d("KMM Koin init Complete")
         }
@@ -43,3 +46,9 @@ class SourcesModule
 class APIModule
 
 internal expect val platformModule: Module
+
+val sharedViewModelModule = module {
+    factory {
+        SessionListViewModel(useCase = get())
+    }
+}

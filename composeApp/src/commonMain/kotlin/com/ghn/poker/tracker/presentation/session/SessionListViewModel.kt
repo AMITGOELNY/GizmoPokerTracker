@@ -9,15 +9,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
-class SessionListViewModel : BaseViewModel(), KoinComponent {
+class SessionListViewModel(useCase: SessionUseCase) : BaseViewModel(), KoinComponent {
     private val _state = MutableStateFlow(SessionListState())
     val state = _state.asStateFlow()
 
     private val viewStateTrigger = MutableSharedFlow<SessionListAction>(replay = 1)
-
-    private val useCase: SessionUseCase by inject<SessionUseCase>()
 
     init {
         viewModelScope.launch {
