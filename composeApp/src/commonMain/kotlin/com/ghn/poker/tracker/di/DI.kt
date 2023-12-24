@@ -1,6 +1,7 @@
 package com.ghn.poker.tracker.di
 
 import co.touchlab.kermit.Logger
+import com.ghn.poker.tracker.presentation.login.LoginViewModel
 import com.ghn.poker.tracker.presentation.session.SessionListViewModel
 import org.koin.core.KoinApplication
 import org.koin.core.annotation.ComponentScan
@@ -50,5 +51,9 @@ internal expect val platformModule: Module
 val sharedViewModelModule = module {
     factory {
         SessionListViewModel(useCase = get())
+    }
+
+    factory {
+        LoginViewModel()
     }
 }

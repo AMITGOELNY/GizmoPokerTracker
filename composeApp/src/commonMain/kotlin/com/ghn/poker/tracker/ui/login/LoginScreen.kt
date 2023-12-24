@@ -34,12 +34,17 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ghn.poker.tracker.presentation.login.LoginActions
+import com.ghn.poker.tracker.presentation.login.LoginViewModel
 import com.ghn.poker.tracker.ui.shared.PrimaryButton
 import com.ghn.poker.tracker.ui.theme.title200
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun LoginScreen() {
+internal fun LoginScreen(
+    viewModel: LoginViewModel = koinInject()
+) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -68,13 +73,19 @@ internal fun LoginScreen() {
                 style = MaterialTheme.typography.title200,
                 modifier = Modifier.padding(vertical = 16.dp),
             )
-            FormBody()
+            FormBody(
+                onUsernameChange = { viewModel.dispatch(LoginActions.OnUsernameChange(it)) },
+                onPasswordChange = { viewModel.dispatch(LoginActions.OnPasswordChange(it)) }
+            )
         }
     }
 }
 
 @Composable
-internal fun FormBody() {
+internal fun FormBody(
+    onUsernameChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+) {
     var usernameValue by remember { mutableStateOf(TextFieldValue("")) }
     var passwordValue by remember { mutableStateOf(TextFieldValue("")) }
 
@@ -88,6 +99,7 @@ internal fun FormBody() {
             textFieldValue = usernameValue,
             onValueChange = {
                 usernameValue = it
+                onUsernameChange(it.text)
             },
             leadingIconId = "ic_message.xml",
             placeHolder = "Username",
