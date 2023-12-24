@@ -32,7 +32,7 @@ fun runMigrations(
 
 fun Application.module() {
     val secret = environment.config.property("ktor.SECRET_JWT").getString()
-    log.debug("secret: $secret")
+//    environment.developmentMode
     JwtConfig.initialize(secret)
     val dbUrl = "jdbc:${environment.config.property("ktor.databaseUrl").getString()}"
     runMigrations(dbUrl)

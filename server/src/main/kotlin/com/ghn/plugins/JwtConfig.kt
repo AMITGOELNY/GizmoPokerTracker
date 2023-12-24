@@ -11,7 +11,7 @@ import java.util.Date
 object JwtConfig {
 
     private const val ISSUER = "com.ghn"
-    private const val VALIDITY_IN_MS = 36_000_00 * 24
+    private const val VALIDITY_IN_MS = 36_000_00 * 96
     private lateinit var algorithm: Algorithm
 
     fun initialize(secret: String) {
