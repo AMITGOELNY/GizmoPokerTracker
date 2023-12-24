@@ -1,13 +1,18 @@
 package com.ghn.poker.tracker.ui.tracker
 
 import androidx.compose.animation.Animatable
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,11 +24,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -44,16 +53,39 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackerLandingPage(onCreateSessionClick: () -> Unit) {
-    SessionList(onCreateSessionClick)
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                title = {
+                    Text(
+                        text = "GiZMO POKER",
+                        style = MaterialTheme.typography.title200.copy(
+                            color = Color(0xFFAFA21D)
+                        )
+                    )
+                },
+            )
+        }
+    ) { padding ->
+        SessionList(onCreateSessionClick, padding)
+    }
 //    SessionEntryScreen()
 }
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SessionList(
-    onCreateSessionClick: () -> Unit
+    onCreateSessionClick: () -> Unit,
+    padding: PaddingValues
 ) {
     val viewModel: SessionListViewModel = koinInject<SessionListViewModel>()
     val state = viewModel.state.collectAsState().value
@@ -65,78 +97,84 @@ fun SessionList(
         }
     }
 
-    Box {
-        LazyColumn(Modifier.fillMaxSize()) {
-            when (val sessions = state.sessions) {
-                LoadableDataState.Empty ->
-                    item {
-                        CircularProgressIndicator()
-                    }
-
-                LoadableDataState.Error -> TODO()
+    Box(modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
+        AnimatedContent(
+            state.sessions,
+            transitionSpec = {
+                fadeIn(animationSpec = tween(3000)) togetherWith
+                    fadeOut(animationSpec = tween(3000))
+            },
+            label = "Animated Content"
+        ) { targetState ->
+            when (targetState) {
+                LoadableDataState.Empty -> Unit
+                LoadableDataState.Error -> Unit
                 is LoadableDataState.Loaded -> {
-                    items(sessions.data) { session ->
+                    LazyColumn(Modifier.fillMaxSize()) {
+                        items(targetState.data) { session ->
 
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = Dimens.grid_2_5)
-                                .background(
-                                    color = MaterialTheme.colorScheme.surface,
-                                    shape = RoundedCornerShape(size = 6.dp)
-                                )
-                                .border(
-                                    width = 0.3.dp,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    shape = RoundedCornerShape(size = 6.dp)
-                                )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = Dimens.grid_2_5)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.surface,
+                                        shape = RoundedCornerShape(size = 6.dp)
+                                    )
+                                    .border(
+                                        width = 0.3.dp,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        shape = RoundedCornerShape(size = 6.dp)
+                                    )
 //                                .shadow(
 //                                    elevation = 16.dp,
 //                                    spotColor = Color(0x24384F6F),
 //                                    ambientColor = Color(0x24384F6F)
 //                                )
-                                .padding(vertical = Dimens.grid_2_5, horizontal = Dimens.grid_1_5),
-                            verticalArrangement = Arrangement.spacedBy(
-                                space = Dimens.grid_1,
-                                alignment = Alignment.CenterVertically
-                            )
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                    .padding(
+                                        vertical = Dimens.grid_2_5,
+                                        horizontal = Dimens.grid_1_5
+                                    ),
+                                verticalArrangement = Arrangement.spacedBy(
+                                    space = Dimens.grid_1,
+                                    alignment = Alignment.CenterVertically
+                                )
                             ) {
-                                Image(
-                                    painter = painterResource(res = "magic-city-casino.xml"),
-                                    contentDescription = null,
-                                    modifier = Modifier.height(18.dp)
-                                )
-                                Text(session.netProfit, color = session.netAmountColor)
-                            }
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Text(
-                                    session.formattedDate,
-                                    style = MaterialTheme.typography.title200.copy(
-                                        fontSize = 14.sp,
-                                        lineHeight = 16.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        letterSpacing = 0.sp,
-                                        fontFamily = FontFamily.Default
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Image(
+                                        painter = painterResource(res = "magic-city-casino.xml"),
+                                        contentDescription = null,
+                                        modifier = Modifier.height(18.dp)
                                     )
-                                )
+                                    Text(session.netProfit, color = session.netAmountColor)
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Text(
+                                        session.formattedDate,
+                                        style = MaterialTheme.typography.title200.copy(
+                                            fontSize = 14.sp,
+                                            lineHeight = 16.sp,
+                                            fontWeight = FontWeight.Medium,
+                                            letterSpacing = 0.sp,
+                                            fontFamily = FontFamily.Default
+                                        )
+                                    )
 //                                Text("start")
 //                                Text(session.startAmount.orEmpty())
+                                }
                             }
+                            Spacer(Modifier.height(Dimens.grid_2))
                         }
-                        Spacer(Modifier.height(Dimens.grid_2))
                     }
                 }
-
-                LoadableDataState.Loading -> {
-                    item {
+                LoadableDataState.Loading ->
+                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
-                }
             }
         }
 
