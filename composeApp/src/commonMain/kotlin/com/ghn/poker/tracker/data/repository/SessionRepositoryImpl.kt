@@ -2,6 +2,7 @@ package com.ghn.poker.tracker.data.repository
 
 import co.touchlab.kermit.Logger
 import com.ghn.poker.tracker.data.database.SessionDao
+import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.data.sources.remote.SessionRemoteDataSource
 import com.ghn.poker.tracker.domain.repository.SessionRepository
 import com.ghn.poker.tracker.util.randomUUID
@@ -29,19 +30,21 @@ class SessionRepositoryImpl(
         )
     }
 
-    override suspend fun getSessions(): List<Session> {
-        val sessions = remoteDataSource.getSessions()
-        return sessions.map {
-            Logger.d { "session date: ${it.date}" }
-            Session(
-                id = it.id,
-                date = it.date,
-                startAmount = it.startamount,
-                endAmount = it.endamount,
+    override suspend fun getSessions(): ApiResponse<List<Session>, Exception> {
+        return when (val sessions = remoteDataSource.getSessions()) {
+            is ApiResponse.Error -> sessions
+            is ApiResponse.Success -> ApiResponse.Success(
+                sessions.body.map {
+                    Logger.d { "session date: ${it.date}" }
+                    Session(
+                        id = it.id,
+                        date = it.date,
+                        startAmount = it.startamount,
+                        endAmount = it.endamount,
+                    )
+                }
             )
         }
-
-//        return dao.getSessions()
     }
 }
 

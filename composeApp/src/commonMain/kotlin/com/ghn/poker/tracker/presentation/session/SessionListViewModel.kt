@@ -1,5 +1,6 @@
 package com.ghn.poker.tracker.presentation.session
 
+import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.domain.usecase.SessionData
 import com.ghn.poker.tracker.domain.usecase.SessionUseCase
 import com.ghn.poker.tracker.presentation.BaseViewModel
@@ -19,15 +20,19 @@ class SessionListViewModel(useCase: SessionUseCase) : BaseViewModel(), KoinCompo
     init {
         viewModelScope.launch {
 
-            val sessions = useCase.getSessions()
-            _state.update {
-                it.copy(
-                    sessions = if (sessions.isNotEmpty()) {
-                        LoadableDataState.Loaded(sessions)
-                    } else {
-                        LoadableDataState.Empty
-                    }
-                )
+            when (val sessions = useCase.getSessions()) {
+                is ApiResponse.Error ->
+                    _state.update { it.copy(sessions = LoadableDataState.Error) }
+
+                is ApiResponse.Success -> _state.update {
+                    it.copy(
+                        sessions = if (sessions.body.isNotEmpty()) {
+                            LoadableDataState.Loaded(sessions.body)
+                        } else {
+                            LoadableDataState.Empty
+                        }
+                    )
+                }
             }
 //            viewStateTrigger
 //                .onEach { Logger.d { "Triggered new action : $it" } }

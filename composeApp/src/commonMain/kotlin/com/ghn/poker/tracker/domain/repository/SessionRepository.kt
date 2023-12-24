@@ -1,6 +1,7 @@
 package com.ghn.poker.tracker.domain.repository
 
 import com.ghn.poker.tracker.data.repository.Session
+import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import kotlinx.datetime.LocalDateTime
 
 interface SessionRepository {
@@ -10,5 +11,5 @@ interface SessionRepository {
         endAmount: Double?,
     )
 
-    suspend fun getSessions(): List<Session>
+    suspend fun getSessions(): ApiResponse<List<Session>, Exception>
 }
