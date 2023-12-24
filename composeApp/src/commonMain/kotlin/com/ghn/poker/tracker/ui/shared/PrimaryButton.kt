@@ -17,8 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ghn.poker.tracker.ui.theme.Dimens
+import com.ghn.poker.tracker.ui.theme.title200
 
 @Composable
 fun PrimaryButton(
@@ -55,7 +58,16 @@ fun PrimaryButton(
                 content?.let { content ->
                     content()
                 }
-                Text(text = buttonText)
+                Text(
+                    text = buttonText,
+                    style = MaterialTheme.typography.title200.copy(
+                        letterSpacing = 2.sp,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        lineHeight = 19.6.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                )
             }
             if (showLoading) {
                 CircularProgressIndicator(Modifier.size(Dimens.grid_2_5), strokeWidth = 2.dp)
