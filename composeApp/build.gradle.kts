@@ -54,9 +54,12 @@ kotlin {
             implementation(libs.precompose)
 
             implementation(libs.bundles.commonKtor)
-//            api(libs.koinCompose)
             api(libs.koinCore)
+            api(libs.koinCompose)
             implementation(libs.koinAnnotations)
+
+            // Required until SQLite upgrade
+            implementation("co.touchlab:stately-common:2.0.5")
         }
 
         androidMain.dependencies {
