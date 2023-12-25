@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.ghn.poker.tracker.domain.usecase.impl.AppState
 import com.ghn.poker.tracker.domain.usecase.impl.Store
+import com.ghn.poker.tracker.ui.login.GetStartedScreen
 import com.ghn.poker.tracker.ui.login.LoginScreen
 import com.ghn.poker.tracker.ui.login.SplashScreen
 import com.ghn.poker.tracker.ui.theme.GizmoTheme
@@ -18,6 +19,7 @@ import moe.tlaster.precompose.navigation.transition.NavTransition
 import org.koin.compose.koinInject
 
 enum class Screen {
+    WELCOME,
     LOGIN,
     SESSION,
     SESSION_INSERT,
@@ -38,7 +40,7 @@ fun App(viewModel: Store<AppState> = koinInject()) {
                         when (state) {
                             AppState.Init -> Unit
                             AppState.LoggedIn -> navigator.navigate(Screen.SESSION.formatted)
-                            AppState.LoggedOut -> navigator.navigate(Screen.LOGIN.formatted)
+                            AppState.LoggedOut -> navigator.navigate(Screen.WELCOME.formatted)
                         }
                     }
                 }
@@ -55,8 +57,12 @@ fun App(viewModel: Store<AppState> = koinInject()) {
                         SplashScreen(onSplashScreenFinished = viewModel::checkForToken)
                     }
 
+                    scene(Screen.WELCOME.formatted, navTransition = NavTransition()) {
+                        GetStartedScreen { navigator.navigate(Screen.LOGIN.formatted) }
+                    }
+
                     scene(Screen.LOGIN.formatted, navTransition = NavTransition()) {
-                        LoginScreen()
+                        LoginScreen { navigator.goBack() }
                     }
 
                     scene(route = Screen.SESSION.formatted, navTransition = NavTransition()) {
@@ -65,6 +71,7 @@ fun App(viewModel: Store<AppState> = koinInject()) {
                             onSignOutClick = { viewModel.signout() }
                         )
                     }
+
                     scene(
                         route = Screen.SESSION_INSERT.formatted,
                         navTransition = NavTransition()
