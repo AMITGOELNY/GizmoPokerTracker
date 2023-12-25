@@ -13,7 +13,7 @@ fun GizmoTheme(content: @Composable () -> Unit) {
         MaterialTheme(
             colorScheme = alternateDarkColors,
             shapes = Shapes,
-//            typography = typography,
+            typography = Typography,
             content = content,
         )
     }

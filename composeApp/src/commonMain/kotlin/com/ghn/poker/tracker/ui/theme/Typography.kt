@@ -69,6 +69,70 @@ private val Kalnia: FontFamily
             ),
         )
 
+private val SourceSans: FontFamily
+    @Stable
+    @ReadOnlyComposable
+    @Composable
+    get() =
+        FontFamily(
+            font(
+                "Source Sans3 Regular",
+                "source_sans_three_regular",
+                FontWeight.Normal,
+                FontStyle.Normal
+            ),
+            font(
+                "Source Sans3 Medium",
+                "source_sans_three_medium",
+                FontWeight.Medium,
+                FontStyle.Normal
+            ),
+            font(
+                "Source Sans3 SemiBold",
+                "source_sans_three_semi_bold",
+                FontWeight.SemiBold,
+                FontStyle.Normal
+            ),
+            font(
+                "Source Sans3 Bold",
+                "source_sans_three_bold",
+                FontWeight.Bold,
+                FontStyle.Normal
+            ),
+            font(
+                "Source Sans3 Light",
+                "source_sans_three_light",
+                FontWeight.Light,
+                FontStyle.Normal
+            ),
+        )
+
+private val defaultTypography = Typography()
+
+val Typography: Typography
+    @Composable
+    get() = Typography(
+        displayLarge = defaultTypography.displayLarge.copy(fontFamily = SourceSans),
+        displayMedium = defaultTypography.displayMedium.copy(fontFamily = SourceSans),
+        displaySmall = defaultTypography.displaySmall.copy(fontFamily = SourceSans),
+
+        headlineLarge = defaultTypography.headlineLarge.copy(fontFamily = SourceSans),
+        headlineMedium = defaultTypography.headlineMedium.copy(fontFamily = SourceSans),
+        headlineSmall = defaultTypography.headlineSmall.copy(fontFamily = SourceSans),
+
+        titleLarge = defaultTypography.titleLarge.copy(fontFamily = SourceSans),
+        titleMedium = defaultTypography.titleMedium.copy(fontFamily = SourceSans),
+        titleSmall = defaultTypography.titleSmall.copy(fontFamily = SourceSans),
+
+        bodyLarge = defaultTypography.bodyLarge.copy(fontFamily = SourceSans),
+        bodyMedium = defaultTypography.bodyMedium.copy(fontFamily = SourceSans),
+        bodySmall = defaultTypography.bodySmall.copy(fontFamily = SourceSans),
+
+        labelLarge = defaultTypography.labelLarge.copy(fontFamily = SourceSans),
+        labelMedium = defaultTypography.labelMedium.copy(fontFamily = SourceSans),
+        labelSmall = defaultTypography.labelSmall.copy(fontFamily = SourceSans)
+    )
+
 val Typography.title200: TextStyle
     @Composable
     get() {
@@ -77,7 +141,7 @@ val Typography.title200: TextStyle
         val lineHeight = if (!isSmallScreen) 28.sp else 24.sp
 
         return TextStyle(
-            fontFamily = Kalnia,
+            fontFamily = SourceSans,
             fontWeight = FontWeight.Light,
             fontSize = fontSize,
             lineHeight = lineHeight,

@@ -17,11 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ghn.poker.tracker.ui.theme.Dimens
-import com.ghn.poker.tracker.ui.theme.title200
 
 @Composable
 fun PrimaryButton(
@@ -60,11 +58,8 @@ fun PrimaryButton(
                 }
                 Text(
                     text = buttonText,
-                    style = MaterialTheme.typography.title200.copy(
+                    style = MaterialTheme.typography.bodyMedium.copy(
                         letterSpacing = 2.sp,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                 )
