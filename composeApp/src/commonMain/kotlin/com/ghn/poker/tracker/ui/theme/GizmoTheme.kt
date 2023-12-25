@@ -11,7 +11,7 @@ fun GizmoTheme(content: @Composable () -> Unit) {
 
     ProvideDimens(dimensions = sw360Dimensions) {
         MaterialTheme(
-            colorScheme = colors,
+            colorScheme = alternateDarkColors,
             shapes = Shapes,
 //            typography = typography,
             content = content,
