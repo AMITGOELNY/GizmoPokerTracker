@@ -63,8 +63,8 @@ fun PrimaryButton(
                     style = MaterialTheme.typography.title200.copy(
                         letterSpacing = 2.sp,
                         fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp,
-                        lineHeight = 19.6.sp,
+                        fontSize = 16.sp,
+                        lineHeight = 24.sp,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                 )
