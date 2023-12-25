@@ -1,5 +1,8 @@
 package com.ghn.poker.tracker.presentation.login
 
+import co.touchlab.kermit.Logger
+import com.ghn.poker.tracker.data.sources.remote.ApiResponse
+import com.ghn.poker.tracker.domain.usecase.LoginUseCase
 import com.ghn.poker.tracker.presentation.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -7,7 +10,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LoginViewModel : BaseViewModel() {
+class LoginViewModel(
+    private val loginUseCase: LoginUseCase
+) : BaseViewModel() {
     private val _state = MutableStateFlow(LoginState())
     val state = _state.asStateFlow()
 
@@ -21,9 +26,27 @@ class LoginViewModel : BaseViewModel() {
                     when (action) {
                         is LoginActions.OnUsernameChange -> onUsernameChange(action.username)
                         is LoginActions.OnPasswordChange -> onPasswordChange(action.password)
-                        LoginActions.OnSubmit -> TODO()
+                        LoginActions.OnSubmit -> onSubmit()
                     }
                 }
+        }
+    }
+
+    private suspend fun onSubmit() {
+        Logger.d {
+            "login with username: ${_state.value.username}, password: ${_state.value.password}"
+        }
+        _state.update { it.copy(authenticating = true) }
+
+        val (username, password) = _state.value
+        when (val result = loginUseCase.login(username, password)) {
+            is ApiResponse.Error -> {
+                _state.update { it.copy(authenticating = false) }
+            }
+
+            is ApiResponse.Success -> {
+                _state.update { it.copy(authenticating = false) }
+            }
         }
     }
 
@@ -42,7 +65,8 @@ class LoginViewModel : BaseViewModel() {
 
 data class LoginState(
     val username: String = "",
-    val password: String = ""
+    val password: String = "",
+    val authenticating: Boolean = false,
 )
 
 sealed interface LoginActions {
