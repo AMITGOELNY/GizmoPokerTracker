@@ -19,6 +19,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +37,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ghn.poker.tracker.presentation.login.LoginActions
+import com.ghn.poker.tracker.presentation.login.LoginEffects
 import com.ghn.poker.tracker.presentation.login.LoginViewModel
 import com.ghn.poker.tracker.ui.shared.PrimaryButton
 import com.ghn.poker.tracker.ui.theme.title200
@@ -43,8 +46,19 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun LoginScreen(
-    viewModel: LoginViewModel = koinInject()
+    viewModel: LoginViewModel = koinInject(),
+    onSignInSuccess: () -> Unit
 ) {
+    val state = viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loginEffects.collect { effect ->
+            when (effect) {
+                LoginEffects.NavigateToDashboard -> onSignInSuccess()
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -74,6 +88,7 @@ internal fun LoginScreen(
                 modifier = Modifier.padding(vertical = 16.dp),
             )
             FormBody(
+                loading = state.value.authenticating,
                 onUsernameChange = { viewModel.dispatch(LoginActions.OnUsernameChange(it)) },
                 onPasswordChange = { viewModel.dispatch(LoginActions.OnPasswordChange(it)) },
                 onSubmit = { viewModel.dispatch(LoginActions.OnSubmit) }
@@ -84,6 +99,7 @@ internal fun LoginScreen(
 
 @Composable
 internal fun FormBody(
+    loading: Boolean,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onSubmit: () -> Unit,
@@ -146,6 +162,8 @@ internal fun FormBody(
             buttonText = "Sign In",
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             onClick = onSubmit,
+            isEnabled = !loading,
+            showLoading = loading
         )
     }
 }

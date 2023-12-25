@@ -1,6 +1,9 @@
 package com.ghn.poker.tracker.data.api
 
 import com.ghn.poker.tracker.data.preferences.PreferenceManager
+import com.ghn.poker.tracker.data.preferences.Preferences
+import com.ghn.poker.tracker.data.preferences.get
+import com.ghn.poker.tracker.data.preferences.set
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.addDefaultResponseValidation
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -25,7 +28,7 @@ internal class GizmoApiClient(
     val http = httpClient.config {
         install(Logging) {
             logger = Logger.SIMPLE
-            level = LogLevel.HEADERS
+            level = LogLevel.BODY
         }
 
         install(ContentNegotiation) {
@@ -44,8 +47,16 @@ internal class GizmoApiClient(
 
         install("TokenHandler") {
             requestPipeline.intercept(HttpRequestPipeline.Before) {
-                context.header("YOLO", "hard")
+                if (context.url.pathSegments.first() != "login") {
+                    preferenceManager.get<String>(Preferences.USER_TOKEN_KEY)?.let {
+                        context.header("Authorization", "Bearer $it")
+                    }
+                }
             }
         }
+    }
+
+    fun storeToken(token: String) {
+        preferenceManager[Preferences.USER_TOKEN_KEY] = token
     }
 }

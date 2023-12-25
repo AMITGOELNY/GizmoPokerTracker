@@ -27,7 +27,9 @@ internal class LoginRemoteDataSourceImpl(
                     )
                 )
             }
-            response.body<String>()
+            val token = response.body<String>()
+            apiClient.storeToken(token)
+            token
         }
     }
 }

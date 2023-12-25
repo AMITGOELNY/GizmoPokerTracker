@@ -45,7 +45,9 @@ fun App(viewModel: UserStore = UserStore()) {
                         route = Screen.LOGIN.formatted,
                         navTransition = NavTransition()
                     ) {
-                        LoginScreen()
+                        LoginScreen {
+                            navigator.navigate(Screen.SESSION.formatted)
+                        }
                     }
                     scene(route = Screen.SESSION.formatted, navTransition = NavTransition()) {
                         TrackerLandingPage {

@@ -4,9 +4,13 @@ import co.touchlab.kermit.Logger
 import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.domain.usecase.LoginUseCase
 import com.ghn.poker.tracker.presentation.BaseViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -17,6 +21,10 @@ class LoginViewModel(
     val state = _state.asStateFlow()
 
     private val viewStateTrigger = MutableSharedFlow<LoginActions>(replay = 1)
+
+    private val _loginEffects = Channel<LoginEffects>()
+    val loginEffects = _loginEffects.receiveAsFlow()
+        .shareIn(viewModelScope, SharingStarted.Eagerly)
 
     init {
         viewModelScope.launch {
@@ -46,6 +54,7 @@ class LoginViewModel(
 
             is ApiResponse.Success -> {
                 _state.update { it.copy(authenticating = false) }
+                _loginEffects.trySend(LoginEffects.NavigateToDashboard)
             }
         }
     }
@@ -75,4 +84,6 @@ sealed interface LoginActions {
     data object OnSubmit : LoginActions
 }
 
-sealed class LoginEffects
+sealed interface LoginEffects {
+    data object NavigateToDashboard : LoginEffects
+}
