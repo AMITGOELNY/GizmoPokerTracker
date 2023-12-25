@@ -2,6 +2,7 @@ package com.ghn.poker.tracker.ui.tracker
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,11 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,6 +44,7 @@ import com.ghn.poker.tracker.presentation.session.SessionEntryAction
 import com.ghn.poker.tracker.presentation.session.SessionEntryViewModel
 import com.ghn.poker.tracker.ui.shared.PrimaryButton
 import com.ghn.poker.tracker.ui.theme.Dimens
+import kotlinx.datetime.Clock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +54,15 @@ fun SessionEntryScreen(
 ) {
     var startAmount by remember { mutableStateOf("") }
     var endAmount by remember { mutableStateOf("") }
+    var showDatePicker by remember { mutableStateOf(false) }
     val state = viewModel.state.collectAsState().value
+
+    if (showDatePicker) {
+        SimpleDateRangePickerInDatePickerDialog(
+            openDialog = showDatePicker,
+            onDismiss = { showDatePicker = false }
+        )
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -55,28 +70,25 @@ fun SessionEntryScreen(
             CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
-                    navigationIconContentColor = MaterialTheme.colorScheme.primary
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                 ),
                 modifier = Modifier.fillMaxWidth(),
                 title = {
                     Text(
                         text = "Create Session",
 //                        style = MaterialTheme.typography.p3.copy(fontWeight = FontWeight.Medium),
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.onBackground,
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.Rounded.ArrowBack,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                        Icon(Icons.Rounded.ArrowBack, null)
                     }
                 }
             )
         }
     ) { padding ->
+
         Column(
             modifier = Modifier.fillMaxWidth()
                 .padding(horizontal = Dimens.grid_2_5)
@@ -86,7 +98,10 @@ fun SessionEntryScreen(
             verticalArrangement = Arrangement.spacedBy(Dimens.grid_2)
         ) {
             InputRow("Date") {
-                Text(state.date.date.toString())
+                Text(
+                    text = state.date.date.toString(),
+                    modifier = Modifier.clickable { showDatePicker = true }
+                )
             }
 
             InputRow("BuyIn Amount") {
@@ -148,4 +163,32 @@ private fun TextEntryField(
             }
         }
     )
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun SimpleDateRangePickerInDatePickerDialog(
+    openDialog: Boolean,
+    onDismiss: () -> Unit
+) {
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = Clock.System.now().toEpochMilliseconds()
+    )
+    DatePickerDialog(
+        shape = RoundedCornerShape(6.dp),
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            PrimaryButton("ok", fillMaxWidth = false, onClick = { onDismiss() })
+        },
+        colors = DatePickerDefaults.colors(
+            containerColor = Color(0xFF1F222A)
+        )
+    ) {
+        DatePicker(
+            state = datePickerState,
+//            dateValidator = { timestamp ->
+//                timestamp > Instant.now().toEpochMilli()
+//            }
+        )
+    }
 }
