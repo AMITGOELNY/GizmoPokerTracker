@@ -5,7 +5,6 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.ghn.poker.tracker.data.database.DataBaseDriver
 import com.russhwolf.settings.ObservableSettings
-import com.russhwolf.settings.Settings
 import com.russhwolf.settings.SharedPreferencesSettings
 import io.ktor.client.engine.okhttp.OkHttp
 import org.koin.core.module.Module
@@ -21,7 +20,7 @@ internal actual val platformModule: Module = module {
         }
     }
 
-    single<Settings>(named(ENCRYPTED_SETTINGS_NAME)) {
+    single<ObservableSettings>(named(ENCRYPTED_SETTINGS_NAME)) {
         SharedPreferencesSettings(
             delegate = EncryptedSharedPreferences.create(
                 get(),

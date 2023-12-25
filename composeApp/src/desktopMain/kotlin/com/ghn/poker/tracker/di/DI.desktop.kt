@@ -3,8 +3,7 @@ package com.ghn.poker.tracker.di
 import com.ghn.poker.tracker.data.database.DataBaseDriver
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.PreferencesSettings
-import com.russhwolf.settings.Settings
-import io.ktor.client.engine.okhttp.*
+import io.ktor.client.engine.okhttp.OkHttp
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -19,7 +18,7 @@ internal actual val platformModule: Module = module {
         }
     }
 
-    single<Settings>(named(ENCRYPTED_SETTINGS_NAME)) {
+    single<ObservableSettings>(named(ENCRYPTED_SETTINGS_NAME)) {
         PreferencesSettings(Preferences.userRoot())
     }
 

@@ -3,6 +3,9 @@ package com.ghn.poker.tracker.di
 import co.touchlab.kermit.Logger
 import com.ghn.poker.tracker.data.preferences.PreferenceManager
 import com.ghn.poker.tracker.data.preferences.PrefsManager
+import com.ghn.poker.tracker.domain.usecase.impl.AppState
+import com.ghn.poker.tracker.domain.usecase.impl.Store
+import com.ghn.poker.tracker.domain.usecase.impl.UserStore
 import com.ghn.poker.tracker.presentation.login.LoginViewModel
 import com.ghn.poker.tracker.presentation.session.SessionListViewModel
 import io.ktor.client.HttpClient
@@ -61,6 +64,8 @@ val sharedViewModelModule = module {
     factory { SessionListViewModel(useCase = get()) }
 
     factory { LoginViewModel(loginUseCase = get()) }
+
+    factory<Store<AppState>> { UserStore(get()) }
 }
 
 internal val storageModule = module {

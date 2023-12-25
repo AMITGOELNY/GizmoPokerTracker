@@ -1,22 +1,24 @@
 package com.ghn.poker.tracker.di
 
 import com.ghn.poker.tracker.data.database.DataBaseDriver
+import com.ghn.poker.tracker.util.asObservableSettings
+import com.russhwolf.settings.ExperimentalSettingsImplementation
 import com.russhwolf.settings.KeychainSettings
 import com.russhwolf.settings.NSUserDefaultsSettings
 import com.russhwolf.settings.ObservableSettings
-import com.russhwolf.settings.Settings
-import io.ktor.client.engine.darwin.*
+import io.ktor.client.engine.darwin.Darwin
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import platform.Foundation.NSUserDefaults
 
+@OptIn(ExperimentalSettingsImplementation::class)
 internal actual val platformModule: Module = module {
     single { DataBaseDriver().createDriver() }
     single { Darwin.create { } }
 
-    single<Settings>(named(ENCRYPTED_SETTINGS_NAME)) {
-        KeychainSettings(service = ENCRYPTED_SETTINGS_NAME)
+    single<ObservableSettings>(named(ENCRYPTED_SETTINGS_NAME)) {
+        KeychainSettings(service = ENCRYPTED_SETTINGS_NAME).asObservableSettings()
     }
 
     single<ObservableSettings>(named(DEFAULT_SETTINGS_NAME)) {

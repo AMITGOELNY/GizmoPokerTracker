@@ -1,7 +1,8 @@
 package com.ghn.poker.tracker.data.preferences
 
 import com.russhwolf.settings.ObservableSettings
-import com.russhwolf.settings.Settings
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlin.jvm.JvmInline
 import kotlin.reflect.KClass
 
@@ -10,7 +11,7 @@ import kotlin.reflect.KClass
  * settings instances to manage persisted KV pairs.
  */
 internal class PrefsManager(
-    private val encryptedPrefs: Settings,
+    private val encryptedPrefs: ObservableSettings,
     private val defaultPrefs: ObservableSettings
 ) : PreferenceManager {
 
@@ -20,6 +21,9 @@ internal class PrefsManager(
     override fun clearPrefs() = encryptedPrefs.clear()
 
     override val count: Int get() = encryptedPrefs.size
+
+    override val tokenFlow: StateFlow<String?> = encryptedPrefs
+        .stringAsFlow(Preferences.USER_TOKEN_KEY)
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Comparable<T>> getPreference(
@@ -58,6 +62,8 @@ internal interface PreferenceManager {
     fun clearPrefs()
     val count: Int
 
+    val tokenFlow: StateFlow<String?>
+
     fun <T : Comparable<T>> getPreference(preferenceKey: PreferenceKey, kClass: KClass<T>): T?
     fun <T : Comparable<T>> setPreference(preferenceKey: PreferenceKey, value: T, kClass: KClass<T>)
 }
@@ -88,3 +94,30 @@ object Preferences {
 
 @JvmInline
 value class PreferenceKey(val key: String)
+
+private fun <T> createStateFlow(
+    key: String,
+    defaultValue: T,
+    getValue: (String, T) -> T,
+    addListener: (String, T, (T) -> Unit) -> Unit,
+): StateFlow<T> = MutableStateFlow(getValue(key, defaultValue)).apply {
+    addListener(key, defaultValue) {
+        tryEmit(it)
+    }
+}
+
+private fun <T> createStateFlowNull(
+    key: String,
+    getValue: (String) -> T?,
+    addListener: (String, (T?) -> Unit) -> Unit,
+): StateFlow<T?> = MutableStateFlow(getValue(key)).apply {
+    addListener(key) {
+        tryEmit(it)
+    }
+}
+
+fun ObservableSettings.boolAsFlow(key: String, defaultValue: Boolean) =
+    createStateFlow(key, defaultValue, ::getBoolean, ::addBooleanListener)
+
+fun ObservableSettings.stringAsFlow(key: String) =
+    createStateFlowNull(key, ::getStringOrNull, ::addStringOrNullListener)
