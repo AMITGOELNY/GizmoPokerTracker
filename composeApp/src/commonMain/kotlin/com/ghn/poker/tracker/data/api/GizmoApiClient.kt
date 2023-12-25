@@ -1,5 +1,6 @@
 package com.ghn.poker.tracker.data.api
 
+import com.ghn.poker.tracker.data.preferences.PreferenceManager
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.addDefaultResponseValidation
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -19,7 +20,7 @@ import org.koin.core.annotation.Single
 @Single([GizmoApiClient::class])
 internal class GizmoApiClient(
     httpClient: HttpClient,
-//    private val sessionManager: SessionManager,
+    private val preferenceManager: PreferenceManager
 ) {
     val http = httpClient.config {
         install(Logging) {

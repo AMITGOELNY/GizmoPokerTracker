@@ -58,6 +58,8 @@ kotlin {
             api(libs.koinCompose)
             implementation(libs.koinAnnotations)
 
+            implementation(libs.multiplatform.settings)
+
             // Required until SQLite upgrade
             implementation("co.touchlab:stately-common:2.0.5")
         }
@@ -69,6 +71,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
 
             implementation(libs.android.sqldelight.driver)
+            implementation(libs.androidx.security.crypto.ktx)
             implementation(libs.ktor.client.okhttp)
         }
 
