@@ -3,6 +3,7 @@ package com.ghn.poker.tracker.di
 import co.touchlab.kermit.Logger
 import com.ghn.poker.tracker.presentation.login.LoginViewModel
 import com.ghn.poker.tracker.presentation.session.SessionListViewModel
+import io.ktor.client.HttpClient
 import org.koin.core.KoinApplication
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.context.startKoin
@@ -14,6 +15,7 @@ fun initKoin(appModule: () -> Module): KoinApplication =
     startKoin {
         modules(
             appModule(),
+            module { single { HttpClient(engine = get()) } },
             platformModule,
             RepositoryModule().module,
             UseCaseModule().module,
@@ -49,11 +51,7 @@ class APIModule
 internal expect val platformModule: Module
 
 val sharedViewModelModule = module {
-    factory {
-        SessionListViewModel(useCase = get())
-    }
+    factory { SessionListViewModel(useCase = get()) }
 
-    factory {
-        LoginViewModel()
-    }
+    factory { LoginViewModel(loginUseCase = get()) }
 }

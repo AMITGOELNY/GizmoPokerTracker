@@ -1,27 +1,30 @@
 package com.ghn.poker.tracker.data.api
 
 import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
-import io.ktor.client.engine.HttpClientEngineConfig
+import io.ktor.client.plugins.addDefaultResponseValidation
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
+import io.ktor.client.request.HttpRequestPipeline
+import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Single
 
-internal interface KtorProvider {
-    val client: HttpClient
-
-    fun <T : HttpClientEngineConfig> HttpClientConfig<T>.getCommonConfig() {
+@Single([GizmoApiClient::class])
+internal class GizmoApiClient(
+    httpClient: HttpClient,
+//    private val sessionManager: SessionManager,
+) {
+    val http = httpClient.config {
         install(Logging) {
             logger = Logger.SIMPLE
-            level = LogLevel.BODY
+            level = LogLevel.HEADERS
         }
 
         install(ContentNegotiation) {
@@ -35,26 +38,13 @@ internal interface KtorProvider {
         defaultRequest {
             contentType(ContentType.Application.Json)
         }
+        expectSuccess = true
+        addDefaultResponseValidation()
+
+        install("TokenHandler") {
+            requestPipeline.intercept(HttpRequestPipeline.Before) {
+                context.header("YOLO", "hard")
+            }
+        }
     }
-
-//    fun HttpRequestBuilder.apiUrl(path: String, baseUrl: String = ) {
-//        url {
-//            takeFrom(baseUrl)
-//            encodedPath = path
-//        }
-//    }
-//
-//    fun HttpRequestBuilder.apiHeaders(
-//        headers: Map<String, String> = emptyMap(),
-//        token: String
-//    ): HeadersBuilder =
-//        headers {
-//            append("Authorization", token)
-//            for (header in headers) {
-//                append(header.key, header.value)
-//            }
-//        }
 }
-
-@Single([KtorProvider::class])
-internal expect class KtorProviderImpl() : KtorProvider

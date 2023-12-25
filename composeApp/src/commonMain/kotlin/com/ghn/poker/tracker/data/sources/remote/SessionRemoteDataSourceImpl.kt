@@ -2,7 +2,7 @@ package com.ghn.poker.tracker.data.sources.remote
 
 import co.touchlab.kermit.Logger
 import com.ghn.gizmodb.common.models.SessionDTO
-import com.ghn.poker.tracker.data.api.KtorProvider
+import com.ghn.poker.tracker.data.api.GizmoApiClient
 import io.ktor.client.HttpClient
 import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.call.body
@@ -18,10 +18,10 @@ import org.koin.core.annotation.Single
 
 @Single([SessionRemoteDataSource::class])
 internal class SessionRemoteDataSourceImpl(
-    private val provider: KtorProvider
+    private val apiClient: GizmoApiClient
 ) : SessionRemoteDataSource {
     override suspend fun getSessions(): ApiResponse<List<SessionDTO>, Exception> {
-        return provider.client.safeRequest {
+        return apiClient.http.safeRequest {
             get {
                 url {
                     protocol = URLProtocol.HTTP
@@ -54,7 +54,10 @@ suspend inline fun <reified T, reified E> HttpClient.safeRequest(
 
 suspend inline fun <reified E> ResponseException.errorBody(): E? =
     try {
-        response.body()
+        val error: E? = response.body()
+        error
+    } catch (e: NoTransformationFoundException) {
+        null
     } catch (e: SerializationException) {
         null
     }
