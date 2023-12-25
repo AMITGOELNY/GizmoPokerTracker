@@ -2,16 +2,20 @@ package com.ghn.poker.tracker.ui
 
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import com.ghn.poker.tracker.domain.usecase.impl.UserStore
+import androidx.compose.runtime.LaunchedEffect
+import com.ghn.poker.tracker.domain.usecase.impl.AppState
+import com.ghn.poker.tracker.domain.usecase.impl.Store
 import com.ghn.poker.tracker.ui.login.LoginScreen
 import com.ghn.poker.tracker.ui.login.SplashScreen
 import com.ghn.poker.tracker.ui.theme.GizmoTheme
 import com.ghn.poker.tracker.ui.tracker.SessionEntryScreen
 import com.ghn.poker.tracker.ui.tracker.TrackerLandingPage
+import kotlinx.coroutines.flow.collectLatest
 import moe.tlaster.precompose.PreComposeApp
 import moe.tlaster.precompose.navigation.NavHost
 import moe.tlaster.precompose.navigation.rememberNavigator
 import moe.tlaster.precompose.navigation.transition.NavTransition
+import org.koin.compose.koinInject
 
 enum class Screen {
     LOGIN,
@@ -23,16 +27,26 @@ enum class Screen {
 }
 
 @Composable
-fun App(viewModel: UserStore = UserStore()) {
+fun App(viewModel: Store<AppState> = koinInject()) {
     GizmoTheme {
         Scaffold {
             PreComposeApp {
                 val navigator = rememberNavigator()
 
+                LaunchedEffect(Unit) {
+                    viewModel.userState.collectLatest { state ->
+                        when (state) {
+                            AppState.Init -> Unit
+                            AppState.LoggedIn -> navigator.navigate(Screen.SESSION.formatted)
+                            AppState.LoggedOut -> navigator.navigate(Screen.LOGIN.formatted)
+                        }
+                    }
+                }
+
                 NavHost(
                     navigator = navigator,
                     navTransition = NavTransition(),
-                    initialRoute = Screen.LOGIN.formatted,
+                    initialRoute = Screen.SPLASH_SCREEN.formatted,
                 ) {
                     scene(
                         route = Screen.SPLASH_SCREEN.formatted,
@@ -41,18 +55,15 @@ fun App(viewModel: UserStore = UserStore()) {
                         SplashScreen(onSplashScreenFinished = viewModel::checkForToken)
                     }
 
-                    scene(
-                        route = Screen.LOGIN.formatted,
-                        navTransition = NavTransition()
-                    ) {
-                        LoginScreen {
-                            navigator.navigate(Screen.SESSION.formatted)
-                        }
+                    scene(Screen.LOGIN.formatted, navTransition = NavTransition()) {
+                        LoginScreen()
                     }
+
                     scene(route = Screen.SESSION.formatted, navTransition = NavTransition()) {
-                        TrackerLandingPage {
-                            navigator.navigate(Screen.SESSION_INSERT.formatted)
-                        }
+                        TrackerLandingPage(
+                            onCreateSessionClick = { navigator.navigate(Screen.SESSION_INSERT.formatted) },
+                            onSignOutClick = { viewModel.signout() }
+                        )
                     }
                     scene(
                         route = Screen.SESSION_INSERT.formatted,

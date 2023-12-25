@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ghn.poker.tracker.ui.theme.Dimens
@@ -37,7 +38,7 @@ fun PrimaryButton(
             .then(if (fillMaxWidth) Modifier.fillMaxWidth() else Modifier)
             .height(Dimens.grid_6_5),
         onClick = onClick,
-        shape = RoundedCornerShape(Dimens.grid_3),
+        shape = RoundedCornerShape(Dimens.grid_2_5),
         enabled = isEnabled,
         colors =
         ButtonDefaults.buttonColors(
@@ -60,6 +61,7 @@ fun PrimaryButton(
                     text = buttonText,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         letterSpacing = 2.sp,
+                        fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                 )
