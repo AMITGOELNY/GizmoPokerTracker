@@ -59,6 +59,7 @@ kotlin {
             implementation(libs.koinAnnotations)
 
             implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.coroutines)
 
             // Required until SQLite upgrade
             implementation("co.touchlab:stately-common:2.0.5")

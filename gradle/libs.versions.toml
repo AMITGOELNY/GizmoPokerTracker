@@ -71,6 +71,7 @@ koinCompiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koi
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.1" }
 kermit = { module = "co.touchlab:kermit", version = "2.0.2" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
+multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatformSettings" }
 precompose = { module = "moe.tlaster:precompose", version = "1.5.8" }
 
 # Ktor
