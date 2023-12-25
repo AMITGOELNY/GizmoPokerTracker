@@ -24,11 +24,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -55,7 +57,10 @@ import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TrackerLandingPage(onCreateSessionClick: () -> Unit) {
+fun TrackerLandingPage(
+    onCreateSessionClick: () -> Unit,
+    onSignOutClick: () -> Unit,
+) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -73,6 +78,14 @@ fun TrackerLandingPage(onCreateSessionClick: () -> Unit) {
                         )
                     )
                 },
+                actions = {
+                    IconButton(onClick = onSignOutClick) {
+                        Icon(
+                            imageVector = Icons.Filled.ExitToApp,
+                            contentDescription = "Sign out",
+                        )
+                    }
+                }
             )
         }
     ) { padding ->
@@ -171,6 +184,7 @@ fun SessionList(
                         }
                     }
                 }
+
                 LoadableDataState.Loading ->
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
