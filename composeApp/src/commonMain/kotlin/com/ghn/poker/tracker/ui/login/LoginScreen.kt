@@ -75,7 +75,8 @@ internal fun LoginScreen(
             )
             FormBody(
                 onUsernameChange = { viewModel.dispatch(LoginActions.OnUsernameChange(it)) },
-                onPasswordChange = { viewModel.dispatch(LoginActions.OnPasswordChange(it)) }
+                onPasswordChange = { viewModel.dispatch(LoginActions.OnPasswordChange(it)) },
+                onSubmit = { viewModel.dispatch(LoginActions.OnSubmit) }
             )
         }
     }
@@ -85,6 +86,7 @@ internal fun LoginScreen(
 internal fun FormBody(
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
+    onSubmit: () -> Unit,
 ) {
     var usernameValue by remember { mutableStateOf(TextFieldValue("")) }
     var passwordValue by remember { mutableStateOf(TextFieldValue("")) }
@@ -120,6 +122,7 @@ internal fun FormBody(
             textFieldValue = passwordValue,
             onValueChange = {
                 passwordValue = it
+                onPasswordChange(it.text)
             },
             leadingIconId = "ic_lock.xml",
             placeHolder = "Password",
@@ -142,7 +145,7 @@ internal fun FormBody(
         PrimaryButton(
             buttonText = "Sign In",
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            onClick = { },
+            onClick = onSubmit,
         )
     }
 }
