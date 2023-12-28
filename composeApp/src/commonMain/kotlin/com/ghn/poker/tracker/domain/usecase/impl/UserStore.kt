@@ -1,10 +1,12 @@
 package com.ghn.poker.tracker.domain.usecase.impl
 
+import co.touchlab.kermit.Logger
 import com.ghn.poker.tracker.data.preferences.PreferenceManager
 import com.ghn.poker.tracker.presentation.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -17,10 +19,13 @@ internal class UserStore(
     override fun checkForToken() {
         if (_userState.value is AppState.Init) {
             viewModelScope.launch {
-                preferenceManager.tokenFlow.collect { token ->
-                    val state = if (token.isNullOrBlank()) AppState.LoggedOut else AppState.LoggedIn
-                    _userState.update { state }
-                }
+                preferenceManager.tokenFlow
+                    .onEach { Logger.d { "flow updated with $it" } }
+                    .collect { token ->
+                        val state =
+                            if (token.isNullOrBlank()) AppState.LoggedOut else AppState.LoggedIn
+                        _userState.update { state }
+                    }
             }
         }
     }

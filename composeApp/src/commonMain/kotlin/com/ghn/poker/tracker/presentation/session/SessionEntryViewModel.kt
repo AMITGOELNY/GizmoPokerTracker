@@ -1,28 +1,38 @@
 package com.ghn.poker.tracker.presentation.session
 
 import co.touchlab.kermit.Logger
+import com.ghn.gizmodb.common.models.GameType
+import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.domain.usecase.SessionUseCase
 import com.ghn.poker.tracker.presentation.BaseViewModel
+import com.ghn.poker.tracker.util.DAY_AND_MONTH_FORMAT
+import com.ghn.poker.tracker.util.format
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
-class SessionEntryViewModel : BaseViewModel(), KoinComponent {
+class SessionEntryViewModel(
+    private val useCase: SessionUseCase
+) : BaseViewModel(), KoinComponent {
     private val _state = MutableStateFlow(SessionEntryState())
     val state = _state.asStateFlow()
 
     private val viewStateTrigger = MutableSharedFlow<SessionEntryAction>(replay = 1)
 
-    private val useCase: SessionUseCase by inject<SessionUseCase>()
+    private val _effects = Channel<SessionEntryEffect>()
+    val effects = _effects.receiveAsFlow().shareIn(viewModelScope, SharingStarted.Eagerly)
 
     init {
         viewModelScope.launch {
@@ -30,18 +40,36 @@ class SessionEntryViewModel : BaseViewModel(), KoinComponent {
                 .onEach { Logger.d { "Triggered new action : $it" } }
                 .collect { action ->
                     when (action) {
-                        is SessionEntryAction.UpdateDate -> TODO()
+                        is SessionEntryAction.UpdateDate -> updateDate(action.date)
                         is SessionEntryAction.UpdateStartAmount -> updateStartAmount(action)
                         is SessionEntryAction.UpdateEndAmount -> updateEndAmount(action)
                         is SessionEntryAction.UpdateLocation -> TODO()
                         is SessionEntryAction.SaveSession -> saveSession()
+                        is SessionEntryAction.UpdateGameType ->
+                            _state.update { it.copy(gameType = action.gameType) }
                     }
                 }
         }
     }
 
+    private fun updateDate(date: Instant) {
+        _state.update { it.copy(date = date) }
+    }
+
     private suspend fun saveSession() {
-        useCase.insertSession(state.value.date, state.value.startAmount, state.value.endAmount)
+        _state.update { it.copy(isCreatingSession = true) }
+        val result = useCase.createSession(
+            date = state.value.date,
+            startAmount = state.value.startAmount,
+            endAmount = state.value.endAmount,
+            gameType = state.value.gameType
+        )
+        _state.update { it.copy(isCreatingSession = false) }
+        when (result) {
+            is ApiResponse.Error -> Unit
+            is ApiResponse.Success -> _effects.send(SessionEntryEffect.OnSessionCreated)
+        }
+//        useCase.insertSession(state.value.date, state.value.startAmount, state.value.endAmount)
     }
 
     private fun updateStartAmount(action: SessionEntryAction.UpdateStartAmount) {
@@ -49,7 +77,7 @@ class SessionEntryViewModel : BaseViewModel(), KoinComponent {
     }
 
     private fun updateEndAmount(action: SessionEntryAction.UpdateEndAmount) {
-        _state.update { it.copy(startAmount = action.endAmount) }
+        _state.update { it.copy(endAmount = action.endAmount) }
     }
 
     fun dispatch(action: SessionEntryAction) {
@@ -58,18 +86,23 @@ class SessionEntryViewModel : BaseViewModel(), KoinComponent {
 }
 
 data class SessionEntryState(
-    val date: LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+    val date: Instant = Clock.System.now(),
     val startAmount: Double? = null,
     val endAmount: Double? = null,
+    val gameType: GameType = GameType.PLO_2_2,
     val location: String? = null,
-    val coordinates: GeoCoordinates? = null
+    val coordinates: GeoCoordinates? = null,
+    val isCreatingSession: Boolean = false,
 ) {
+    val dateFormatted: String
+        get() = date.toLocalDateTime(TimeZone.UTC).format(DAY_AND_MONTH_FORMAT).orEmpty()
+
     val saveEnabled: Boolean
         get() = true // (startAmount == null && endAmount == null).not()
 }
 
 sealed class SessionEntryAction {
-    data class UpdateDate(val date: LocalDateTime) : SessionEntryAction()
+    data class UpdateDate(val date: Instant) : SessionEntryAction()
 
     data class UpdateStartAmount(val startAmount: Double?) : SessionEntryAction()
 
@@ -77,7 +110,14 @@ sealed class SessionEntryAction {
 
     data class UpdateLocation(val location: String?) : SessionEntryAction()
 
+    data class UpdateGameType(val gameType: GameType) : SessionEntryAction()
+
     data object SaveSession : SessionEntryAction()
 }
 
+sealed interface SessionEntryEffect {
+    data object OnSessionCreated : SessionEntryEffect
+}
+
 data class GeoCoordinates(val latitude: Double, val longitude: Double)
+
