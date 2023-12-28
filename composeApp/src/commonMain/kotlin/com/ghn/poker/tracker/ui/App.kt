@@ -11,9 +11,10 @@ import com.ghn.poker.tracker.ui.login.SplashScreen
 import com.ghn.poker.tracker.ui.theme.GizmoTheme
 import com.ghn.poker.tracker.ui.tracker.SessionEntryScreen
 import com.ghn.poker.tracker.ui.tracker.TrackerLandingPage
-import kotlinx.coroutines.flow.collectLatest
 import moe.tlaster.precompose.PreComposeApp
 import moe.tlaster.precompose.navigation.NavHost
+import moe.tlaster.precompose.navigation.NavOptions
+import moe.tlaster.precompose.navigation.PopUpTo
 import moe.tlaster.precompose.navigation.rememberNavigator
 import moe.tlaster.precompose.navigation.transition.NavTransition
 import org.koin.compose.koinInject
@@ -36,11 +37,18 @@ fun App(viewModel: Store<AppState> = koinInject()) {
                 val navigator = rememberNavigator()
 
                 LaunchedEffect(Unit) {
-                    viewModel.userState.collectLatest { state ->
+                    viewModel.userState.collect { state ->
                         when (state) {
                             AppState.Init -> Unit
-                            AppState.LoggedIn -> navigator.navigate(Screen.SESSION.formatted)
-                            AppState.LoggedOut -> navigator.navigate(Screen.WELCOME.formatted)
+                            AppState.LoggedIn -> navigator.navigate(
+                                route = Screen.SESSION.formatted,
+                                options = NavOptions(popUpTo = PopUpTo("", inclusive = true))
+                            )
+
+                            AppState.LoggedOut -> navigator.navigate(
+                                route = Screen.WELCOME.formatted,
+                                options = NavOptions(popUpTo = PopUpTo("", inclusive = true))
+                            )
                         }
                     }
                 }

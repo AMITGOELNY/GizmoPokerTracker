@@ -7,6 +7,7 @@ import com.ghn.poker.tracker.domain.usecase.impl.AppState
 import com.ghn.poker.tracker.domain.usecase.impl.Store
 import com.ghn.poker.tracker.domain.usecase.impl.UserStore
 import com.ghn.poker.tracker.presentation.login.LoginViewModel
+import com.ghn.poker.tracker.presentation.session.SessionEntryViewModel
 import com.ghn.poker.tracker.presentation.session.SessionListViewModel
 import io.ktor.client.HttpClient
 import org.koin.core.KoinApplication
@@ -63,9 +64,11 @@ internal expect val platformModule: Module
 val sharedViewModelModule = module {
     factory { SessionListViewModel(useCase = get()) }
 
+    factory { SessionEntryViewModel(useCase = get()) }
+
     factory { LoginViewModel(loginUseCase = get()) }
 
-    factory<Store<AppState>> { UserStore(get()) }
+    single<Store<AppState>> { UserStore(get()) }
 }
 
 internal val storageModule = module {
