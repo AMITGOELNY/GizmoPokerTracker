@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS session
     date DATETIME NOT NULL,
     startAmount TEXT,
     endAmount TEXT,
+    gameType TEXT NOT NULL,
     userId INTEGER NOT NULL
 );
 
