@@ -1,10 +1,12 @@
 package com.ghn.poker.tracker.domain.usecase.impl
 
+import com.ghn.gizmodb.common.models.GameType
 import com.ghn.poker.tracker.data.repository.Session
 import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.domain.repository.SessionRepository
 import com.ghn.poker.tracker.domain.usecase.SessionData
 import com.ghn.poker.tracker.domain.usecase.SessionUseCase
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import org.koin.core.annotation.Factory
 
@@ -18,6 +20,15 @@ class SessionUseCaseImpl(
         endAmount: Double?
     ) {
         sessionRepository.insertSession(date, startAmount, endAmount)
+    }
+
+    override suspend fun createSession(
+        date: Instant,
+        startAmount: Double?,
+        endAmount: Double?,
+        gameType: GameType,
+    ): ApiResponse<Unit, Exception> {
+        return sessionRepository.createSession(date, startAmount, endAmount, gameType)
     }
 
     override suspend fun getSessions(): ApiResponse<List<SessionData>, Exception> {

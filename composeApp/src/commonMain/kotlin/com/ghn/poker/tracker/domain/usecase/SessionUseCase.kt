@@ -3,6 +3,7 @@ package com.ghn.poker.tracker.domain.usecase
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.ghn.gizmodb.common.models.GameType
 import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.util.DAY_MONTH_AND_YEAR_FORMAT
 import com.ghn.poker.tracker.util.format
@@ -17,6 +18,13 @@ interface SessionUseCase {
         startAmount: Double?,
         endAmount: Double?
     )
+
+    suspend fun createSession(
+        date: Instant,
+        startAmount: Double?,
+        endAmount: Double?,
+        gameType: GameType
+    ): ApiResponse<Unit, Exception>
 
     suspend fun getSessions(): ApiResponse<List<SessionData>, Exception>
 }

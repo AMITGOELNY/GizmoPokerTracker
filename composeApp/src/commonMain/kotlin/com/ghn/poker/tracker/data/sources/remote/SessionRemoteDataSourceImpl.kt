@@ -10,7 +10,8 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.request.get
-import io.ktor.http.URLProtocol
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.path
 import io.ktor.utils.io.errors.IOException
 import kotlinx.serialization.SerializationException
@@ -22,13 +23,19 @@ internal class SessionRemoteDataSourceImpl(
 ) : SessionRemoteDataSource {
     override suspend fun getSessions(): ApiResponse<List<SessionDTO>, Exception> {
         return apiClient.http.safeRequest {
-            get {
-                url {
-                    protocol = URLProtocol.HTTP
-                    host = "138.197.84.104"
-                    path("sessions")
-                }
-            }.body<List<SessionDTO>>()
+            get { url { path("sessions") } }
+                .body<List<SessionDTO>>()
+        }
+    }
+
+    override suspend fun createSession(
+        session: SessionDTO,
+    ): ApiResponse<Unit, Exception> {
+        return apiClient.http.safeRequest {
+            post {
+                url { path("sessions") }
+                setBody(session)
+            }.body<String>()
         }
     }
 }
