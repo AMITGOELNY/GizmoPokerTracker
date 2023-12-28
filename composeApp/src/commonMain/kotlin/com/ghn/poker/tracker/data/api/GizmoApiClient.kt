@@ -15,10 +15,13 @@ import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.HttpRequestPipeline
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
+import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Single
+
+private const val BASE_URL = "138.197.84.104"
 
 @Single([GizmoApiClient::class])
 internal class GizmoApiClient(
@@ -41,6 +44,10 @@ internal class GizmoApiClient(
         }
         defaultRequest {
             contentType(ContentType.Application.Json)
+            url {
+                protocol = URLProtocol.HTTP
+                host = BASE_URL
+            }
         }
         expectSuccess = true
         addDefaultResponseValidation()
