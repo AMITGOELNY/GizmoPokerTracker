@@ -206,7 +206,6 @@ fun SessionList(
                         lineHeight = 16.sp,
                         fontWeight = FontWeight.Medium,
                         letterSpacing = 0.sp,
-                        fontFamily = FontFamily.Default
                     )
                 )
             },
@@ -214,7 +213,7 @@ fun SessionList(
                 Icon(Icons.Filled.Add, null)
             },
             containerColor = MaterialTheme.colorScheme.primary,
-//            contentColor = MaterialTheme.colorScheme.secondary
+            contentColor = Color.White
         )
     }
 }
