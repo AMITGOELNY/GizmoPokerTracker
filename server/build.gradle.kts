@@ -1,6 +1,6 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import nu.studer.gradle.jooq.JooqGenerate
-import org.jooq.meta.jaxb.*
+import org.jooq.meta.jaxb.ForcedType
 import org.jooq.meta.jaxb.Logging
 
 plugins {
@@ -92,6 +92,11 @@ jooq {
                                     includeTypes = "DATETIME"
                                     userType = "kotlinx.datetime.Instant"
                                     binding = "com.ghn.database.JooqInstantBinding"
+                                },
+                                ForcedType().apply {
+                                    userType = "com.ghn.gizmodb.common.models.GameType"
+                                    withEnumConverter(true)
+                                    includeExpression = ".*\\.gameType"
                                 },
                             )
                         )
