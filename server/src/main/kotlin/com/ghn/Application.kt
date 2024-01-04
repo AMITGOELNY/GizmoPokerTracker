@@ -1,8 +1,8 @@
 package com.ghn
 
 import com.ghn.plugins.*
-import io.ktor.server.application.*
-import io.ktor.server.netty.*
+import io.ktor.server.application.Application
+import io.ktor.server.netty.EngineMain
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.FlywayException
 import org.jooq.SQLDialect
@@ -47,4 +47,5 @@ fun Application.module() {
     configureHTTP()
     configureSecurity()
     configureRouting(db)
+    configureInfoFetch(db)
 }

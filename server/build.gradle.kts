@@ -56,8 +56,6 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jwt-jvm")
     implementation("ch.qos.logback:logback-classic:${libs.versions.logbackVersion.get()}")
     implementation("io.ktor:ktor-server-config-yaml:2.3.7")
-    testImplementation("io.ktor:ktor-server-tests-jvm")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${libs.versions.kotlin.get()}")
 
     implementation(libs.bouncyCastle)
     implementation(libs.datetime)
@@ -65,6 +63,11 @@ dependencies {
     jooqGenerator(libs.jdbc.sqlite)
     jooqGenerator(projects.server.jooqGenerator)
     implementation(libs.jdbc.sqlite)
+    implementation(libs.ktor.client.core.v203)
+    implementation(libs.bundles.scrapeIt)
+
+    testImplementation("io.ktor:ktor-server-tests-jvm")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${libs.versions.kotlin.get()}")
 }
 
 jooq {
@@ -92,6 +95,11 @@ jooq {
                                     includeTypes = "DATETIME"
                                     userType = "kotlinx.datetime.Instant"
                                     binding = "com.ghn.database.JooqInstantBinding"
+                                },
+                                ForcedType().apply {
+                                    includeTypes = "DATE"
+                                    userType = "kotlinx.datetime.LocalDate"
+                                    binding = "com.ghn.database.JooqLocalDateBinding"
                                 },
                                 ForcedType().apply {
                                     userType = "com.ghn.gizmodb.common.models.GameType"

@@ -16,3 +16,15 @@ CREATE TABLE IF NOT EXISTS user
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS feed
+(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    link TEXT NOT NULL,
+    image TEXT NOT NULL,
+    title TEXT NOT NULL,
+    pub_date DATE NOT NULL,
+    site TEXT NOT NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL
+);

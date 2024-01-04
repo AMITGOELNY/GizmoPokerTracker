@@ -17,3 +17,5 @@ captures
 **/xcshareddata/WorkspaceSettings.xcsettings
 gizmopoker.db
 docker-compose.yml
+composeApp/kcef-bundle/
+composeApp/cache/

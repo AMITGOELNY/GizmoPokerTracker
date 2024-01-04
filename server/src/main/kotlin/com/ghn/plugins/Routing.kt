@@ -1,7 +1,9 @@
 package com.ghn.plugins
 
+import com.ghn.gizmodb.common.models.FeedDTO
 import com.ghn.gizmodb.common.models.SessionDTO
 import com.ghn.gizmodb.common.models.UserDTO
+import com.ghn.gizmodb.tables.references.FEED
 import com.ghn.gizmodb.tables.references.SESSION
 import com.ghn.gizmodb.tables.references.USER
 import io.ktor.http.*
@@ -50,6 +52,16 @@ fun Application.configureRouting(db: DSLContext) {
             call.respond(HttpStatusCode.OK)
         }
         sessionRouting(db)
+        feedRouting(db)
+    }
+}
+
+private fun Routing.feedRouting(db: DSLContext) {
+    route("/feed") {
+        get {
+            val feed = db.fetch(FEED).into(FeedDTO::class.java)
+            call.respond(feed)
+        }
     }
 }
 
