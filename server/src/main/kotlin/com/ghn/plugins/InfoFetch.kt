@@ -1,7 +1,9 @@
 package com.ghn.plugins
 
+import com.ghn.client.GizmoRSSClient
 import com.ghn.gizmodb.tables.records.FeedRecord
 import com.ghn.gizmodb.tables.references.FEED
+import com.prof18.rssparser.RssParser
 import io.ktor.server.application.Application
 import io.ktor.server.application.log
 import it.skrape.core.htmlDocument
@@ -23,6 +25,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 fun Application.configureInfoFetch(db: DSLContext) {
+    val gizmoRSSClient = GizmoRSSClient(RssParser())
     launch {
         while (true) {
             log.info("Starting fetch for feed!")
@@ -30,6 +33,37 @@ fun Application.configureInfoFetch(db: DSLContext) {
 
             db.delete(FEED).execute()
             feed.forEach {
+                println("Found: $it")
+                it.store()
+            }
+
+            val rssFeed = gizmoRSSClient.getFeed()
+            val feedItems = rssFeed.items.mapNotNull {
+                val title = it.title
+                val subtitle = it.description
+                val pubDate = it.pubDate
+
+                if (title == null || subtitle == null || pubDate == null) {
+                    return@mapNotNull null
+                }
+
+                val localDate = LocalDate.parse(
+                    pubDate,
+                    DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z")
+                )
+
+                db.newRecord(FEED).apply {
+                    this.link = it.link.orEmpty()
+                    this.image = it.image
+                    this.title = it.title.orEmpty()
+                    this.pubDate = localDate.toKotlinLocalDate()
+                    this.site = "Poker News"
+                    this.createdAt = Clock.System.now()
+                    this.updatedAt = Clock.System.now()
+                }
+            }
+
+            feedItems.forEach {
                 println("Found: $it")
                 it.store()
             }
