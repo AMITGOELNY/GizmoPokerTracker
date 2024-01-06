@@ -26,7 +26,7 @@ android-minSdk = "24"
 android-compileSdk = "34"
 android-targetSdk = "34"
 
-androidx-activityCompose = "1.8.1"
+androidx-activityCompose = "1.8.2"
 androidx-core-ktx = "1.12.0"
 androidx-material = "1.10.0"
 androidx-test-junit = "1.1.5"
@@ -78,10 +78,13 @@ koinAnnotations = { module = "io.insert-koin:koin-annotations", version.ref = "k
 koinCompiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinKspVersion" }
 
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.1" }
+image-loader = { module = "io.github.qdsfdhvh:image-loader", version = "1.7.0" }
 kermit = { module = "co.touchlab:kermit", version = "2.0.2" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatformSettings" }
-precompose = { module = "moe.tlaster:precompose", version = "1.5.8" }
+precompose = { module = "moe.tlaster:precompose", version = "1.5.10" }
+precompose-navigation-typesafe = { module = "tech.annexflow.precompose:precompose-navigation-typesafe", version = "0.2.4" }
+webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "1.8.0" }
 
 # Ktor
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersion" }

@@ -10,12 +10,13 @@ plugins {
     alias(libs.plugins.sqldelight)
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.21"
 }
+val JAVA_TARGET = JavaVersion.VERSION_17
 
 kotlin {
     androidTarget {
         compilations.all {
             kotlinOptions {
-                jvmTarget = "1.8"
+                jvmTarget = JAVA_TARGET.majorVersion
             }
         }
     }
@@ -50,8 +51,11 @@ kotlin {
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             implementation(libs.datetime)
+            implementation(libs.image.loader)
             implementation(libs.kermit)
             implementation(libs.precompose)
+            implementation(libs.precompose.navigation.typesafe)
+            api(libs.webview.multiplatform)
 
             implementation(libs.bundles.commonKtor)
             api(libs.koinCore)
@@ -136,8 +140,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     dependencies {
         debugImplementation(libs.compose.ui.tooling)
@@ -173,6 +177,19 @@ kover {
     filters {
         classes {
             excludes += listOf()
+        }
+    }
+}
+
+afterEvaluate {
+    tasks.withType<JavaExec> {
+        jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
+        jvmArgs("--add-opens", "java.desktop/java.awt.peer=ALL-UNNAMED")
+
+        if (System.getProperty("os.name").contains("Mac")) {
+            jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
+            jvmArgs("--add-opens", "java.desktop/sun.lwawt=ALL-UNNAMED")
+            jvmArgs("--add-opens", "java.desktop/sun.lwawt.macosx=ALL-UNNAMED")
         }
     }
 }
