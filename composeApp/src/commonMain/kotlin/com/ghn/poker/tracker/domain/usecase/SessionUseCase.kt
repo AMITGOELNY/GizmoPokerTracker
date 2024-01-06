@@ -11,6 +11,8 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 interface SessionUseCase {
     suspend fun insertSession(
@@ -36,7 +38,7 @@ data class SessionData(
 ) {
     val formattedDate: String
         get() {
-            val localDatetime = date.toLocalDateTime(TimeZone.currentSystemDefault())
+            val localDatetime = date.toLocalDateTime(TimeZone.UTC)
             return localDatetime.format(DAY_MONTH_AND_YEAR_FORMAT).orEmpty()
         }
 
@@ -48,7 +50,7 @@ data class SessionData(
                     val end = endAmount?.toDoubleOrNull() ?: 0.0
                     val profit = end - start
                     val prefix = if (profit < 0.0) "-" else ""
-                    "$prefix$$profit"
+                    "$prefix$${abs(profit).roundToInt()}"
                 }
 
                 else -> "N/A"
