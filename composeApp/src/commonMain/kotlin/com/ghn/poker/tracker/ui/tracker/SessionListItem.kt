@@ -1,11 +1,13 @@
 package com.ghn.poker.tracker.ui.tracker
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -21,7 +23,11 @@ import com.ghn.poker.tracker.domain.usecase.SessionData
 import com.ghn.poker.tracker.domain.usecase.netAmountColor
 import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.title200
+import gizmopoker.generated.resources.Res
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 internal fun SessionListItem(session: SessionData) {
     Column(
@@ -51,11 +57,11 @@ internal fun SessionListItem(session: SessionData) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-//            Image(
-//                painter = painterResource(res = "magic-city-casino.xml"),
-//                contentDescription = null,
-//                modifier = Modifier.height(18.dp)
-//            )
+            Image(
+                painter = painterResource(Res.drawable.magic_city_casino),
+                contentDescription = null,
+                modifier = Modifier.height(18.dp)
+            )
             Text(session.netProfit, color = session.netAmountColor)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
