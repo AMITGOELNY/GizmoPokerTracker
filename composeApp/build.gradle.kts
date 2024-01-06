@@ -10,6 +10,8 @@ plugins {
     alias(libs.plugins.sqldelight)
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.21"
 }
+
+@Suppress("PropertyName")
 val JAVA_TARGET = JavaVersion.VERSION_17
 
 kotlin {
@@ -57,11 +59,11 @@ kotlin {
             implementation(libs.precompose.navigation.typesafe)
             api(libs.webview.multiplatform)
 
-            implementation(libs.bundles.commonKtor)
             api(libs.koinCore)
             api(libs.koinCompose)
             implementation(libs.koinAnnotations)
 
+            implementation(libs.bundles.commonKtor)
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.coroutines)
 
@@ -104,6 +106,7 @@ tasks.withType<KotlinCompile<*>>().configureEach {
     }
 }
 
+// Koin Annotation Config
 kotlin.sourceSets.commonMain {
     kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
 }

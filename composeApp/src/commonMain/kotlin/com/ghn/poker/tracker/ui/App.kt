@@ -35,6 +35,7 @@ import com.ghn.poker.tracker.ui.tracker.TrackerLandingPage
 import com.multiplatform.webview.web.LoadingState
 import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.rememberWebViewState
+import gizmopoker.generated.resources.Res
 import kotlinx.serialization.Serializable
 import moe.tlaster.precompose.PreComposeApp
 import moe.tlaster.precompose.navigation.NavOptions
@@ -43,6 +44,7 @@ import moe.tlaster.precompose.navigation.PopUpTo
 import moe.tlaster.precompose.navigation.SwipeProperties
 import moe.tlaster.precompose.navigation.rememberNavigator
 import moe.tlaster.precompose.navigation.transition.NavTransition
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
@@ -71,17 +73,24 @@ sealed interface AppRoutes : Route {
     @Serializable
     sealed class BottomNavItem(
         val route: String,
-        val title: String,
-        val icon: String,
+        val title: String
     ) : AppRoutes {
         @Serializable
-        data object Home : BottomNavItem("home", "Home", "ic_home.xml")
+        data object Home : BottomNavItem("home", "Home")
 
         @Serializable
-        data object News : BottomNavItem("news", "News", "ic_baseline_assignment.xml")
+        data object News : BottomNavItem("news", "News")
 
         @Serializable
-        data object Profile : BottomNavItem("profile", "Account", "ic_person.xml")
+        data object Profile : BottomNavItem("profile", "Account")
+
+        fun icon(): DrawableResource {
+            return when (this) {
+                Home -> Res.drawable.ic_home
+                News -> Res.drawable.ic_baseline_assignment
+                Profile -> Res.drawable.ic_person
+            }
+        }
     }
 }
 
@@ -198,7 +207,6 @@ fun BottomNavigationBar(navController: Navigator, bottomBarState: MutableState<B
         exit = slideOutVertically(targetOffsetY = { it }),
         content = {
             NavigationBar {
-
 //                backgroundColor = MaterialTheme.colors.whiteColor,
 //                modifier = Modifier.height(56.dp + Dimens.grid_1) // Default nav bar height + padding
 //            ) {
@@ -210,9 +218,7 @@ fun BottomNavigationBar(navController: Navigator, bottomBarState: MutableState<B
                         currentRoute?.route == item.route
                     }
                     NavigationBarItem(
-                        icon = {
-                            Icon(painterResource(item.icon), contentDescription = null)
-                        },
+                        icon = { Icon(painterResource(item.icon()), contentDescription = null) },
                         label = null,
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = MaterialTheme.colorScheme.onBackground,

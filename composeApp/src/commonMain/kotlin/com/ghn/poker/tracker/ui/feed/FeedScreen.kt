@@ -40,6 +40,7 @@ import com.ghn.poker.tracker.presentation.session.LoadableDataState
 import com.ghn.poker.tracker.ui.shared.LoadingAnimation
 import com.ghn.poker.tracker.ui.theme.Dimens
 import com.seiko.imageloader.ui.AutoSizeImage
+import gizmopoker.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
@@ -96,8 +97,8 @@ fun NewsItemList(feed: FeedsContainer, onFeedItemClick: (String) -> Unit) {
                                 .background(Color.White, MaterialTheme.shapes.medium)
                                 .clip(MaterialTheme.shapes.medium),
                             contentScale = ContentScale.Crop,
-                            placeholderPainter = { painterResource("ic_placeholder.xml") },
-                            errorPainter = { painterResource("ic_placeholder.xml") }
+                            placeholderPainter = { painterResource(Res.drawable.ic_placeholder) },
+                            errorPainter = { painterResource(Res.drawable.ic_placeholder) }
                         )
 
                         Text(
@@ -136,8 +137,8 @@ fun NewsItemList(feed: FeedsContainer, onFeedItemClick: (String) -> Unit) {
                         .background(Color.White, MaterialTheme.shapes.medium)
                         .clip(MaterialTheme.shapes.medium),
                     contentScale = ContentScale.Crop,
-                    placeholderPainter = { painterResource("ic_placeholder.xml") },
-                    errorPainter = { painterResource("ic_placeholder.xml") }
+                    placeholderPainter = { painterResource(Res.drawable.ic_placeholder) },
+                    errorPainter = { painterResource(Res.drawable.ic_placeholder) }
                 )
                 Column(
                     modifier = Modifier.height(120.dp)

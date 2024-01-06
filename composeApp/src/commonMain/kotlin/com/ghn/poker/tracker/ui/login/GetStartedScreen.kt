@@ -33,6 +33,7 @@ import com.ghn.poker.tracker.ui.shared.PrimaryButton
 import com.ghn.poker.tracker.ui.shared.SecondaryButton
 import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.title200
+import gizmopoker.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
@@ -44,7 +45,7 @@ fun GetStartedScreen(
     Scaffold(modifier = Modifier.fillMaxSize()) {
         Box {
             Image(
-                painter = painterResource("gizmo-bg.webp"),
+                painter = painterResource(Res.drawable.gizmo_bg),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier.fillMaxSize(),

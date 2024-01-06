@@ -5,106 +5,43 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-
-@Stable
-@ReadOnlyComposable
-@Composable
-internal expect fun font(
-    name: String,
-    res: String,
-    weight: FontWeight,
-    style: FontStyle
-): Font
+import gizmopoker.generated.resources.Res
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.Font
 
 @ReadOnlyComposable
 @Composable
 internal expect fun getScreenWidthDp(): Int
 
+@OptIn(ExperimentalResourceApi::class)
 private val Kalnia: FontFamily
     @Stable
-    @ReadOnlyComposable
     @Composable
     get() =
         FontFamily(
-            font(
-                "Kalnia Regular",
-                "kalnia_regular",
-                FontWeight.Normal,
-                FontStyle.Normal
-            ),
-            font(
-                "Kalnia Medium",
-                "kalnia_medium",
-                FontWeight.Medium,
-                FontStyle.Normal
-            ),
-            font(
-                "Kalnia SemiBold",
-                "kalnia_semi_bold",
-                FontWeight.SemiBold,
-                FontStyle.Normal
-            ),
-            font(
-                "Kalnia Bold",
-                "kalnia_bold",
-                FontWeight.Bold,
-                FontStyle.Normal
-            ),
-            font(
-                "Kalnia Thin",
-                "kalnia_thin",
-                FontWeight.Thin,
-                FontStyle.Normal
-            ),
-            font(
-                "Kalnia Light",
-                "kalnia_light",
-                FontWeight.Light,
-                FontStyle.Normal
-            ),
+            Font(Res.font.kalnia_medium, FontWeight.Medium, FontStyle.Normal),
+            Font(Res.font.kalnia_semi_bold, FontWeight.SemiBold, FontStyle.Normal),
+            Font(Res.font.kalnia_bold, FontWeight.Bold, FontStyle.Normal),
+            Font(Res.font.kalnia_thin, FontWeight.Thin, FontStyle.Normal),
+            Font(Res.font.kalnia_light, FontWeight.Light, FontStyle.Normal),
         )
 
+@OptIn(ExperimentalResourceApi::class)
 private val SourceSans: FontFamily
     @Stable
-    @ReadOnlyComposable
+//    @ReadOnlyComposable
     @Composable
     get() =
         FontFamily(
-            font(
-                "Source Sans3 Regular",
-                "source_sans_three_regular",
-                FontWeight.Normal,
-                FontStyle.Normal
-            ),
-            font(
-                "Source Sans3 Medium",
-                "source_sans_three_medium",
-                FontWeight.Medium,
-                FontStyle.Normal
-            ),
-            font(
-                "Source Sans3 SemiBold",
-                "source_sans_three_semi_bold",
-                FontWeight.SemiBold,
-                FontStyle.Normal
-            ),
-            font(
-                "Source Sans3 Bold",
-                "source_sans_three_bold",
-                FontWeight.Bold,
-                FontStyle.Normal
-            ),
-            font(
-                "Source Sans3 Light",
-                "source_sans_three_light",
-                FontWeight.Light,
-                FontStyle.Normal
-            ),
+            Font(Res.font.source_sans_three_regular, FontWeight.Normal, FontStyle.Normal),
+            Font(Res.font.source_sans_three_medium, FontWeight.Medium, FontStyle.Normal),
+            Font(Res.font.source_sans_three_semi_bold, FontWeight.SemiBold, FontStyle.Normal),
+            Font(Res.font.source_sans_three_bold, FontWeight.Bold, FontStyle.Normal),
+            Font(Res.font.source_sans_three_light, FontWeight.Light, FontStyle.Normal),
         )
 
 private val defaultTypography = Typography()
