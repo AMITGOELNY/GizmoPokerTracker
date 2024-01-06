@@ -43,9 +43,12 @@ import com.ghn.poker.tracker.presentation.login.LoginActions
 import com.ghn.poker.tracker.presentation.login.LoginViewModel
 import com.ghn.poker.tracker.ui.shared.PrimaryButton
 import com.ghn.poker.tracker.ui.theme.title200
+import gizmopoker.generated.resources.Res
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
 @Composable
 internal fun LoginScreen(viewModel: LoginViewModel = koinInject(), onBackClick: () -> Unit) {
     val state = viewModel.state.collectAsState()
@@ -59,7 +62,7 @@ internal fun LoginScreen(viewModel: LoginViewModel = koinInject(), onBackClick: 
                 modifier = Modifier.fillMaxWidth(),
                 title = {
                     Text(
-                        text = "GiZMO POKER",
+                        text = stringResource(Res.string.app_name),
                         style = MaterialTheme.typography.title200.copy(color = Color(0xFFAFA21D))
                     )
                 },
@@ -78,7 +81,7 @@ internal fun LoginScreen(viewModel: LoginViewModel = koinInject(), onBackClick: 
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = "Login to Your Account",
+                text = stringResource(Res.string.login_in_to_account),
                 style = MaterialTheme.typography.title200,
                 modifier = Modifier.padding(vertical = 16.dp),
             )
@@ -92,6 +95,7 @@ internal fun LoginScreen(viewModel: LoginViewModel = koinInject(), onBackClick: 
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 internal fun FormBody(
     loading: Boolean,
@@ -154,7 +158,7 @@ internal fun FormBody(
 
         Spacer(Modifier.height(24.dp))
         PrimaryButton(
-            buttonText = "Sign In",
+            buttonText = stringResource(Res.string.sign_in),
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             onClick = onSubmit,
             isEnabled = !loading,

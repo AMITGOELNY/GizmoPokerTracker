@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">GiZMO POKER</string>
+    <string name="confirm">Confirm</string>
+    <string name="welcome_to">Welcome to</string>
+    <string name="select_option_to_start">Select an option below to get started</string>
+    <string name="create_account">Create Account</string>
+    <string name="sign_in">Sign In</string>
+    <string name="login_in_to_account">Login to Your Account</string>
+    <string name="recent_sessions">Recent Sessions</string>
+    <string name="charts">Charts</string>
+    <string name="create_session">Create Session</string>
+    <string name="create_session_date">Date</string>
+    <string name="create_session_enter_amount">BuyIn Amount</string>
+    <string name="create_session_end_amount">End Amount</string>
+    <string name="create_session_game_type">Game</string>
+    <string name="create_session_save">Save Session</string>
+    <string name="news_feed">News feed</string>
+</resources>

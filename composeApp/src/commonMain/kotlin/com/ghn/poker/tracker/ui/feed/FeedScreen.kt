@@ -43,8 +43,10 @@ import com.seiko.imageloader.ui.AutoSizeImage
 import gizmopoker.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun FeedScreen(
     viewModel: FeedViewModel = koinInject(),
@@ -58,9 +60,9 @@ fun FeedScreen(
     ) { targetState ->
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(Dimens.grid_2_5)
         ) {
-            Text("News feed")
+            Text(stringResource(Res.string.news_feed))
             when (targetState) {
                 LoadableDataState.Empty -> TODO()
                 LoadableDataState.Error -> TODO()
@@ -102,11 +104,12 @@ fun NewsItemList(feed: FeedsContainer, onFeedItemClick: (String) -> Unit) {
                         )
 
                         Text(
-                            it.title,
+                            text = it.title,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.SemiBold,
                             ),
-                            maxLines = 3
+                            maxLines = 3,
+                            minLines = 3
                         )
                     }
                 }

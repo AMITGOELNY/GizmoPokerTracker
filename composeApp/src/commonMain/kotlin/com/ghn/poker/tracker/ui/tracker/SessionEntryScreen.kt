@@ -54,11 +54,14 @@ import com.ghn.poker.tracker.presentation.session.SessionEntryEffect
 import com.ghn.poker.tracker.presentation.session.SessionEntryViewModel
 import com.ghn.poker.tracker.ui.shared.PrimaryButton
 import com.ghn.poker.tracker.ui.theme.Dimens
+import gizmopoker.generated.resources.Res
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
 @Composable
 fun SessionEntryScreen(
     onBackClick: () -> Unit,
@@ -101,7 +104,7 @@ fun SessionEntryScreen(
                 modifier = Modifier.fillMaxWidth(),
                 title = {
                     Text(
-                        text = "Create Session",
+                        text = stringResource(Res.string.create_session),
                         color = MaterialTheme.colorScheme.onBackground,
                     )
                 },
@@ -122,7 +125,7 @@ fun SessionEntryScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(Dimens.grid_3)
         ) {
-            InputRow("Date") {
+            InputRow(stringResource(Res.string.create_session_date)) {
                 ReadonlyTextField(
                     value = dateTextField,
                     onValueChange = { },
@@ -133,21 +136,21 @@ fun SessionEntryScreen(
                 )
             }
 
-            InputRow("BuyIn Amount") {
+            InputRow(stringResource(Res.string.create_session_enter_amount)) {
                 TextEntryField(startAmount) { amount ->
                     viewModel.dispatch(SessionEntryAction.UpdateStartAmount(amount.toDoubleOrNull()))
                     startAmount = amount
                 }
             }
 
-            InputRow("End Amount") {
+            InputRow(stringResource(Res.string.create_session_end_amount)) {
                 TextEntryField(endAmount) { amount ->
                     viewModel.dispatch(SessionEntryAction.UpdateEndAmount(amount.toDoubleOrNull()))
                     endAmount = amount
                 }
             }
 
-            InputRow("Game") {
+            InputRow(stringResource(Res.string.create_session_game_type)) {
                 ExposedDropdownMenuBox(
                     expanded = isExpanded,
                     onExpandedChange = { newValue -> isExpanded = newValue },
@@ -188,7 +191,7 @@ fun SessionEntryScreen(
 
             Spacer(Modifier.weight(1f))
             PrimaryButton(
-                buttonText = "Save Session",
+                buttonText = stringResource(Res.string.create_session_save),
                 isEnabled = !state.isCreatingSession,
                 showLoading = state.isCreatingSession,
                 onClick = { viewModel.dispatch(SessionEntryAction.SaveSession) }
@@ -235,7 +238,7 @@ private fun TextEntryField(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
 private fun SimpleDateRangePickerInDatePickerDialog(
     onDismiss: () -> Unit,
     onDateSelected: (Instant) -> Unit
@@ -248,7 +251,7 @@ private fun SimpleDateRangePickerInDatePickerDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             PrimaryButton(
-                buttonText = "Confirm",
+                buttonText = stringResource(Res.string.confirm),
                 fillMaxWidth = false,
                 onClick = {
                     datePickerState.selectedDateMillis?.let {

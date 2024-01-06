@@ -54,9 +54,12 @@ import com.ghn.poker.tracker.presentation.session.SessionListViewModel
 import com.ghn.poker.tracker.ui.shared.LoadingAnimation
 import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.title200
+import gizmopoker.generated.resources.Res
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
 @Composable
 fun TrackerLandingPage(
     viewModel: SessionListViewModel = koinInject<SessionListViewModel>(),
@@ -64,7 +67,7 @@ fun TrackerLandingPage(
     onSignOutClick: () -> Unit,
 ) {
     var tabIndex by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Recent Sessions", "Charts")
+    val tabs = listOf(Res.string.recent_sessions, Res.string.charts)
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -77,7 +80,7 @@ fun TrackerLandingPage(
                 modifier = Modifier.fillMaxWidth(),
                 title = {
                     Text(
-                        text = "GiZMO POKER",
+                        text = stringResource(Res.string.app_name),
                         style = MaterialTheme.typography.title200.copy(color = Color(0xffea940b))
                     )
                 },
@@ -112,7 +115,10 @@ fun TrackerLandingPage(
                 tabs.forEachIndexed { index, title ->
                     Tab(
                         text = {
-                            Text(text = title, color = MaterialTheme.colorScheme.onBackground)
+                            Text(
+                                text = stringResource(title),
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
                         },
                         selected = tabIndex == index,
                         onClick = { tabIndex = index }
@@ -132,7 +138,7 @@ fun TrackerLandingPage(
                         .padding(bottom = Dimens.grid_2_5, end = Dimens.grid_2_5),
                     text = {
                         Text(
-                            "Create Session",
+                            text = stringResource(Res.string.create_session),
                             style = MaterialTheme.typography.title200.copy(
                                 fontSize = 14.sp,
                                 lineHeight = 16.sp,

@@ -35,7 +35,9 @@ import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.title200
 import gizmopoker.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -71,7 +73,7 @@ fun GetStartedScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "Welcome to",
+                    text = stringResource(Res.string.welcome_to),
                     style = MaterialTheme.typography.displaySmall.copy(
                         fontWeight = FontWeight.SemiBold
                     ),
@@ -84,7 +86,7 @@ fun GetStartedScreen(
                 Spacer(Modifier.height(Dimens.grid_1))
 
                 Text(
-                    text = "Select an option below to get started",
+                    text = stringResource(Res.string.select_option_to_start),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.SemiBold,
                         color = Color(0xFFBBBBBB),
@@ -95,7 +97,7 @@ fun GetStartedScreen(
                 Spacer(Modifier.height(Dimens.grid_2))
 
                 SecondaryButton(
-                    buttonText = "Create Account",
+                    buttonText = stringResource(Res.string.create_account),
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {},
                 )
@@ -103,7 +105,7 @@ fun GetStartedScreen(
                 Spacer(Modifier.height(Dimens.grid_3))
 
                 PrimaryButton(
-                    buttonText = "Sign In",
+                    buttonText = stringResource(Res.string.sign_in),
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onSignInClick,
                 )
@@ -112,6 +114,7 @@ fun GetStartedScreen(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun AnimatedAppTitle(
     initialColor: Color = Color(0xFFAFA21D),
@@ -119,7 +122,7 @@ fun AnimatedAppTitle(
     fontSize: TextUnit = 28.sp,
     lineHeight: TextUnit = 32.sp,
     durationInMillis: Int = 2000,
-    text: String = "GiZMO POKER",
+    text: StringResource = Res.string.app_name,
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "infinite transition")
     val animatedColor by infiniteTransition.animateColor(
@@ -130,7 +133,7 @@ fun AnimatedAppTitle(
     )
 
     Text(
-        text = text,
+        text = stringResource(text),
         style = MaterialTheme.typography.title200.copy(
             color = animatedColor,
             fontSize = fontSize,
