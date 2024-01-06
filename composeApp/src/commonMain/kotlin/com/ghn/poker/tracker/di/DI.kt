@@ -6,6 +6,7 @@ import com.ghn.poker.tracker.data.preferences.PrefsManager
 import com.ghn.poker.tracker.domain.usecase.impl.AppState
 import com.ghn.poker.tracker.domain.usecase.impl.Store
 import com.ghn.poker.tracker.domain.usecase.impl.UserStore
+import com.ghn.poker.tracker.presentation.feed.FeedViewModel
 import com.ghn.poker.tracker.presentation.login.LoginViewModel
 import com.ghn.poker.tracker.presentation.session.SessionEntryViewModel
 import com.ghn.poker.tracker.presentation.session.SessionListViewModel
@@ -67,6 +68,8 @@ val sharedViewModelModule = module {
     factory { SessionEntryViewModel(useCase = get()) }
 
     factory { LoginViewModel(loginUseCase = get()) }
+
+    factory { FeedViewModel(feedUseCase = get()) }
 
     single<Store<AppState>> { UserStore(get()) }
 }

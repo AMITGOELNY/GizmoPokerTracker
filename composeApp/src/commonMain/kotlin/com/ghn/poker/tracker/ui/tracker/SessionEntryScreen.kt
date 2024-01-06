@@ -1,6 +1,5 @@
 package com.ghn.poker.tracker.ui.tracker
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -59,7 +58,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.koin.compose.koinInject
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SessionEntryScreen(
     onBackClick: () -> Unit,
@@ -86,7 +85,6 @@ fun SessionEntryScreen(
 
     if (showDatePicker) {
         SimpleDateRangePickerInDatePickerDialog(
-            openDialog = showDatePicker,
             onDismiss = { showDatePicker = false },
             onDateSelected = { viewModel.dispatch(SessionEntryAction.UpdateDate(it)) }
         )
@@ -130,7 +128,6 @@ fun SessionEntryScreen(
                     onValueChange = { },
                     onClick = { showDatePicker = true },
                     label = {
-
                     },
                     modifier = Modifier.width(200.dp)
                 )
@@ -240,7 +237,6 @@ private fun TextEntryField(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun SimpleDateRangePickerInDatePickerDialog(
-    openDialog: Boolean,
     onDismiss: () -> Unit,
     onDateSelected: (Instant) -> Unit
 ) {
