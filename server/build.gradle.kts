@@ -107,6 +107,11 @@ jooq {
                                     withEnumConverter(true)
                                     includeExpression = ".*\\.gameType"
                                 },
+                                ForcedType().apply {
+                                    userType = "com.ghn.gizmodb.common.models.Venue"
+                                    withEnumConverter(true)
+                                    includeExpression = ".*\\.venue"
+                                },
                             )
                         )
                     }

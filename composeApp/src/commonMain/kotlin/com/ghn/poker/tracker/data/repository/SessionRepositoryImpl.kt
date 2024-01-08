@@ -3,6 +3,7 @@ package com.ghn.poker.tracker.data.repository
 import co.touchlab.kermit.Logger
 import com.ghn.gizmodb.common.models.GameType
 import com.ghn.gizmodb.common.models.SessionDTO
+import com.ghn.gizmodb.common.models.Venue
 import com.ghn.poker.tracker.data.database.SessionDao
 import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.data.sources.remote.SessionRemoteDataSource
@@ -37,6 +38,7 @@ class SessionRepositoryImpl(
         startAmount: Double?,
         endAmount: Double?,
         gameType: GameType,
+        venue: Venue,
     ): ApiResponse<Unit, Exception> {
         val sessionDTO = SessionDTO(
             id = randomUUID(),
@@ -44,6 +46,7 @@ class SessionRepositoryImpl(
             startamount = startAmount?.toString(),
             endamount = endAmount?.toString(),
             gametype = gameType,
+            venue = venue,
             userid = -1
         )
         return remoteDataSource.createSession(sessionDTO)

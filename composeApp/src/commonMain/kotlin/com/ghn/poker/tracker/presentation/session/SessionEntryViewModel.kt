@@ -2,6 +2,7 @@ package com.ghn.poker.tracker.presentation.session
 
 import co.touchlab.kermit.Logger
 import com.ghn.gizmodb.common.models.GameType
+import com.ghn.gizmodb.common.models.Venue
 import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.domain.usecase.SessionUseCase
 import com.ghn.poker.tracker.presentation.BaseViewModel
@@ -62,7 +63,8 @@ class SessionEntryViewModel(
             date = state.value.date,
             startAmount = state.value.startAmount,
             endAmount = state.value.endAmount,
-            gameType = state.value.gameType
+            gameType = state.value.gameType,
+            venue = state.value.venue,
         )
         _state.update { it.copy(isCreatingSession = false) }
         when (result) {
@@ -90,6 +92,7 @@ data class SessionEntryState(
     val startAmount: Double? = null,
     val endAmount: Double? = null,
     val gameType: GameType = GameType.PLO_2_2,
+    val venue: Venue = Venue.HARD_ROCK_FL,
     val location: String? = null,
     val coordinates: GeoCoordinates? = null,
     val isCreatingSession: Boolean = false,
@@ -120,4 +123,3 @@ sealed interface SessionEntryEffect {
 }
 
 data class GeoCoordinates(val latitude: Double, val longitude: Double)
-

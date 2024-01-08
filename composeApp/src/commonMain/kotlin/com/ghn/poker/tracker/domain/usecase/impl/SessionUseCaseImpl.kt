@@ -1,6 +1,7 @@
 package com.ghn.poker.tracker.domain.usecase.impl
 
 import com.ghn.gizmodb.common.models.GameType
+import com.ghn.gizmodb.common.models.Venue
 import com.ghn.poker.tracker.data.repository.Session
 import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.domain.repository.SessionRepository
@@ -27,8 +28,9 @@ class SessionUseCaseImpl(
         startAmount: Double?,
         endAmount: Double?,
         gameType: GameType,
+        venue: Venue,
     ): ApiResponse<Unit, Exception> {
-        return sessionRepository.createSession(date, startAmount, endAmount, gameType)
+        return sessionRepository.createSession(date, startAmount, endAmount, gameType, venue)
     }
 
     override suspend fun getSessions(): ApiResponse<List<SessionData>, Exception> {

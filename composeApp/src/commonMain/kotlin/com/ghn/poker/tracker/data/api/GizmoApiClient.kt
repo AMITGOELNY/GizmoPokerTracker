@@ -39,6 +39,7 @@ internal class GizmoApiClient(
                 Json {
                     ignoreUnknownKeys = true
                     encodeDefaults = true
+                    isLenient = true
                 }
             )
         }
