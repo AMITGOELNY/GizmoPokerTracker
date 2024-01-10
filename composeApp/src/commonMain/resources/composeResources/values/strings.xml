@@ -13,6 +13,7 @@
     <string name="create_session_enter_amount">BuyIn Amount</string>
     <string name="create_session_end_amount">End Amount</string>
     <string name="create_session_game_type">Game</string>
+    <string name="create_session_location_type">Location</string>
     <string name="create_session_save">Save Session</string>
     <string name="news_feed">News feed</string>
 </resources>

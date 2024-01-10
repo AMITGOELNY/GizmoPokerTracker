@@ -29,7 +29,7 @@ class FeedViewModel(
     private suspend fun getFeed() {
         when (val result = feedUseCase.getFeed()) {
             is ApiResponse.Error -> {
-                Logger.e { "Rss fetch failed" }
+                Logger.e { "Rss fetch failed $result" }
                 _state.update { it.copy(feed = LoadableDataState.Error) }
             }
 

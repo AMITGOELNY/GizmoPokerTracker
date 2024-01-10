@@ -49,6 +49,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.ghn.gizmodb.common.models.GameType
+import com.ghn.gizmodb.common.models.Venue
 import com.ghn.poker.tracker.presentation.session.SessionEntryAction
 import com.ghn.poker.tracker.presentation.session.SessionEntryEffect
 import com.ghn.poker.tracker.presentation.session.SessionEntryViewModel
@@ -71,7 +72,6 @@ fun SessionEntryScreen(
     var endAmount by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
     val state = viewModel.state.collectAsState().value
-    var isExpanded by remember { mutableStateOf(false) }
     var dateTextField by remember { mutableStateOf(TextFieldValue()) }
 
     LaunchedEffect(state.dateFormatted) {
@@ -151,41 +151,14 @@ fun SessionEntryScreen(
             }
 
             InputRow(stringResource(Res.string.create_session_game_type)) {
-                ExposedDropdownMenuBox(
-                    expanded = isExpanded,
-                    onExpandedChange = { newValue -> isExpanded = newValue },
-                    modifier = Modifier.width(200.dp)
-                ) {
-                    TextField(
-                        value = state.gameType.name,
-                        onValueChange = {},
-                        readOnly = true,
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
-                        },
-                        colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                        modifier = Modifier.menuAnchor()
-                    )
+                ExpandedDropDown(GameType.entries, state = state.gameType) {
+                    viewModel.dispatch(SessionEntryAction.UpdateGameType(it))
+                }
+            }
 
-                    ExposedDropdownMenu(
-                        expanded = isExpanded,
-                        onDismissRequest = { isExpanded = false },
-                    ) {
-                        GameType.entries.forEach { selectionOption ->
-                            DropdownMenuItem(
-                                text = { Text(selectionOption.name, color = Color.White) },
-                                onClick = {
-                                    viewModel.dispatch(
-                                        SessionEntryAction.UpdateGameType(
-                                            selectionOption
-                                        )
-                                    )
-                                    isExpanded = false
-                                },
-                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                            )
-                        }
-                    }
+            InputRow(stringResource(Res.string.create_session_location_type)) {
+                ExpandedDropDown(Venue.entries, state.venue) {
+                    viewModel.dispatch(SessionEntryAction.UpdateVenue(it))
                 }
             }
 
@@ -196,6 +169,49 @@ fun SessionEntryScreen(
                 showLoading = state.isCreatingSession,
                 onClick = { viewModel.dispatch(SessionEntryAction.SaveSession) }
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private inline fun <T : Enum<T>> ExpandedDropDown(
+    items: List<T>,
+    state: T,
+    crossinline onSelected: (T) -> Unit
+) {
+    var isExpanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = isExpanded,
+        onExpandedChange = { newValue -> isExpanded = newValue },
+        modifier = Modifier.width(200.dp)
+    ) {
+        TextField(
+            value = state.name,
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)
+            },
+            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+            modifier = Modifier.menuAnchor()
+        )
+
+        ExposedDropdownMenu(
+            expanded = isExpanded,
+            onDismissRequest = { isExpanded = false },
+        ) {
+            items.forEach { selectionOption ->
+                DropdownMenuItem(
+                    text = { Text(selectionOption.toString(), color = Color.White) },
+                    onClick = {
+                        onSelected(selectionOption)
+                        isExpanded = false
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                )
+            }
         }
     }
 }

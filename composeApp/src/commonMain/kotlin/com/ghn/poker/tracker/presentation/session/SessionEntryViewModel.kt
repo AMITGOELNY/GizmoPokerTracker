@@ -48,6 +48,9 @@ class SessionEntryViewModel(
                         is SessionEntryAction.SaveSession -> saveSession()
                         is SessionEntryAction.UpdateGameType ->
                             _state.update { it.copy(gameType = action.gameType) }
+
+                        is SessionEntryAction.UpdateVenue ->
+                            _state.update { it.copy(venue = action.venue) }
                     }
                 }
         }
@@ -114,6 +117,8 @@ sealed class SessionEntryAction {
     data class UpdateLocation(val location: String?) : SessionEntryAction()
 
     data class UpdateGameType(val gameType: GameType) : SessionEntryAction()
+
+    data class UpdateVenue(val venue: Venue) : SessionEntryAction()
 
     data object SaveSession : SessionEntryAction()
 }
