@@ -37,6 +37,7 @@ data class SessionData(
     val date: Instant,
     val startAmount: String?,
     val endAmount: String?,
+    val venue: Venue?,
 ) {
     val formattedDate: String
         get() {

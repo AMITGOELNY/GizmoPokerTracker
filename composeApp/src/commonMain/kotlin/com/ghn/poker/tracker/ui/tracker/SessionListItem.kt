@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ghn.gizmodb.common.models.Venue
 import com.ghn.poker.tracker.domain.usecase.SessionData
 import com.ghn.poker.tracker.domain.usecase.netAmountColor
 import com.ghn.poker.tracker.ui.theme.Dimens
@@ -57,11 +58,25 @@ internal fun SessionListItem(session: SessionData) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(Res.drawable.magic_city_casino),
-                contentDescription = null,
-                modifier = Modifier.height(18.dp)
-            )
+            if (session.venue == Venue.MAGIC_CITY) {
+                Image(
+                    painter = painterResource(Res.drawable.magic_city_casino),
+                    contentDescription = null,
+                    modifier = Modifier.height(18.dp)
+                )
+            } else {
+                Text(
+                    text = "Seminole Hard Rock",
+                    style = MaterialTheme.typography.title200.copy(
+                        fontSize = 14.sp,
+                        lineHeight = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        letterSpacing = 0.sp,
+                        fontFamily = FontFamily.Default,
+                        color = MaterialTheme.colorScheme.primary
+                    ),
+                )
+            }
             Text(session.netProfit, color = session.netAmountColor)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

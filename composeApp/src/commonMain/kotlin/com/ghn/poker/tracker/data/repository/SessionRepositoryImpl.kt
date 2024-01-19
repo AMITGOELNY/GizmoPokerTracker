@@ -63,6 +63,7 @@ class SessionRepositoryImpl(
                         date = it.date,
                         startAmount = it.startamount,
                         endAmount = it.endamount,
+                        venue = it.venue
                     )
                 }
             )
@@ -75,4 +76,5 @@ data class Session(
     val date: Instant,
     val startAmount: String?,
     val endAmount: String?,
+    val venue: Venue?,
 )

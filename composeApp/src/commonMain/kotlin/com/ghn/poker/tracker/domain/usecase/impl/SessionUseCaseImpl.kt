@@ -48,6 +48,7 @@ private fun List<Session>.toSessionData(): List<SessionData> =
         SessionData(
             date = it.date,
             startAmount = it.startAmount,
-            endAmount = it.endAmount
+            endAmount = it.endAmount,
+            venue = it.venue
         )
     }
