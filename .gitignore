@@ -19,3 +19,4 @@ gizmopoker.db
 docker-compose.yml
 composeApp/kcef-bundle/
 composeApp/cache/
+.fleet
