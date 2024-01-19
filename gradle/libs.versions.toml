@@ -14,12 +14,12 @@ scrapeIt = [
 ]
 
 [versions]
-kotlin = "1.9.21"
+kotlin = "1.9.22"
 
-agp = "8.1.4"
+agp = "8.2.1"
 
 compose = "1.5.4"
-compose-plugin = "1.6.0-dev1357"
+compose-plugin = "1.6.0-dev1369"
 compose-compiler = "1.5.5"
 
 android-minSdk = "24"
@@ -32,7 +32,7 @@ androidx-material = "1.10.0"
 androidx-test-junit = "1.1.5"
 androidx-espresso-core = "3.5.1"
 
-koinVersion = "3.5.2-RC1"
+koinVersion = "3.5.3"
 koinKspVersion = "1.3.0"
 kotlinxSerializationJson = "1.6.2"
 multiplatformSettings = "1.1.1"
@@ -72,13 +72,13 @@ android-sqldelight-driver = { module = "app.cash.sqldelight:android-driver", ver
 ios-sqldelight-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelightVersion" }
 jvm-sqldelight-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelightVersion" }
 
-koinCompose = { module = "io.insert-koin:koin-compose", version = "1.1.0" }
+koinCompose = { module = "io.insert-koin:koin-compose", version = "1.1.2" }
 koinCore = { module = "io.insert-koin:koin-core", version.ref = "koinVersion" }
 koinAnnotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinKspVersion" }
 koinCompiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinKspVersion" }
 
-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.1" }
-image-loader = { module = "io.github.qdsfdhvh:image-loader", version = "1.7.0" }
+datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.5.0" }
+image-loader = { module = "io.github.qdsfdhvh:image-loader", version = "1.7.3" }
 kermit = { module = "co.touchlab:kermit", version = "2.0.2" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatformSettings" }
@@ -118,7 +118,7 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.0.2" }
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.6.1" }
-ksp = { id = "com.google.devtools.ksp", version = "1.9.21-1.0.15" }
+ksp = { id = "com.google.devtools.ksp", version = "1.9.22-1.0.16" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelightVersion" }
 jooq = { id = "nu.studer.jooq", version = "8.2" }
 flyway = { id = "org.flywaydb.flyway", version = "10.1.0" }

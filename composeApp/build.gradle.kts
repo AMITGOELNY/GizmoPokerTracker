@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.sqldelight)
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.21"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
 }
 
 @Suppress("PropertyName")
