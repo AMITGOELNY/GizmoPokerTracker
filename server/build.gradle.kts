@@ -112,6 +112,11 @@ jooq {
                                     withEnumConverter(true)
                                     includeExpression = ".*\\.venue"
                                 },
+                                ForcedType().apply {
+                                    userType = "com.ghn.gizmodb.common.models.NewsCategory"
+                                    withEnumConverter(true)
+                                    includeExpression = ".*\\.category"
+                                },
                             )
                         )
                     }

@@ -1,6 +1,7 @@
 package com.ghn.plugins
 
 import com.ghn.client.GizmoRSSClient
+import com.ghn.gizmodb.common.models.NewsCategory
 import com.ghn.gizmodb.tables.records.FeedRecord
 import com.ghn.gizmodb.tables.references.FEED
 import com.prof18.rssparser.RssParser
@@ -12,8 +13,10 @@ import it.skrape.fetcher.response
 import it.skrape.fetcher.skrape
 import it.skrape.selects.html5.a
 import it.skrape.selects.html5.div
+import it.skrape.selects.html5.h1
 import it.skrape.selects.html5.h2
 import it.skrape.selects.html5.img
+import it.skrape.selects.html5.time
 import it.skrape.selects.html5.title
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
@@ -29,10 +32,13 @@ fun Application.configureInfoFetch(db: DSLContext) {
     launch {
         while (true) {
             log.info("Starting fetch for feed!")
-            val feed = infoFetch(db)
+            val feed1 = infoFetch(db)
+            val feed2 = infoFetch2(db)
+            val feed3 = infoFetch3(db)
 
             db.delete(FEED).execute()
-            feed.forEach {
+
+            listOf(feed1, feed2, feed3).flatten().forEach {
                 println("Found: $it")
                 it.store()
             }
@@ -60,6 +66,7 @@ fun Application.configureInfoFetch(db: DSLContext) {
                     this.site = "Poker News"
                     this.createdAt = Clock.System.now()
                     this.updatedAt = Clock.System.now()
+                    this.category = NewsCategory.NEWS
                 }
             }
 
@@ -75,28 +82,6 @@ fun Application.configureInfoFetch(db: DSLContext) {
 
 suspend fun infoFetch(db: DSLContext): List<FeedRecord> {
     val links: List<FeedRecord> = skrape(BrowserFetcher) {
-//        request {
-//            url = "https://newsletter.philgalfond.com/"
-//        }
-//        response {
-//            htmlDocument {
-//                "div.group.h-full.overflow-hidden.transition-all" {
-//
-//                    findAll {
-//                        map {
-////                            it.a{ findFirst { text } } to
-//                            Dopey(
-//                                link = it.a { findFirst("href") }.text,
-//                                image = it.a { findFirst("href") }.text,
-//                                title = it.a { findFirst("href") }.text,
-//                            )
-//                        }
-////                        this@htmlDocument.eachImage
-//                    }
-//                }
-//            }
-//        }
-
         request {
             url = "https://upswingpoker.com/blog/"
         }
@@ -129,6 +114,7 @@ suspend fun infoFetch(db: DSLContext): List<FeedRecord> {
                                 this.site = "Upswing Poker"
                                 this.createdAt = Clock.System.now()
                                 this.updatedAt = Clock.System.now()
+                                this.category = NewsCategory.STRATEGY
                             }
                         }
                     }
@@ -138,5 +124,99 @@ suspend fun infoFetch(db: DSLContext): List<FeedRecord> {
     }
 
     links.forEach { (text, link) -> println("$text --> $link") }
+    return links
+}
+
+suspend fun infoFetch2(db: DSLContext): List<FeedRecord> {
+    val links: List<FeedRecord> = skrape(BrowserFetcher) {
+        request {
+            url = "https://www.cardschat.com/news/poker-news/"
+        }
+        response {
+            htmlDocument {
+                "li.wp-block-post" {
+                    findAll {
+                        map {
+                            val (link, img) = it.a {
+                                it.a { it.eachHref }.first() to it.img { it.eachSrc }.first()
+                            }
+                            val date = it.time {
+                                findFirst { text }
+                            }
+                            val title = it.h2 {
+                                findFirst { text }
+                            }
+                            link to title
+
+                            val localDate = LocalDate.parse(
+                                date.trim(),
+                                DateTimeFormatter.ofPattern("MMMM d, yyyy")
+                            )
+                            db.newRecord(FEED).apply {
+                                this.link = link
+                                this.image = img
+                                this.title = title
+                                this.pubDate = localDate.toKotlinLocalDate()
+                                this.site = "CardsChat"
+                                this.createdAt = Clock.System.now()
+                                this.updatedAt = Clock.System.now()
+                                this.category = NewsCategory.NEWS
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    links.forEach(::println)
+    return links
+}
+
+suspend fun infoFetch3(db: DSLContext): List<FeedRecord> {
+    val links: List<FeedRecord> = skrape(BrowserFetcher) {
+        request {
+            url = "https://www.philgalfond.com/articles"
+        }
+
+        response {
+            htmlDocument {
+                "article.blog-basic-grid--container" {
+                    findAll {
+                        map {
+                            println("hola senor, ${it.text}")
+                            val (link, img) = it.a {
+                                it.a { it.eachHref }.first() to it.img { it.eachSrc }.firstOrNull()
+                            }
+                            val date = it.time {
+                                findFirst { text }
+                            }
+                            val title = it.h1 {
+                                findFirst { text }
+                            }
+                            link to title
+
+                            val localDate = LocalDate.parse(
+                                date.trim(),
+                                DateTimeFormatter.ofPattern("M/d/yy")
+                            )
+                            db.newRecord(FEED).apply {
+                                this.link = "https://www.philgalfond.com$link"
+                                this.image = img
+                                this.title = title
+                                this.pubDate = localDate.toKotlinLocalDate()
+                                this.site = "Phil Galfond"
+                                this.createdAt = Clock.System.now()
+                                this.updatedAt = Clock.System.now()
+                                this.category = NewsCategory.STRATEGY
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    links.forEach(::println)
     return links
 }

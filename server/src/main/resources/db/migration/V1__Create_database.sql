@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS feed
     image TEXT NOT NULL,
     title TEXT NOT NULL,
     pub_date DATE NOT NULL,
+    category TEXT NOT NULL,
     site TEXT NOT NULL,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL

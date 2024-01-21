@@ -84,7 +84,7 @@ multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", vers
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatformSettings" }
 precompose = { module = "moe.tlaster:precompose", version = "1.5.10" }
 precompose-navigation-typesafe = { module = "tech.annexflow.precompose:precompose-navigation-typesafe", version = "0.2.4" }
-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "1.8.0" }
+webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "1.8.4" }
 
 # Ktor
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersion" }
