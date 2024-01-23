@@ -22,11 +22,10 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.koin.core.component.KoinComponent
 
 class SessionEntryViewModel(
     private val useCase: SessionUseCase
-) : BaseViewModel(), KoinComponent {
+) : BaseViewModel() {
     private val _state = MutableStateFlow(SessionEntryState())
     val state = _state.asStateFlow()
 
@@ -37,8 +36,10 @@ class SessionEntryViewModel(
 
     init {
         viewModelScope.launch {
+            viewStateTrigger.emit(SessionEntryAction.Init)
+
             viewStateTrigger
-                .onEach { Logger.d { "Triggered new action : $it" } }
+                .onEach { Logger.d("SessionEntryViewModel") { "Triggered new action : $it" } }
                 .collect { action ->
                     when (action) {
                         is SessionEntryAction.UpdateDate -> updateDate(action.date)
@@ -51,6 +52,8 @@ class SessionEntryViewModel(
 
                         is SessionEntryAction.UpdateVenue ->
                             _state.update { it.copy(venue = action.venue) }
+
+                        SessionEntryAction.Init -> Unit
                     }
                 }
         }
@@ -107,20 +110,22 @@ data class SessionEntryState(
         get() = true // (startAmount == null && endAmount == null).not()
 }
 
-sealed class SessionEntryAction {
-    data class UpdateDate(val date: Instant) : SessionEntryAction()
+sealed interface SessionEntryAction {
+    data object Init : SessionEntryAction
 
-    data class UpdateStartAmount(val startAmount: Double?) : SessionEntryAction()
+    data class UpdateDate(val date: Instant) : SessionEntryAction
 
-    data class UpdateEndAmount(val endAmount: Double?) : SessionEntryAction()
+    data class UpdateStartAmount(val startAmount: Double?) : SessionEntryAction
 
-    data class UpdateLocation(val location: String?) : SessionEntryAction()
+    data class UpdateEndAmount(val endAmount: Double?) : SessionEntryAction
 
-    data class UpdateGameType(val gameType: GameType) : SessionEntryAction()
+    data class UpdateLocation(val location: String?) : SessionEntryAction
 
-    data class UpdateVenue(val venue: Venue) : SessionEntryAction()
+    data class UpdateGameType(val gameType: GameType) : SessionEntryAction
 
-    data object SaveSession : SessionEntryAction()
+    data class UpdateVenue(val venue: Venue) : SessionEntryAction
+
+    data object SaveSession : SessionEntryAction
 }
 
 sealed interface SessionEntryEffect {

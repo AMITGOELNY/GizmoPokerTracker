@@ -10,6 +10,7 @@ import com.ghn.poker.tracker.presentation.session.LoadableDataState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -25,13 +26,15 @@ class FeedViewModel(
         viewModelScope.launch {
             viewStateTrigger.emit(FeedActions.Init)
 
-            viewStateTrigger.collect { action ->
-                when (action) {
-                    FeedActions.Init -> getFeed()
-                    is FeedActions.OnTabItemClick ->
-                        _state.update { it.copy(tabIndex = action.index) }
+            viewStateTrigger
+                .onEach { Logger.d("FeedViewModel") { "action: $it" } }
+                .collect { action ->
+                    when (action) {
+                        FeedActions.Init -> getFeed()
+                        is FeedActions.OnTabItemClick ->
+                            _state.update { it.copy(tabIndex = action.index) }
+                    }
                 }
-            }
         }
     }
 

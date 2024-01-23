@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.ghn.poker.tracker.domain.usecase.impl.AppState
 import com.ghn.poker.tracker.domain.usecase.impl.Store
+import com.ghn.poker.tracker.ui.cards.CardsScreen
 import com.ghn.poker.tracker.ui.feed.FeedScreen
 import com.ghn.poker.tracker.ui.login.GetStartedScreen
 import com.ghn.poker.tracker.ui.login.LoginScreen
@@ -51,7 +52,6 @@ import moe.tlaster.precompose.PreComposeApp
 import moe.tlaster.precompose.navigation.NavOptions
 import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.PopUpTo
-import moe.tlaster.precompose.navigation.SwipeProperties
 import moe.tlaster.precompose.navigation.rememberNavigator
 import moe.tlaster.precompose.navigation.transition.NavTransition
 import org.jetbrains.compose.resources.DrawableResource
@@ -108,7 +108,7 @@ sealed interface AppRoutes : Route {
     }
 }
 
-@OptIn(ExperimentalTypeSafeApi::class)
+@OptIn(ExperimentalTypeSafeApi::class, ExperimentalResourceApi::class)
 @Composable
 fun App(viewModel: Store<AppState> = koinInject()) {
     GizmoTheme {
@@ -142,7 +142,7 @@ fun App(viewModel: Store<AppState> = koinInject()) {
                     navigator = navigator,
                     navTransition = NavTransition(),
                     initialRoute = AppRoutes.SplashScreen,
-                    swipeProperties = remember { SwipeProperties() },
+//                    swipeProperties = remember { SwipeProperties() },
                     modifier = Modifier.padding(bottom = padding.calculateBottomPadding())
                 ) {
                     scene<AppRoutes.SplashScreen>(navTransition = NavTransition()) {
@@ -206,7 +206,7 @@ fun App(viewModel: Store<AppState> = koinInject()) {
                     }
 
                     scene<AppRoutes.BottomNavItem.Profile>(navTransition = NavTransition()) {
-                        Column { }
+                        CardsScreen()
                     }
                 }
             }

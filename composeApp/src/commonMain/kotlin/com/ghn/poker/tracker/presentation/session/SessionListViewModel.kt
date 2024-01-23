@@ -1,5 +1,6 @@
 package com.ghn.poker.tracker.presentation.session
 
+import co.touchlab.kermit.Logger
 import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.domain.usecase.SessionData
 import com.ghn.poker.tracker.domain.usecase.SessionUseCase
@@ -7,11 +8,11 @@ import com.ghn.poker.tracker.presentation.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
 
-class SessionListViewModel(useCase: SessionUseCase) : BaseViewModel(), KoinComponent {
+class SessionListViewModel(useCase: SessionUseCase) : BaseViewModel() {
     private val _state = MutableStateFlow(SessionListState())
     val state = _state.asStateFlow()
 
@@ -19,26 +20,26 @@ class SessionListViewModel(useCase: SessionUseCase) : BaseViewModel(), KoinCompo
 
     init {
         viewModelScope.launch {
+            viewStateTrigger.emit(SessionListAction.Init)
 
-            when (val sessions = useCase.getSessions()) {
-                is ApiResponse.Error ->
-                    _state.update { it.copy(sessions = LoadableDataState.Error) }
+            viewStateTrigger
+                .onEach { Logger.d("SessionListViewModel") { "Triggered new action : $it" } }
+                .collect {
+                    when (val sessions = useCase.getSessions()) {
+                        is ApiResponse.Error ->
+                            _state.update { it.copy(sessions = LoadableDataState.Error) }
 
-                is ApiResponse.Success -> _state.update {
-                    it.copy(
-                        sessions = if (sessions.body.isNotEmpty()) {
-                            LoadableDataState.Loaded(sessions.body)
-                        } else {
-                            LoadableDataState.Empty
+                        is ApiResponse.Success -> _state.update {
+                            it.copy(
+                                sessions = if (sessions.body.isNotEmpty()) {
+                                    LoadableDataState.Loaded(sessions.body)
+                                } else {
+                                    LoadableDataState.Empty
+                                }
+                            )
                         }
-                    )
+                    }
                 }
-            }
-//            viewStateTrigger
-//                .onEach { Logger.d { "Triggered new action : $it" } }
-//                .collect { action ->
-//
-//                }
         }
     }
 }
@@ -63,4 +64,6 @@ sealed class LoadableDataState<out T> {
     val isLoaded: Boolean get() = this is Loaded
 }
 
-sealed class SessionListAction
+sealed interface SessionListAction {
+    data object Init : SessionListAction
+}
