@@ -169,10 +169,5 @@ tasks.getByName<JavaExec>("run") {
     )
     val localProperties = gradleLocalProperties(rootDir)
     val secret = localProperties.getProperty("SECRET_JWT", "")
-    environment(
-        /* name = */
-        "SECRET_JWT",
-        /* value = */
-        secret ?: environment["SECRET_JWT"] ?: ""
-    )
+    environment("SECRET_JWT", secret ?: environment.getOrDefault("SECRET_JWT", ""))
 }
