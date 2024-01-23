@@ -22,6 +22,7 @@ class FeedUseCaseImpl(
                             title = it.title,
                             pubDate = it.pubDate,
                             site = it.site,
+                            category = it.category,
                         )
                     }
                         .sortedByDescending { it.pubDate }
