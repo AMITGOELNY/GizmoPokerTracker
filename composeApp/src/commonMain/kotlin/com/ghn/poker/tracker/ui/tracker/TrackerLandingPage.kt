@@ -81,7 +81,7 @@ fun TrackerLandingPage(
                 title = {
                     Text(
                         text = stringResource(Res.string.app_name),
-                        style = MaterialTheme.typography.title200.copy(color = Color(0xffea940b))
+                        style = MaterialTheme.typography.titleLarge.copy(color = Color(0xffea940b))
                     )
                 },
                 actions = {

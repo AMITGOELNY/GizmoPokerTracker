@@ -1,13 +1,20 @@
 package com.ghn.poker.tracker.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -15,6 +22,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -23,11 +31,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.ghn.poker.tracker.domain.usecase.impl.AppState
 import com.ghn.poker.tracker.domain.usecase.impl.Store
 import com.ghn.poker.tracker.ui.feed.FeedScreen
 import com.ghn.poker.tracker.ui.login.GetStartedScreen
 import com.ghn.poker.tracker.ui.login.LoginScreen
+import com.ghn.poker.tracker.ui.login.SignUpScreen
 import com.ghn.poker.tracker.ui.login.SplashScreen
 import com.ghn.poker.tracker.ui.theme.GizmoTheme
 import com.ghn.poker.tracker.ui.tracker.SessionEntryScreen
@@ -47,6 +57,7 @@ import moe.tlaster.precompose.navigation.transition.NavTransition
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import tech.annexflow.precompose.navigation.typesafe.ExperimentalTypeSafeApi
 import tech.annexflow.precompose.navigation.typesafe.Route
@@ -60,6 +71,9 @@ sealed interface AppRoutes : Route {
 
     @Serializable
     data object Login : AppRoutes
+
+    @Serializable
+    data object CreateAccount : AppRoutes
 
     @Serializable
     data object SessionInsert : AppRoutes
@@ -136,14 +150,28 @@ fun App(viewModel: Store<AppState> = koinInject()) {
                     }
 
                     scene<AppRoutes.Welcome>(navTransition = NavTransition()) {
-                        GetStartedScreen { navigator.navigate(AppRoutes.Login) }
+                        GetStartedScreen(
+                            onSignInClick = { navigator.navigate(AppRoutes.Login) },
+                            onCreateAccountClick = { navigator.navigate(AppRoutes.CreateAccount) }
+                        )
                     }
 
                     scene<AppRoutes.Login>(navTransition = NavTransition()) {
                         LoginScreen(onBackClick = navigator::goBack)
                     }
 
-                    scene<AppRoutes.BottomNavItem.Home>(navTransition = NavTransition()) {
+                    scene<AppRoutes.CreateAccount>(navTransition = NavTransition()) {
+                        SignUpScreen(onBackClick = navigator::goBack)
+                    }
+
+                    scene<AppRoutes.BottomNavItem.Home>(
+                        navTransition = NavTransition(
+                            createTransition = fadeIn(),
+                            destroyTransition = fadeOut(),
+                            pauseTransition = fadeOut(),
+                            resumeTransition = fadeIn()
+                        )
+                    ) {
                         bottomBarState.value = true
                         TrackerLandingPage(
                             onCreateSessionClick = {
@@ -154,7 +182,14 @@ fun App(viewModel: Store<AppState> = koinInject()) {
                         )
                     }
 
-                    scene<AppRoutes.BottomNavItem.News>(navTransition = NavTransition()) {
+                    scene<AppRoutes.BottomNavItem.News>(
+                        navTransition = NavTransition(
+                            createTransition = fadeIn(),
+                            destroyTransition = fadeOut(),
+                            pauseTransition = fadeOut(),
+                            resumeTransition = fadeIn()
+                        )
+                    ) {
                         bottomBarState.value = true
                         FeedScreen {
                             navigator.navigate(AppRoutes.WebView(it))
@@ -163,19 +198,7 @@ fun App(viewModel: Store<AppState> = koinInject()) {
 
                     scene<AppRoutes.WebView>(navTransition = NavTransition()) {
                         bottomBarState.value = false
-                        Column(Modifier.fillMaxSize()) {
-                            val state = rememberWebViewState(url)
-
-                            Text(text = "${state.pageTitle}")
-                            val loadingState = state.loadingState
-                            if (loadingState is LoadingState.Loading) {
-                                LinearProgressIndicator(
-                                    progress = loadingState.progress,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                            WebView(state, modifier = Modifier.fillMaxWidth().weight(1f))
-                        }
+                        WebViewCompose(url, onBackClick = navigator::goBack)
                     }
 
                     scene<AppRoutes.SessionInsert>(navTransition = NavTransition()) {
@@ -187,6 +210,46 @@ fun App(viewModel: Store<AppState> = koinInject()) {
                     }
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
+@Composable
+private fun WebViewCompose(url: String, onBackClick: () -> Unit) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    navigationIconContentColor = MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                title = {
+                    Text(
+                        text = stringResource(Res.string.news_feed),
+                        style = MaterialTheme.typography.titleLarge.copy(color = Color(0xffea940b))
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.Rounded.ArrowBack, null)
+                    }
+                }
+            )
+        }
+    ) { padding ->
+        Column(Modifier.fillMaxSize().padding(padding)) {
+            val state = rememberWebViewState(url)
+            val loadingState = state.loadingState
+            if (loadingState is LoadingState.Loading) {
+                LinearProgressIndicator(
+                    progress = loadingState.progress,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            WebView(state, modifier = Modifier.fillMaxWidth().weight(1f))
         }
     }
 }
