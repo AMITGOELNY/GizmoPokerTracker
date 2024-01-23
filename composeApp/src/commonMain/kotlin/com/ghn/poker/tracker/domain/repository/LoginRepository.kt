@@ -4,4 +4,5 @@ import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 
 interface LoginRepository {
     suspend fun login(username: String, password: String): ApiResponse<Unit, Exception>
+    suspend fun create(username: String, password: String): ApiResponse<Unit, Exception>
 }

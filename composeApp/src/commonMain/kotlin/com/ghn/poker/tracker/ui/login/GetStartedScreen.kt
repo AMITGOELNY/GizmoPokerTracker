@@ -42,7 +42,8 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun GetStartedScreen(
-    onSignInClick: () -> Unit
+    onSignInClick: () -> Unit,
+    onCreateAccountClick: () -> Unit,
 ) {
     Scaffold(modifier = Modifier.fillMaxSize()) {
         Box {
@@ -99,7 +100,7 @@ fun GetStartedScreen(
                 SecondaryButton(
                     buttonText = stringResource(Res.string.create_account),
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = {},
+                    onClick = onCreateAccountClick,
                 )
 
                 Spacer(Modifier.height(Dimens.grid_3))

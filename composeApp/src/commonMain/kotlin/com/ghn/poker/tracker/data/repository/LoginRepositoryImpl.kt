@@ -19,4 +19,14 @@ class LoginRepositoryImpl(
             }
         }
     }
+
+    override suspend fun create(username: String, password: String): ApiResponse<Unit, Exception> {
+        return when (val result = remoteDataSource.create(username, password)) {
+            is ApiResponse.Error -> result
+            is ApiResponse.Success -> {
+                Logger.d { "login success, token: ${result.body}" }
+                ApiResponse.Success(Unit)
+            }
+        }
+    }
 }

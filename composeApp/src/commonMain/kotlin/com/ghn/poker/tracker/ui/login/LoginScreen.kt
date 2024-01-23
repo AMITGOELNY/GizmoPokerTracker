@@ -44,7 +44,9 @@ import com.ghn.poker.tracker.presentation.login.LoginViewModel
 import com.ghn.poker.tracker.ui.shared.PrimaryButton
 import com.ghn.poker.tracker.ui.theme.title200
 import gizmopoker.generated.resources.Res
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -118,7 +120,7 @@ internal fun FormBody(
                 usernameValue = it
                 onUsernameChange(it.text)
             },
-            leadingIconId = "ic_message.xml",
+            leadingIconId = Res.drawable.ic_message,
             placeHolder = "Username",
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
@@ -139,7 +141,7 @@ internal fun FormBody(
                 passwordValue = it
                 onPasswordChange(it.text)
             },
-            leadingIconId = "ic_lock.xml",
+            leadingIconId = Res.drawable.ic_lock,
             placeHolder = "Password",
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
@@ -167,11 +169,12 @@ internal fun FormBody(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
-private fun OutlineTextField(
+internal fun OutlineTextField(
     textFieldValue: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
-    leadingIconId: String?,
+    leadingIconId: DrawableResource,
     placeHolder: String,
     keyboardOptions: KeyboardOptions,
     visualTransformation: VisualTransformation = VisualTransformation.None,
@@ -200,7 +203,9 @@ private fun OutlineTextField(
         ),
         readOnly = readOnly,
         keyboardOptions = keyboardOptions,
-        leadingIcon = null,
+        leadingIcon = {
+            Icon(painter = painterResource(leadingIconId), null, tint = Color(0xFF9E9E9E))
+        },
         visualTransformation = visualTransformation,
         modifier = Modifier.fillMaxWidth().then(modifier),
         shape = RoundedCornerShape(12.dp),

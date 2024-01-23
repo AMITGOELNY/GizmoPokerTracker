@@ -22,4 +22,19 @@ internal class LoginRemoteDataSourceImpl(
             token
         }
     }
+
+    override suspend fun create(
+        username: String,
+        password: String
+    ): ApiResponse<String, Exception> {
+        val result: ApiResponse<String, Exception> = apiClient.http.safeRequest {
+            val response = post {
+                url { path("createUser") }
+                setBody(mapOf("username" to username, "password" to password))
+            }
+
+            response.body<String>()
+        }
+        return if (result is ApiResponse.Success) login(username, password) else result
+    }
 }
