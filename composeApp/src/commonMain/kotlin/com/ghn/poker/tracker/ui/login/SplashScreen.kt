@@ -26,12 +26,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.ghn.poker.tracker.ui.theme.title200
-import gizmopoker.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.Res
 import kotlinx.coroutines.delay
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SplashScreen(onSplashScreenFinished: () -> Unit) {
 //    val systemUiController: SystemUiController = rememberSystemUiController()

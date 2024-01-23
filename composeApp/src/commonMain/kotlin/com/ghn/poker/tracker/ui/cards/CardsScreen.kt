@@ -39,7 +39,6 @@ import com.ghn.poker.tracker.presentation.cards.model.color
 import com.ghn.poker.tracker.presentation.cards.model.drawable
 import com.ghn.poker.tracker.ui.theme.Dimens
 import kotlinx.coroutines.delay
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 
@@ -145,7 +144,6 @@ internal fun PlayerCard(card: Card, cardSize: CardSize) {
 }
 
 @Composable
-@OptIn(ExperimentalResourceApi::class)
 private fun CornerCard(
     card: Card,
     cardSize: CardSize,

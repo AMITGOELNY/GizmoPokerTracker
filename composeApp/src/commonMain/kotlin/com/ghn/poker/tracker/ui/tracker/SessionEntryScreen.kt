@@ -55,14 +55,13 @@ import com.ghn.poker.tracker.presentation.session.SessionEntryEffect
 import com.ghn.poker.tracker.presentation.session.SessionEntryViewModel
 import com.ghn.poker.tracker.ui.shared.PrimaryButton
 import com.ghn.poker.tracker.ui.theme.Dimens
-import gizmopoker.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.Res
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SessionEntryScreen(
     onBackClick: () -> Unit,
@@ -254,7 +253,7 @@ private fun TextEntryField(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 private fun SimpleDateRangePickerInDatePickerDialog(
     onDismiss: () -> Unit,
     onDateSelected: (Instant) -> Unit

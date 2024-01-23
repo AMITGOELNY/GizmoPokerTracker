@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ghn.poker.tracker.domain.model.CardSuit
-import gizmopoker.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.DrawableResource
 
 val CardSuit.drawable: DrawableResource

@@ -24,11 +24,9 @@ import com.ghn.poker.tracker.domain.usecase.SessionData
 import com.ghn.poker.tracker.domain.usecase.netAmountColor
 import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.title200
-import gizmopoker.generated.resources.Res
-import org.jetbrains.compose.resources.ExperimentalResourceApi
+import gizmopoker.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.painterResource
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 internal fun SessionListItem(session: SessionData) {
     Column(

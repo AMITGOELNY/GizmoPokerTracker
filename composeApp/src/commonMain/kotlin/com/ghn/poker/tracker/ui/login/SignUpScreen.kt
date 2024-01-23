@@ -25,12 +25,11 @@ import androidx.compose.ui.unit.dp
 import com.ghn.poker.tracker.presentation.login.CreateAccountActions
 import com.ghn.poker.tracker.presentation.login.CreateAccountViewModel
 import com.ghn.poker.tracker.ui.theme.title200
-import gizmopoker.generated.resources.Res
-import org.jetbrains.compose.resources.ExperimentalResourceApi
+import gizmopoker.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SignUpScreen(
     viewModel: CreateAccountViewModel = koinInject(),

@@ -53,13 +53,11 @@ import com.ghn.poker.tracker.presentation.session.LoadableDataState
 import com.ghn.poker.tracker.ui.shared.LoadingAnimation
 import com.ghn.poker.tracker.ui.theme.Dimens
 import com.seiko.imageloader.ui.AutoSizeImage
-import gizmopoker.generated.resources.Res
-import org.jetbrains.compose.resources.ExperimentalResourceApi
+import gizmopoker.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun FeedScreen(
     viewModel: FeedViewModel = koinInject(),
@@ -112,7 +110,7 @@ fun FeedScreen(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NewsItemList(
     feed: FeedsContainer,

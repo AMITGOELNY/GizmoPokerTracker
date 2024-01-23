@@ -9,15 +9,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import gizmopoker.generated.resources.Res
-import org.jetbrains.compose.resources.ExperimentalResourceApi
+import gizmopoker.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.Font
 
 @ReadOnlyComposable
 @Composable
 internal expect fun getScreenWidthDp(): Int
 
-@OptIn(ExperimentalResourceApi::class)
 private val Kalnia: FontFamily
     @Stable
     @Composable
@@ -30,7 +28,6 @@ private val Kalnia: FontFamily
             Font(Res.font.kalnia_light, FontWeight.Light, FontStyle.Normal),
         )
 
-@OptIn(ExperimentalResourceApi::class)
 private val SourceSans: FontFamily
     @Stable
 //    @ReadOnlyComposable

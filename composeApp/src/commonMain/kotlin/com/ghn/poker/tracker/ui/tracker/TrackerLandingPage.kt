@@ -54,12 +54,11 @@ import com.ghn.poker.tracker.presentation.session.SessionListViewModel
 import com.ghn.poker.tracker.ui.shared.LoadingAnimation
 import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.title200
-import gizmopoker.generated.resources.Res
-import org.jetbrains.compose.resources.ExperimentalResourceApi
+import gizmopoker.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackerLandingPage(
     viewModel: SessionListViewModel = koinInject<SessionListViewModel>(),

@@ -46,7 +46,7 @@ import com.ghn.poker.tracker.ui.tracker.TrackerLandingPage
 import com.multiplatform.webview.web.LoadingState
 import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.rememberWebViewState
-import gizmopoker.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.Res
 import kotlinx.serialization.Serializable
 import moe.tlaster.precompose.PreComposeApp
 import moe.tlaster.precompose.navigation.NavOptions
@@ -55,7 +55,6 @@ import moe.tlaster.precompose.navigation.PopUpTo
 import moe.tlaster.precompose.navigation.rememberNavigator
 import moe.tlaster.precompose.navigation.transition.NavTransition
 import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -108,7 +107,7 @@ sealed interface AppRoutes : Route {
     }
 }
 
-@OptIn(ExperimentalTypeSafeApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalTypeSafeApi::class)
 @Composable
 fun App(viewModel: Store<AppState> = koinInject()) {
     GizmoTheme {
@@ -214,7 +213,7 @@ fun App(viewModel: Store<AppState> = koinInject()) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun WebViewCompose(url: String, onBackClick: () -> Unit) {
     Scaffold(
@@ -254,7 +253,6 @@ private fun WebViewCompose(url: String, onBackClick: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun BottomNavigationBar(navController: Navigator, bottomBarState: MutableState<Boolean>) {
     val items = remember {

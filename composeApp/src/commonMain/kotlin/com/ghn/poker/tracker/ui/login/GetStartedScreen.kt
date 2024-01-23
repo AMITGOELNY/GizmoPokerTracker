@@ -33,13 +33,11 @@ import com.ghn.poker.tracker.ui.shared.PrimaryButton
 import com.ghn.poker.tracker.ui.shared.SecondaryButton
 import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.title200
-import gizmopoker.generated.resources.Res
-import org.jetbrains.compose.resources.ExperimentalResourceApi
+import gizmopoker.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun GetStartedScreen(
     onSignInClick: () -> Unit,
@@ -115,7 +113,6 @@ fun GetStartedScreen(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun AnimatedAppTitle(
     initialColor: Color = Color(0xFFAFA21D),
