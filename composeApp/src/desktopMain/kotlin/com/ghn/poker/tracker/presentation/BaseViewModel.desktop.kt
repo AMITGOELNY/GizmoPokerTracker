@@ -11,6 +11,7 @@ import kotlinx.coroutines.cancel
  * which uses [Dispatchers.Main][kotlinx.coroutines.Dispatchers.Main] and can be tied
  * into an arbitrary lifecycle by calling [clear] at the appropriate time.
  */
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual abstract class BaseViewModel {
 
     actual val viewModelScope: CoroutineScope = CoroutineScope( SupervisorJob() + Dispatchers.IO)

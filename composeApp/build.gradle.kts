@@ -86,6 +86,8 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.jvm.sqldelight.driver)
             implementation(libs.ktor.client.okhttp)
+
+            api("io.github.qdsfdhvh:image-loader-extension-imageio:1.7.3")
         }
 
         iosMain.dependencies {
