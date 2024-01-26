@@ -8,10 +8,8 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -70,9 +68,10 @@ fun PrimaryButton(
                     )
                 )
             }
-            if (showLoading) {
-                CircularProgressIndicator(Modifier.size(Dimens.grid_2_5), strokeWidth = 2.dp)
-            }
+            // TODO: Crash caused by below
+//            if (showLoading) {
+//                CircularProgressIndicator(Modifier.size(Dimens.grid_2_5), strokeWidth = 2.dp)
+//            }
         }
     }
 }

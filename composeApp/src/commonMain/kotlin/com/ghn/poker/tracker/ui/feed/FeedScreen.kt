@@ -20,7 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -45,6 +45,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.CachePolicy
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.ghn.poker.tracker.domain.model.FeedItem
 import com.ghn.poker.tracker.presentation.feed.FeedActions
 import com.ghn.poker.tracker.presentation.feed.FeedViewModel
@@ -52,7 +57,6 @@ import com.ghn.poker.tracker.presentation.feed.FeedsContainer
 import com.ghn.poker.tracker.presentation.session.LoadableDataState
 import com.ghn.poker.tracker.ui.shared.LoadingAnimation
 import com.ghn.poker.tracker.ui.theme.Dimens
-import com.seiko.imageloader.ui.AutoSizeImage
 import gizmopoker.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -149,17 +153,21 @@ fun NewsItemList(
                             .clickable { onFeedItemClick(it.link) }
 
                     ) {
-                        AutoSizeImage(
-                            url = it.image,
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalPlatformContext.current)
+                                .data(it.image)
+                                .crossfade(true)
+                                .diskCachePolicy(CachePolicy.ENABLED)
+                                .build(),
+                            placeholder = painterResource(Res.drawable.ic_placeholder),
+                            error = painterResource(Res.drawable.ic_placeholder),
                             contentDescription = null,
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .matchParentSize()
                                 .shadow(elevation = Dimens.grid_1, MaterialTheme.shapes.medium)
                                 .background(Color.White, MaterialTheme.shapes.medium)
-                                .clip(MaterialTheme.shapes.medium),
-                            contentScale = ContentScale.Crop,
-                            placeholderPainter = { painterResource(Res.drawable.ic_placeholder) },
-                            errorPainter = { painterResource(Res.drawable.ic_placeholder) }
+                                .clip(MaterialTheme.shapes.medium)
                         )
 
                         Column(
@@ -269,21 +277,24 @@ fun NewsItemList(
                     .animateItemPlacement(),
                 horizontalArrangement = Arrangement.spacedBy(Dimens.grid_1_5)
             ) {
-                AutoSizeImage(
-                    url = it.image,
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalPlatformContext.current)
+                        .data(it.image)
+                        .crossfade(true)
+                        .diskCachePolicy(CachePolicy.ENABLED)
+                        .build(),
+                    placeholder = painterResource(Res.drawable.ic_placeholder),
+                    error = painterResource(Res.drawable.ic_placeholder),
                     contentDescription = null,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .width(140.dp)
-                        .height(140.dp)
+                        .size(140.dp)
                         .clip(
                             RoundedCornerShape(
                                 topStart = Dimens.grid_1,
                                 bottomStart = Dimens.grid_1
                             )
-                        ),
-                    contentScale = ContentScale.Crop,
-                    placeholderPainter = { painterResource(Res.drawable.ic_placeholder) },
-                    errorPainter = { painterResource(Res.drawable.ic_placeholder) }
+                        )
                 )
                 Column(
                     modifier = Modifier.height(140.dp)

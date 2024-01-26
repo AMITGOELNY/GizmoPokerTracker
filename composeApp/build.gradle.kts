@@ -1,4 +1,3 @@
-import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 
@@ -56,10 +55,13 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.animation)
 
-            @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
+            implementation("org.jetbrains.compose.components:components-ui-tooling-preview:1.6.0-beta01")
+
+            implementation(libs.coil.core)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network)
             implementation(libs.datetime)
-            implementation(libs.image.loader)
             implementation(libs.kermit)
             implementation(libs.precompose)
             implementation(libs.precompose.navigation.typesafe)

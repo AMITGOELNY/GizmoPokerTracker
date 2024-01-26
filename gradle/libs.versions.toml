@@ -19,7 +19,7 @@ kotlin = "1.9.22"
 agp = "8.2.1"
 
 compose = "1.5.4"
-compose-plugin = "1.6.0-dev1383"
+compose-plugin = "1.6.0-beta01"
 compose-compiler = "1.5.5"
 
 android-minSdk = "26"
@@ -32,6 +32,7 @@ androidx-material = "1.10.0"
 androidx-test-junit = "1.1.5"
 androidx-espresso-core = "3.5.1"
 
+coilVersion = "3.0.0-alpha03"
 koinVersion = "3.5.3"
 koinKspVersion = "1.3.0"
 kotlinxSerializationJson = "1.6.2"
@@ -43,7 +44,7 @@ ktorVersion = "2.3.7"
 # Server
 jdbc_sqlite = "3.43.2.2"
 jooq = "3.18.7"
-logbackVersion="1.4.11"
+logbackVersion = "1.4.11"
 jetbrainsKotlinJvm = "1.9.0"
 ktorClientCore203 = "2.0.3"
 rssparser = "6.0.6"
@@ -72,13 +73,16 @@ android-sqldelight-driver = { module = "app.cash.sqldelight:android-driver", ver
 ios-sqldelight-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelightVersion" }
 jvm-sqldelight-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelightVersion" }
 
+coil-core = { module = "io.coil-kt.coil3:coil", version.ref = "coilVersion" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilVersion" }
+coil-network = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coilVersion" }
+
 koinCompose = { module = "io.insert-koin:koin-compose", version = "1.1.2" }
 koinCore = { module = "io.insert-koin:koin-core", version.ref = "koinVersion" }
 koinAnnotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinKspVersion" }
 koinCompiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinKspVersion" }
 
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.5.0" }
-image-loader = { module = "io.github.qdsfdhvh:image-loader", version = "1.7.3" }
 kermit = { module = "co.touchlab:kermit", version = "2.0.2" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatformSettings" }
@@ -90,9 +94,9 @@ webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multipla
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersion" }
 ktor-client-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorVersion" }
-ktor-client-ios = {module = "io.ktor:ktor-client-ios", version.ref = "ktorVersion" }
+ktor-client-ios = { module = "io.ktor:ktor-client-ios", version.ref = "ktorVersion" }
 ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorVersion" }
-ktor-client-okhttp = {module = "io.ktor:ktor-client-okhttp", version.ref = "ktorVersion" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktorVersion" }
 
 # Server
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
