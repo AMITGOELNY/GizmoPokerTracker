@@ -8,6 +8,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ghn.poker.tracker.domain.model.Deck
 import com.ghn.poker.tracker.presentation.cards.model.CardSize
+import com.ghn.poker.tracker.ui.cards.EquityCalculator
 import com.ghn.poker.tracker.ui.cards.PlayerCard
 import com.ghn.poker.tracker.ui.theme.GizmoTheme
 
@@ -16,6 +17,14 @@ import com.ghn.poker.tracker.ui.theme.GizmoTheme
 private fun CardPreview() = GizmoTheme {
     Surface(Modifier.padding(8.dp)) {
         val card = Deck.cards.random()
-        PlayerCard(card = card, cardSize = CardSize.EXTRA_SMALL)
+        PlayerCard(card = card, cardSize = CardSize.EXTRA_EXTRA_SMALL)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun EquityCalculatorPreview() = GizmoTheme {
+    Surface(Modifier.padding(8.dp)) {
+        EquityCalculator()
     }
 }
