@@ -56,6 +56,7 @@ kotlin {
 
         commonMain.dependencies {
             implementation(project(":common"))
+            implementation(project(":evaluator"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
