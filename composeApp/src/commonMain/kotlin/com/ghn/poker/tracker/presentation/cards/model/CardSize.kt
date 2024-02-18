@@ -36,6 +36,7 @@ enum class CardSize(
     val shape: Shape,
     val paddingValues: Dp,
 ) {
+    EXTRA_EXTRA_SMALL(38.dp, 11.sp, 12.sp, 7.dp, RoundedCornerShape(4.dp), 4.dp),
     EXTRA_SMALL(50.dp, 14.sp, 16.sp, 10.dp, RoundedCornerShape(4.dp), 4.dp),
     SMALL(75.dp, 18.sp, 20.sp, 16.dp, RoundedCornerShape(8.dp), 8.dp),
     Medium(200.dp, 35.sp, 37.5.sp, 24.dp, RoundedCornerShape(8.dp), 8.dp),
@@ -43,6 +44,7 @@ enum class CardSize(
 
     val rotationOffset: Float
         get() = when (this) {
+            EXTRA_EXTRA_SMALL -> 40f
             EXTRA_SMALL -> 55f
             SMALL -> 85f
             Medium -> 105f
