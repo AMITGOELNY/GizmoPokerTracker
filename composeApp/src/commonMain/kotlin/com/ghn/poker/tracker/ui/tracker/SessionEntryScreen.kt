@@ -55,7 +55,7 @@ import com.ghn.poker.tracker.presentation.session.SessionEntryEffect
 import com.ghn.poker.tracker.presentation.session.SessionEntryViewModel
 import com.ghn.poker.tracker.ui.shared.PrimaryButton
 import com.ghn.poker.tracker.ui.theme.Dimens
-import gizmopoker.composeapp.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.*
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.stringResource

@@ -43,6 +43,12 @@ kotlin {
         all {
             languageSettings {
                 optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
+                optIn("androidx.compose.material3.ExperimentalMaterial3Api")
+            }
+
+            compilerOptions {
+                // Common compiler options applied to all Kotlin source sets
+                freeCompilerArgs.add("-Xexpect-actual-classes")
             }
         }
 
@@ -61,6 +67,7 @@ kotlin {
             implementation(libs.coil.core)
             implementation(libs.coil.compose)
             implementation(libs.coil.network)
+            implementation(libs.collections.immutable)
             implementation(libs.datetime)
             implementation(libs.kermit)
             implementation(libs.precompose)
@@ -94,8 +101,6 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.jvm.sqldelight.driver)
             implementation(libs.ktor.client.okhttp)
-
-            api("io.github.qdsfdhvh:image-loader-extension-imageio:1.7.3")
         }
 
         iosMain.dependencies {
@@ -119,6 +124,10 @@ tasks.withType<KotlinCompile<*>>().configureEach {
 // Koin Annotation Config
 kotlin.sourceSets.commonMain {
     kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+    resources.srcDirs(
+        rootProject.file("evaluator/src/commonMain/composeResources"),
+        rootProject.file("evaluator/src/commonMain/resources"),
+    )
 }
 
 android {
@@ -127,7 +136,7 @@ android {
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+    sourceSets["main"].resources.srcDirs("src/commonMain/composeResources")
 
     defaultConfig {
         applicationId = "com.ghn.poker.tracker"
@@ -160,7 +169,7 @@ android {
         debugImplementation(libs.compose.ui.tooling)
     }
 
-    sourceSets["main"].res.srcDirs("src/androidMain/res", "src/commonMain/resources")
+    sourceSets["main"].res.srcDirs("src/androidMain/res", "src/commonMain/composeResources")
 }
 
 compose.desktop {

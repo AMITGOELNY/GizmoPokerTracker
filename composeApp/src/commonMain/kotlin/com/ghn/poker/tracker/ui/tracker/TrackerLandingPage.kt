@@ -54,7 +54,7 @@ import com.ghn.poker.tracker.presentation.session.SessionListViewModel
 import com.ghn.poker.tracker.ui.shared.LoadingAnimation
 import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.title200
-import gizmopoker.composeapp.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 

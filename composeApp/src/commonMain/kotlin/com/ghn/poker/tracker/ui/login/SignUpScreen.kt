@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.ghn.poker.tracker.presentation.login.CreateAccountActions
 import com.ghn.poker.tracker.presentation.login.CreateAccountViewModel
 import com.ghn.poker.tracker.ui.theme.title200
-import gizmopoker.composeapp.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 

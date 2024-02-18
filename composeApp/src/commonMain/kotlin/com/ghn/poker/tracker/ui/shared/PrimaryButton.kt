@@ -1,5 +1,10 @@
 package com.ghn.poker.tracker.ui.shared
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,8 +13,10 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -52,26 +59,33 @@ fun PrimaryButton(
         contentPadding = contentPadding,
     ) {
         Box(contentAlignment = Alignment.Center) {
-            Row(
-                modifier = Modifier.alpha(if (showLoading) 0f else 1f),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                content?.let { content ->
-                    content()
+            AnimatedContent(
+                targetState = showLoading,
+                transitionSpec = { fadeIn(tween(1000)) togetherWith fadeOut(tween(1000)) },
+            ) { target ->
+                when (target) {
+                    false -> {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            content?.invoke(this)
+                            Text(
+                                text = buttonText,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    letterSpacing = 2.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            )
+                        }
+                    }
+
+                    true -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(Dimens.grid_2_5),
+                            strokeWidth = 2.dp
+                        )
+                    }
                 }
-                Text(
-                    text = buttonText,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        letterSpacing = 2.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                )
             }
-            // TODO: Crash caused by below
-//            if (showLoading) {
-//                CircularProgressIndicator(Modifier.size(Dimens.grid_2_5), strokeWidth = 2.dp)
-//            }
         }
     }
 }
