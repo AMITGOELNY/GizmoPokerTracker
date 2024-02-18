@@ -27,6 +27,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,14 +85,7 @@ fun EquityCalculator(
         }
     }
 
-    val itemsList = CardSuit.entries
-//    var selectedItem by remember {
-//        mutableStateOf(itemsList[0]) // initially, first item is selected
-//    }
-//
-//    val cards = remember(selectedItem) {
-//        mutableStateOf(generateCardsBySuit(selectedItem))
-//    }
+    val itemsList by remember { mutableStateOf(CardSuit.entries) }
 
     if (state.showBottomSheet) {
         ModalBottomSheet(
