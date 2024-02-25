@@ -7,6 +7,7 @@ interface EquityCalculationUseCase {
     suspend fun evaluateCards(
         heroCards: List<Card?>,
         villainCards: List<Card?>,
+        boardCards: List<Card?>,
         deck: List<CardState>,
     ): IntArray
 }

@@ -59,6 +59,7 @@ class EquityCalculatorViewModel(
         val result = calculatorUseCase.evaluateCards(
             heroCards = _state.value.heroCard,
             villainCards = _state.value.villainCard,
+            boardCards = _state.value.boardCards,
             deck = _state.value.deck
         )
 
@@ -99,7 +100,12 @@ class EquityCalculatorViewModel(
         }
 
         when (type) {
-            CardRowType.BOARD -> TODO()
+            CardRowType.BOARD -> {
+                val cards = _state.value.boardCards.mutate { it[index] = card }
+                _state.update {
+                    it.copy(deck = deck, boardCards = cards)
+                }
+            }
             CardRowType.HERO -> {
                 val cards = _state.value.heroCard.mutate { it[index] = card }
                 _state.update {
