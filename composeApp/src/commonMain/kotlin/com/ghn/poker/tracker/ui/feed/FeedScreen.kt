@@ -168,6 +168,7 @@ fun NewsItemList(
                                 .shadow(elevation = Dimens.grid_1, MaterialTheme.shapes.medium)
                                 .background(Color.White, MaterialTheme.shapes.medium)
                                 .clip(MaterialTheme.shapes.medium)
+                                .border(1.dp, Color(0xff2c2c2c), MaterialTheme.shapes.medium)
                         )
 
                         Column(
