@@ -8,7 +8,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -33,7 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -55,7 +53,6 @@ import com.ghn.poker.tracker.ui.shared.SessionInsert
 import com.ghn.poker.tracker.ui.shared.SplashScreen
 import com.ghn.poker.tracker.ui.shared.WebView
 import com.ghn.poker.tracker.ui.shared.Welcome
-import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.GizmoTheme
 import com.ghn.poker.tracker.ui.tracker.SessionEntryScreen
 import com.ghn.poker.tracker.ui.tracker.TrackerLandingPage
@@ -89,22 +86,22 @@ fun App(
                 startDestination = SplashScreen,
                 modifier = Modifier.padding(bottom = padding.calculateBottomPadding())
             ) {
-                composable<SplashScreen>() {
+                composable<SplashScreen> {
                     SplashScreen(onSplashScreenFinished = viewModel::checkForToken)
                 }
 
-                composable<Welcome>() {
+                composable<Welcome> {
                     GetStartedScreen(
                         onSignInClick = { navController.navigate(Login) },
                         onCreateAccountClick = { navController.navigate(CreateAccount) }
                     )
                 }
 
-                composable<Login>() {
+                composable<Login> {
                     LoginScreen(onBackClick = navController::popBackStack)
                 }
 
-                composable<CreateAccount>() {
+                composable<CreateAccount> {
                     SignUpScreen(onBackClick = navController::popBackStack)
                 }
 
@@ -132,7 +129,7 @@ fun App(
                     }
                 }
 
-                composable<WebView>() { backStackEntry ->
+                composable<WebView> { backStackEntry ->
 //                        bottomBarState.value = false
                     val webView: WebView = backStackEntry.toRoute()
                     WebViewCompose(
@@ -141,11 +138,11 @@ fun App(
                     )
                 }
 
-                composable<SessionInsert>() {
+                composable<SessionInsert> {
                     SessionEntryScreen(onBackClick = navController::popBackStack)
                 }
 
-                composable<BottomNavItem.Profile>() {
+                composable<BottomNavItem.Profile> {
                     CardsScreen()
                 }
             }
@@ -232,7 +229,7 @@ fun BottomNavigationBar(navController: NavHostController, bottomBarState: Mutabl
         content = {
             NavigationBar(
 //                backgroundColor = MaterialTheme.colors.whiteColor,
-                modifier = Modifier.height(56.dp + Dimens.grid_1) // Default nav bar height + padding
+//                modifier = Modifier.height(56.dp + Dimens.grid_1) // Default nav bar height + padding
             ) {
                 val currentRoute by navController.currentBackStackEntryAsState()
 
@@ -254,7 +251,7 @@ fun BottomNavigationBar(navController: NavHostController, bottomBarState: Mutabl
                             navController.navigate(
                                 route = item,
 //                                options = NavOptions(
-////                                    popUpTo = PopUpTo("", inclusive = true)
+// //                                    popUpTo = PopUpTo("", inclusive = true)
 //                                    launchSingleTop = true,
 //                                )
                             )

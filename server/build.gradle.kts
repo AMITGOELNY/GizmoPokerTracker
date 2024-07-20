@@ -172,3 +172,9 @@ tasks.getByName<JavaExec>("run") {
     val secret = localProperties.getProperty("SECRET_JWT", "")
     environment("SECRET_JWT", secret ?: environment.getOrDefault("SECRET_JWT", ""))
 }
+
+tasks.matching {
+    it.name == "movePojos"
+}.configureEach {
+    dependsOn(":common:runKtlintFormatOverCommonMainSourceSet")
+}

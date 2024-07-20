@@ -6,7 +6,7 @@ package com.ghn.gizmodb.evaluator.models
  * Due to the size of the tables they're loaded lazily on demand.
  */
 internal object HashTable {
-    private var FLUSH: ShortArray? = null
+    private var flush: ShortArray? = null
 
     private lateinit var noFlush5: ShortArray
     private lateinit var noFlush7: ShortArray
@@ -45,7 +45,7 @@ internal object HashTable {
             return arr
         } catch (e: Exception) {
             println(e.message)
-            throw RuntimeException(e) //TODO make this suck less
+            throw RuntimeException(e) // TODO make this suck less
         }
     }
 
@@ -58,7 +58,7 @@ internal object HashTable {
 }
 
 suspend fun readFile(path: String): ByteArray {
-    val classLoader = Thread.currentThread().contextClassLoader //?: javaClass.classLoader
+    val classLoader = Thread.currentThread().contextClassLoader // ?: javaClass.classLoader
     val resource = classLoader.getResourceAsStream(path) ?: throw MissingResourceException(path)
     return resource.readBytes()
 }

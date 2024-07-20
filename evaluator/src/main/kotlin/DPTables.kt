@@ -1,7 +1,7 @@
 package com.ghn.gizmodb.evaluator.models
 
 internal object DPTables {
-    var CHOOSE: Array<LongArray> = arrayOf(
+    val choose: Array<LongArray> = arrayOf(
         longArrayOf(1, 0, 0, 0, 0, 0, 0, 0, 0, 0),
         longArrayOf(1, 1, 0, 0, 0, 0, 0, 0, 0, 0),
         longArrayOf(1, 2, 1, 0, 0, 0, 0, 0, 0, 0),
@@ -57,7 +57,7 @@ internal object DPTables {
         longArrayOf(1, 52, 1326, 22100, 270725, 2598960, 20358520, 133784560, 752538150, 3679075400L)
     )
 
-    var DP: Array<Array<IntArray>> = arrayOf(
+    val dp: Array<Array<IntArray>> = arrayOf(
         arrayOf(
             intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
             intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
@@ -140,7 +140,7 @@ internal object DPTables {
         )
     )
 
-    val SUITS: ByteArray = byteArrayOf(
+    val suits: ByteArray = byteArrayOf(
         0, 0, 0, 0, 0, 1, 1, 1,
         1, 1, 0, 0, 0, 1, 1, 1,
         1, 0, 0, 0, 0, 1, 1, 1,

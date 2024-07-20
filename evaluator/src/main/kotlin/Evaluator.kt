@@ -24,7 +24,7 @@ class Evaluator(private val logger: (String) -> Unit) {
 
         val time = measureTime {
             withContext(Dispatchers.IO) {
-                val newDeck = Deck.cards.filter { !heroCards.contains(it) && !board.contains(it) && !villain.contains(it)}
+                val newDeck = Deck.cards.filter { !heroCards.contains(it) && !board.contains(it) && !villain.contains(it) }
 
                 val chunkSimulate = (SIMULATION_COUNT / 16).toInt()
                 val deferredEvaluators: Deferred<List<IntArray>> = async {
@@ -110,7 +110,7 @@ class Evaluator(private val logger: (String) -> Unit) {
     suspend fun evaluateCards(originalCards: List<Card>): Short {
         val cards = originalCards.convertCardsToIds(logger)
         val suitHash = cards.sumOf { SUITBIT_BY_ID[it].toInt() }
-        val flushSuit = DPTables.SUITS[suitHash] - 1
+        val flushSuit = DPTables.suits[suitHash] - 1
 
         if (flushSuit != -1) {
             var handBinary = 0

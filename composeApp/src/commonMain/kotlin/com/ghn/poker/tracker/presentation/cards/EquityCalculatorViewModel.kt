@@ -66,7 +66,6 @@ class EquityCalculatorViewModel(
 
         when (result) {
             is ApiResponse.Error -> {
-
             }
 
             is ApiResponse.Success -> {

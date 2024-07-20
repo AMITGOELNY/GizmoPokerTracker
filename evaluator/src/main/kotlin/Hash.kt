@@ -9,7 +9,7 @@ object Hash {
         var sum = 0
 
         for (i in 0 until LENGTH) {
-            sum += DPTables.DP[q[i].toInt()][LENGTH - i - 1][kLocal]
+            sum += DPTables.dp[q[i].toInt()][LENGTH - i - 1][kLocal]
             kLocal -= q[i].toInt()
             if (kLocal <= 0) break
         }
