@@ -14,32 +14,33 @@ scrapeIt = [
 ]
 
 [versions]
-kotlin = "1.9.22"
+kotlin = "2.0.0"
 
-agp = "8.2.2"
+agp = "8.3.2"
 
-compose = "1.6.1"
-compose-plugin = "1.6.0-rc02"
-compose-compiler = "1.5.5"
+compose = "1.6.8"
+compose-plugin = "1.7.0-alpha01"
 
 android-minSdk = "26"
 android-compileSdk = "34"
 android-targetSdk = "34"
 
-androidx-activityCompose = "1.8.2"
-androidx-core-ktx = "1.12.0"
+androidx-activityCompose = "1.9.0"
+androidx-core-ktx = "1.13.1"
 androidx-material = "1.10.0"
-androidx-test-junit = "1.1.5"
-androidx-espresso-core = "3.5.1"
+androidx-test-junit = "1.2.1"
+androidx-espresso-core = "3.6.1"
 
-coilVersion = "3.0.0-alpha04"
-koinVersion = "3.5.3"
-koinKspVersion = "1.3.0"
+coilVersion = "3.0.0-alpha08"
+koinVersion = "3.6.0-Beta5"
+koinKspVersion = "1.4.0-RC2"
+kotlinxCoroutinesCore = "1.9.0-RC"
 kotlinxSerializationJson = "1.6.2"
 multiplatformSettings = "1.1.1"
-sqldelightVersion = "2.0.1"
+navigationCompose = "2.8.0-alpha08"
+sqldelightVersion = "2.0.2"
 
-ktorVersion = "2.3.7"
+ktorVersion = "3.0.0-beta-2"
 
 # Server
 jdbc_sqlite = "3.43.2.2"
@@ -61,7 +62,7 @@ compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = 
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
 compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
-compose-material3 = { module = "androidx.compose.material3:material3", version = "1.1.2" }
+compose-material3 = { module = "androidx.compose.material3:material3", version = "1.2.1" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 
 androidx-security-crypto-ktx = { group = "androidx.security", name = "security-crypto", version.ref = "securityCryptoKtx" }
@@ -77,19 +78,20 @@ coil-core = { module = "io.coil-kt.coil3:coil", version.ref = "coilVersion" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilVersion" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coilVersion" }
 
-koinCompose = { module = "io.insert-koin:koin-compose", version = "1.1.2" }
+koinCompose = { module = "io.insert-koin:koin-compose", version = "1.2.0-Beta4" }
 koinCore = { module = "io.insert-koin:koin-core", version.ref = "koinVersion" }
 koinAnnotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinKspVersion" }
 koinCompiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinKspVersion" }
 
-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.5.0" }
-kermit = { module = "co.touchlab:kermit", version = "2.0.2" }
+datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.0" }
+kermit = { module = "co.touchlab:kermit", version = "2.0.3" }
 collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.7" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.8.0" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatformSettings" }
-precompose = { module = "moe.tlaster:precompose", version = "1.5.10" }
-precompose-navigation-typesafe = { module = "tech.annexflow.precompose:precompose-navigation-typesafe", version = "0.2.4" }
-webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "1.8.4" }
+navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+webview-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "1.9.20" }
 
 # Ktor
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersion" }
@@ -98,6 +100,19 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 ktor-client-ios = { module = "io.ktor:ktor-client-ios", version.ref = "ktorVersion" }
 ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorVersion" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktorVersion" }
+
+# Ktor server
+ktor-serialization-kotlinx-json-jvm = { module = "io.ktor:ktor-serialization-kotlinx-json-jvm" }
+ktor-server-auth-jvm = { module = "io.ktor:ktor-server-auth-jvm" }
+ktor-server-auth-jwt-jvm = { module = "io.ktor:ktor-server-auth-jwt-jvm" }
+ktor-server-auto-head-response-jvm = { module = "io.ktor:ktor-server-auto-head-response-jvm" }
+ktor-server-call-logging-jvm = { module = "io.ktor:ktor-server-call-logging-jvm" }
+ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml" }
+ktor-server-content-negotiation-jvm = { module = "io.ktor:ktor-server-content-negotiation-jvm" }
+ktor-server-core-jvm = { module = "io.ktor:ktor-server-core-jvm" }
+ktor-server-cors-jvm = { module = "io.ktor:ktor-server-cors-jvm" }
+ktor-server-netty-jvm = { module = "io.ktor:ktor-server-netty-jvm" }
+ktor-server-sessions-jvm = { module = "io.ktor:ktor-server-sessions-jvm" }
 
 # Server
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
@@ -118,12 +133,13 @@ skrapeit-ktor-extension = { module = "it.skrape:skrapeit-ktor-extension", versio
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.0.2" }
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.6.1" }
-ksp = { id = "com.google.devtools.ksp", version = "1.9.22-1.0.16" }
+ksp = { id = "com.google.devtools.ksp", version = "2.0.0-1.0.22" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelightVersion" }
 jooq = { id = "nu.studer.jooq", version = "8.2" }
 flyway = { id = "org.flywaydb.flyway", version = "10.1.0" }

@@ -36,8 +36,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.ghn.poker.tracker.domain.model.Card
-import com.ghn.poker.tracker.domain.model.CardSuit
+import com.ghn.gizmodb.common.models.Card
+import com.ghn.gizmodb.common.models.CardSuit
 import com.ghn.poker.tracker.presentation.cards.CardRowType
 import com.ghn.poker.tracker.presentation.cards.EquityCalculatorActions
 import com.ghn.poker.tracker.presentation.cards.EquityCalculatorViewModel

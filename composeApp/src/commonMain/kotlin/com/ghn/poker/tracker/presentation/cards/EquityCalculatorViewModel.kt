@@ -1,12 +1,14 @@
 package com.ghn.poker.tracker.presentation.cards
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
-import com.ghn.poker.tracker.domain.model.Card
-import com.ghn.poker.tracker.domain.model.CardSuit
-import com.ghn.poker.tracker.domain.model.Deck
+import com.ghn.gizmodb.common.models.Card
+import com.ghn.gizmodb.common.models.CardSuit
+import com.ghn.gizmodb.common.models.Deck
+import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.domain.usecase.EquityCalculationUseCase
 import com.ghn.poker.tracker.domain.usecase.impl.EquityCalculationUseCaseImpl.Companion.SIMULATION_COUNT
-import com.ghn.poker.tracker.presentation.BaseViewModel
 import com.ghn.poker.tracker.util.DecimalFormat
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.mutate
@@ -21,7 +23,7 @@ import kotlinx.coroutines.launch
 
 class EquityCalculatorViewModel(
     private val calculatorUseCase: EquityCalculationUseCase
-) : BaseViewModel() {
+) : ViewModel() {
 
     private val _state = MutableStateFlow(EquityCalculatorViewState())
     val state = _state.asStateFlow()
@@ -56,32 +58,40 @@ class EquityCalculatorViewModel(
     private suspend fun calculateEquity() {
         _state.update { it.copy(isCalculating = true, results = null) }
 
-        val result = calculatorUseCase.evaluateCards(
-            heroCards = _state.value.heroCard,
-            villainCards = _state.value.villainCard,
-            boardCards = _state.value.boardCards,
-            deck = _state.value.deck
+        val result = calculatorUseCase.getResults(
+            _state.value.heroCard.filterNotNull(),
+            _state.value.boardCards.filterNotNull(),
+            _state.value.villainCard.filterNotNull(),
         )
 
-        val winPercent = result[0] / SIMULATION_COUNT
-        val lossPercent = result[1] / SIMULATION_COUNT
-        val tiePercent = result[2] / SIMULATION_COUNT
+        when (result) {
+            is ApiResponse.Error -> {
 
-        val formatter = DecimalFormat()
-        val winPercentFormatted = formatter.format(winPercent * 100)
-        val lossPercentFormatted = formatter.format(lossPercent * 100)
-        val tiePercentFormatted = formatter.format(tiePercent * 100)
-        Logger.d { "totalCount: ${result.sum()}" }
-        Logger.d { "Win: $winPercentFormatted%, Loss: $lossPercentFormatted%" }
-        _state.update {
-            it.copy(
-                isCalculating = false,
-                results = HandResults(
-                    winPercent = winPercentFormatted,
-                    lossPercent = lossPercentFormatted,
-                    tiePercent = tiePercentFormatted,
-                )
-            )
+            }
+
+            is ApiResponse.Success -> {
+                val (hero, villain, tied) = result.body
+                val winPercent = hero / SIMULATION_COUNT
+                val lossPercent = villain / SIMULATION_COUNT
+                val tiePercent = tied / SIMULATION_COUNT
+
+                val formatter = DecimalFormat()
+                val winPercentFormatted = formatter.format(winPercent * 100)
+                val lossPercentFormatted = formatter.format(lossPercent * 100)
+                val tiePercentFormatted = formatter.format(tiePercent * 100)
+                Logger.d { "totalCount: ${hero + villain + tied}" }
+                Logger.d { "Win: $winPercentFormatted%, Loss: $lossPercentFormatted%" }
+                _state.update {
+                    it.copy(
+                        isCalculating = false,
+                        results = HandResults(
+                            winPercent = winPercentFormatted,
+                            lossPercent = lossPercentFormatted,
+                            tiePercent = tiePercentFormatted,
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -106,6 +116,7 @@ class EquityCalculatorViewModel(
                     it.copy(deck = deck, boardCards = cards)
                 }
             }
+
             CardRowType.HERO -> {
                 val cards = _state.value.heroCard.mutate { it[index] = card }
                 _state.update {

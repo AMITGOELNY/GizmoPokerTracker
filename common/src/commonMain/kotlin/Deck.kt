@@ -1,4 +1,6 @@
-package com.ghn.poker.tracker.domain.model
+package com.ghn.gizmodb.common.models
+
+import kotlinx.serialization.Serializable
 
 object Deck {
     val cards: List<Card> = buildList {
@@ -31,6 +33,7 @@ enum class CardSuit {
     CLUBS
 }
 
+@Serializable
 data class Card(
     val suit: CardSuit,
     val name: String,

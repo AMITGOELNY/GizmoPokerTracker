@@ -43,19 +43,20 @@ sourceSets {
 
 dependencies {
     implementation(project(":common"))
+    implementation(project(":evaluator"))
 
-    implementation("io.ktor:ktor-server-content-negotiation-jvm")
-    implementation("io.ktor:ktor-server-core-jvm")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
-    implementation("io.ktor:ktor-server-call-logging-jvm")
-    implementation("io.ktor:ktor-server-cors-jvm")
-    implementation("io.ktor:ktor-server-auto-head-response-jvm")
-    implementation("io.ktor:ktor-server-sessions-jvm")
-    implementation("io.ktor:ktor-server-netty-jvm")
-    implementation("io.ktor:ktor-server-auth-jvm")
-    implementation("io.ktor:ktor-server-auth-jwt-jvm")
+    implementation(libs.ktor.server.content.negotiation.jvm)
+    implementation(libs.ktor.server.core.jvm)
+    implementation(libs.ktor.serialization.kotlinx.json.jvm)
+    implementation(libs.ktor.server.call.logging.jvm)
+    implementation(libs.ktor.server.cors.jvm)
+    implementation(libs.ktor.server.auto.head.response.jvm)
+    implementation(libs.ktor.server.sessions.jvm)
+    implementation(libs.ktor.server.netty.jvm)
+    implementation(libs.ktor.server.auth.jvm)
+    implementation(libs.ktor.server.auth.jwt.jvm)
+    implementation(libs.ktor.server.config.yaml)
     implementation("ch.qos.logback:logback-classic:${libs.versions.logbackVersion.get()}")
-    implementation("io.ktor:ktor-server-config-yaml:2.3.7")
 
     implementation(libs.bouncyCastle)
     implementation(libs.datetime)
@@ -67,7 +68,7 @@ dependencies {
     implementation(libs.bundles.scrapeIt)
     implementation(libs.rssparser)
 
-    testImplementation("io.ktor:ktor-server-tests-jvm")
+//    testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${libs.versions.kotlin.get()}")
 }
 
@@ -167,7 +168,7 @@ tasks.getByName<JavaExec>("run") {
         properties["databaseUrl"] ?: environment["DATABASE_URL"]
             ?: "sqlite:${rootDir.resolve("gizmopoker.db")}"
     )
-    val localProperties = gradleLocalProperties(rootDir)
+    val localProperties = gradleLocalProperties(rootDir, providers)
     val secret = localProperties.getProperty("SECRET_JWT", "")
     environment("SECRET_JWT", secret ?: environment.getOrDefault("SECRET_JWT", ""))
 }

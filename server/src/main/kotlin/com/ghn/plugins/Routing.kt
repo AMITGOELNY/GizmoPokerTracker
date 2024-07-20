@@ -1,19 +1,20 @@
 package com.ghn.plugins
 
-import com.ghn.gizmodb.common.models.FeedDTO
-import com.ghn.gizmodb.common.models.SessionDTO
 import com.ghn.gizmodb.common.models.UserDTO
-import com.ghn.gizmodb.tables.references.FEED
-import com.ghn.gizmodb.tables.references.SESSION
 import com.ghn.gizmodb.tables.references.USER
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
-import io.ktor.server.plugins.autohead.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import com.ghn.routing.evaluatorRouting
+import com.ghn.routing.feedRouting
+import com.ghn.routing.sessionRouting
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.plugins.autohead.AutoHeadResponse
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.routing
 import kotlinx.datetime.Clock
 import org.bouncycastle.crypto.generators.OpenBSDBCrypt
 import org.jooq.DSLContext
@@ -53,77 +54,7 @@ fun Application.configureRouting(db: DSLContext) {
         }
         sessionRouting(db)
         feedRouting(db)
-    }
-}
-
-private fun Routing.feedRouting(db: DSLContext) {
-    route("/feed") {
-        get {
-            val feed = db.fetch(FEED).into(FeedDTO::class.java)
-            call.respond(feed)
-        }
-    }
-}
-
-fun Route.sessionRouting(db: DSLContext) {
-    authenticate {
-        route("/sessions") {
-            get {
-                val principal = call.principal<JWTPrincipal>()
-                val id = principal!!.payload.getClaim("id").asInt()
-                val sessions = db.fetch(SESSION, SESSION.USERID.eq(id)).into(SessionDTO::class.java)
-                call.respond(sessions)
-            }
-
-            post {
-                val principal = call.principal<JWTPrincipal>()
-                val id = principal!!.payload.getClaim("id").asInt()
-                val userSession = call.receive<SessionDTO>()
-
-                val newRecord = db.newRecord(SESSION)
-                newRecord.from(userSession)
-                newRecord.userid = id
-                newRecord.store()
-
-                call.respond(HttpStatusCode.OK)
-            }
-
-            route("/{id}") {
-                get {
-                    val principal = call.principal<JWTPrincipal>()
-                    val userId = principal!!.payload.getClaim("id").asInt()
-                    val id = call.parameters["id"].toString()
-                    val session = db.fetchOne(SESSION, SESSION.ID.eq(id), SESSION.USERID.eq(userId))
-                        ?.into(SessionDTO::class.java)
-                    if (session != null) {
-                        call.respond(session)
-                    } else {
-                        call.respond(HttpStatusCode.BadRequest, "Session not found for id: $id")
-                    }
-                }
-
-                delete {
-                    val principal = call.principal<JWTPrincipal>()
-                    val userId = principal!!.payload.getClaim("id").asInt()
-                    val id = call.parameters["id"].toString()
-                    try {
-                        val success = db.deleteFrom(SESSION)
-                            .where(SESSION.ID.eq(id), SESSION.USERID.eq(userId))
-                            .execute()
-                        if (success != 0) {
-                            call.respond(HttpStatusCode.OK)
-                        } else {
-                            call.respond(HttpStatusCode.NotAcceptable)
-                        }
-                    } catch (e: Exception) {
-                        call.respond(
-                            HttpStatusCode.InternalServerError,
-                            "Delete session failed for id: $id"
-                        )
-                    }
-                }
-            }
-        }
+        evaluatorRouting()
     }
 }
 

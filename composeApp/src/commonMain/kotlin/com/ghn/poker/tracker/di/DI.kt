@@ -77,11 +77,11 @@ val sharedViewModelModule = module {
 
     factory { FeedViewModel(feedUseCase = get()) }
 
-    factory { CardScreenViewModel() }
+    factory { CardScreenViewModel(fiveCardSimulatedEvaluationUseCase = get()) }
 
-    factory { EquityCalculatorViewModel(get()) }
+    factory { EquityCalculatorViewModel(calculatorUseCase = get()) }
 
-    factory { CardScreenHoldEmViewModel() }
+    factory { CardScreenHoldEmViewModel(fiveCardSimulatedEvaluationUseCase = get()) }
 
     single<Store<AppState>> { UserStore(get()) }
 }

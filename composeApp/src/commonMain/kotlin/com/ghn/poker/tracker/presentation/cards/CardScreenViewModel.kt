@@ -1,12 +1,12 @@
 package com.ghn.poker.tracker.presentation.cards
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
-import com.ghn.gizmodb.evaluator.models.Evaluator
-import com.ghn.gizmodb.evaluator.models.getHandRankName
-import com.ghn.poker.tracker.domain.model.Card
-import com.ghn.poker.tracker.domain.model.Deck
-import com.ghn.poker.tracker.domain.usecase.impl.convertCardsToIds
-import com.ghn.poker.tracker.presentation.BaseViewModel
+import com.ghn.gizmodb.common.models.Card
+import com.ghn.gizmodb.common.models.Deck
+import com.ghn.poker.tracker.data.sources.remote.ApiResponse
+import com.ghn.poker.tracker.domain.usecase.FiveCardSimulatedEvaluationUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,10 +14,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.DurationUnit
-import kotlin.time.measureTime
 
-class CardScreenViewModel : BaseViewModel() {
+class CardScreenViewModel(
+    private val fiveCardSimulatedEvaluationUseCase: FiveCardSimulatedEvaluationUseCase
+) : ViewModel() {
     private val deck: List<CardState> = Deck.cards.map { CardState(it, false) }
 
     private val _state = MutableStateFlow(CardScreenViewState())
@@ -54,26 +54,24 @@ class CardScreenViewModel : BaseViewModel() {
         _state.update { it.copy(playerCard = playerCards) }
 
         var winnerInfo = WinnerInfo(-1, "")
-        val time = measureTime {
-            playerCards.forEachIndexed { index, cards ->
-                val timeInner = measureTime {
-                    val evaluator = Evaluator()
-                    val rank = evaluator.evaluateCards(cards.convertCardsToIds())
 
-                    if (rank < winnerInfo.winningHandValue) {
+        playerCards.forEachIndexed { index, cards ->
+            when (val result = fiveCardSimulatedEvaluationUseCase.getFiveCardRank(cards)) {
+                is ApiResponse.Error -> Unit // TODO
+                is ApiResponse.Success -> {
+                    if (result.body < winnerInfo.winningHandValue) {
                         Logger.d { "player: ${index + 1} has high hand" }
                         winnerInfo = winnerInfo.copy(
                             winnerIndex = index,
-                            winningHandValue = rank,
-                            winningHand = rank.getHandRankName
+                            winningHandValue = result.body,
+                            winningHand = result.body.getHandRankName
                         )
                     }
                 }
-                Logger.d { "player: ${index + 1} eval finished in ${timeInner.toDouble(DurationUnit.MILLISECONDS)}" }
             }
-            Logger.d { "Player${winnerInfo.winnerIndex + 1} has the high rank: ${winnerInfo.winningHand}" }
         }
-        Logger.d { "Total Time to evaluate ${time.toDouble(DurationUnit.MILLISECONDS)}" }
+        Logger.d { "Player${winnerInfo.winnerIndex + 1} has the high rank: ${winnerInfo.winningHand}" }
+
         _state.update { it.copy(winnerInfo = winnerInfo) }
     }
 

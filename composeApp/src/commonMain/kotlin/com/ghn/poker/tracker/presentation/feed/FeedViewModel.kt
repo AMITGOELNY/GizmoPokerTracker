@@ -1,11 +1,12 @@
 package com.ghn.poker.tracker.presentation.feed
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.ghn.gizmodb.common.models.NewsCategory
 import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.domain.model.FeedItem
 import com.ghn.poker.tracker.domain.usecase.FeedUseCase
-import com.ghn.poker.tracker.presentation.BaseViewModel
 import com.ghn.poker.tracker.presentation.session.LoadableDataState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class FeedViewModel(
     private val feedUseCase: FeedUseCase
-) : BaseViewModel() {
+) : ViewModel() {
     private val _state = MutableStateFlow(FeedState())
     val state = _state.asStateFlow()
 

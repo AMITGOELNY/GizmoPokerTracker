@@ -1,6 +1,5 @@
 package com.ghn.gizmodb.evaluator.models
 
-
 /**
  * Contains all of the HashTables used for either no flush results or flush results.
  *
@@ -28,7 +27,7 @@ internal object HashTable {
 
     private suspend fun loadFromFile(fileName: String): ShortArray {
         try {
-            val bytes = readFile("$fileName.txt")
+            val bytes = readFile("hash.table/$fileName.txt")
             val s: String = bytes.decodeToString()
             println(s)
             val split = s.split("\n".toRegex())
@@ -58,6 +57,10 @@ internal object HashTable {
 //    }
 }
 
-expect suspend fun readFile(path: String): ByteArray
+suspend fun readFile(path: String): ByteArray {
+    val classLoader = Thread.currentThread().contextClassLoader //?: javaClass.classLoader
+    val resource = classLoader.getResourceAsStream(path) ?: throw MissingResourceException(path)
+    return resource.readBytes()
+}
 
 class MissingResourceException(path: String) : Exception("Missing resource with path: $path")

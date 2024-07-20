@@ -5,9 +5,10 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.sqldelight)
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
+    alias(libs.plugins.serialization)
 }
 
 @Suppress("PropertyName")
@@ -56,11 +57,13 @@ kotlin {
 
         commonMain.dependencies {
             implementation(project(":common"))
-            implementation(project(":evaluator"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.animation)
+
+            implementation(libs.lifecycle.viewmodel.compose)
+            implementation(libs.navigation.compose)
 
             implementation(compose.components.resources)
             implementation("org.jetbrains.compose.components:components-ui-tooling-preview:1.6.0-beta01")
@@ -71,8 +74,6 @@ kotlin {
             implementation(libs.collections.immutable)
             implementation(libs.datetime)
             implementation(libs.kermit)
-            implementation(libs.precompose)
-            implementation(libs.precompose.navigation.typesafe)
             api(libs.webview.multiplatform)
 
             api(libs.koinCore)
@@ -150,7 +151,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+//        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
     packaging {
         resources {

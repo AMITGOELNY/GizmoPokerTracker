@@ -1,11 +1,12 @@
 package com.ghn.poker.tracker.presentation.session
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.ghn.gizmodb.common.models.GameType
 import com.ghn.gizmodb.common.models.Venue
 import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.domain.usecase.SessionUseCase
-import com.ghn.poker.tracker.presentation.BaseViewModel
 import com.ghn.poker.tracker.util.DAY_AND_MONTH_FORMAT
 import com.ghn.poker.tracker.util.format
 import kotlinx.coroutines.channels.Channel
@@ -25,7 +26,7 @@ import kotlinx.datetime.toLocalDateTime
 
 class SessionEntryViewModel(
     private val useCase: SessionUseCase
-) : BaseViewModel() {
+) : ViewModel() {
     private val _state = MutableStateFlow(SessionEntryState())
     val state = _state.asStateFlow()
 

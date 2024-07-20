@@ -1,14 +1,16 @@
 package com.ghn.poker.tracker.presentation.login
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.domain.usecase.CreateAccountUseCase
-import com.ghn.poker.tracker.presentation.BaseViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
@@ -16,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class CreateAccountViewModel(
     private val createAccountUseCase: CreateAccountUseCase
-) : BaseViewModel() {
+) : ViewModel() {
     private val _state = MutableStateFlow(CreateAccountState())
     val state = _state.asStateFlow()
 
@@ -29,7 +31,7 @@ class CreateAccountViewModel(
     init {
         viewModelScope.launch {
             viewStateTrigger
-//                .onEach { localLogger.d { "Triggered new action: $it." } }
+                .onEach { Logger.d { "Triggered new action: $it." } }
                 .collect { action ->
                     when (action) {
                         is CreateAccountActions.OnUsernameChange -> onUsernameChange(action.username)

@@ -1,10 +1,11 @@
 package com.ghn.poker.tracker.presentation.session
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.domain.usecase.SessionData
 import com.ghn.poker.tracker.domain.usecase.SessionUseCase
-import com.ghn.poker.tracker.presentation.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +13,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SessionListViewModel(useCase: SessionUseCase) : BaseViewModel() {
+class SessionListViewModel(useCase: SessionUseCase) : ViewModel() {
     private val _state = MutableStateFlow(SessionListState())
     val state = _state.asStateFlow()
 

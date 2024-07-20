@@ -1,12 +1,12 @@
 package com.ghn.poker.tracker.presentation.cards
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
-import com.ghn.gizmodb.evaluator.models.Evaluator
-import com.ghn.gizmodb.evaluator.models.getHandRankName
-import com.ghn.poker.tracker.domain.model.Card
-import com.ghn.poker.tracker.domain.model.CardSuit
-import com.ghn.poker.tracker.domain.model.Deck
-import com.ghn.poker.tracker.presentation.BaseViewModel
+import com.ghn.gizmodb.common.models.Card
+import com.ghn.gizmodb.common.models.Deck
+import com.ghn.poker.tracker.data.sources.remote.ApiResponse
+import com.ghn.poker.tracker.domain.usecase.FiveCardSimulatedEvaluationUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class CardScreenHoldEmViewModel : BaseViewModel() {
+class CardScreenHoldEmViewModel(
+    private val fiveCardSimulatedEvaluationUseCase: FiveCardSimulatedEvaluationUseCase
+) : ViewModel() {
     private val deck: List<CardState> = Deck.cards.map { CardState(it, false) }
 
     private val _state = MutableStateFlow(CardScreenHoldEmViewState())
@@ -60,23 +62,14 @@ class CardScreenHoldEmViewModel : BaseViewModel() {
         var lowestRank = Short.MAX_VALUE
         var lowestRankIndex = -1
         playerCards.forEachIndexed { index, cards ->
-            val cardIds = (cards + boardCards).map {
-                val suitValue = when (it.suit) {
-                    CardSuit.CLUBS -> 0
-                    CardSuit.DIAMONDS -> 1
-                    CardSuit.HEARTS -> 2
-                    CardSuit.SPADES -> 3
+            when (val result = fiveCardSimulatedEvaluationUseCase.getFiveCardRank(cards + boardCards)) {
+                is ApiResponse.Error -> {}
+                is ApiResponse.Success -> {
+                    if (lowestRank > result.body) {
+                        lowestRank = result.body
+                        lowestRankIndex = index
+                    }
                 }
-                val convert = ((it.value - 2) * 4) + suitValue
-//                Logger.d { "Converting ${it.name}${it.suit} to binary: ${convert.toString(2)}, decimal: $convert" }
-                convert
-            }
-
-            val evaluator = Evaluator()
-            val rank = evaluator.evaluateCards(cardIds)
-            if (lowestRank > rank) {
-                lowestRank = rank
-                lowestRankIndex = index
             }
         }
 
@@ -101,3 +94,16 @@ sealed interface CardScreenHoldEmActions {
     data object Init : CardScreenHoldEmActions
     data object NewGame : CardScreenHoldEmActions
 }
+
+val Short.getHandRankName: String
+    get() = when {
+        this > 6185 -> "HIGH CARD"
+        this > 3325 -> "ONE PAIR"
+        this > 2467 -> "TWO PAIR"
+        this > 1609 -> "THREE OF A KIND"
+        this > 1599 -> "STRAIGHT"
+        this > 322 -> "FLUSH"
+        this > 166 -> "FULL HOUSE"
+        this > 10 -> "FOUR OF A KIND"
+        else -> "STRAIGHT FLUSH"
+    }

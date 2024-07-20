@@ -8,6 +8,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -26,12 +27,19 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.ghn.poker.tracker.domain.usecase.impl.AppState
 import com.ghn.poker.tracker.domain.usecase.impl.Store
 import com.ghn.poker.tracker.ui.cards.CardsScreen
@@ -40,174 +48,129 @@ import com.ghn.poker.tracker.ui.login.GetStartedScreen
 import com.ghn.poker.tracker.ui.login.LoginScreen
 import com.ghn.poker.tracker.ui.login.SignUpScreen
 import com.ghn.poker.tracker.ui.login.SplashScreen
+import com.ghn.poker.tracker.ui.shared.BottomNavItem
+import com.ghn.poker.tracker.ui.shared.CreateAccount
+import com.ghn.poker.tracker.ui.shared.Login
+import com.ghn.poker.tracker.ui.shared.SessionInsert
+import com.ghn.poker.tracker.ui.shared.SplashScreen
+import com.ghn.poker.tracker.ui.shared.WebView
+import com.ghn.poker.tracker.ui.shared.Welcome
+import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.GizmoTheme
 import com.ghn.poker.tracker.ui.tracker.SessionEntryScreen
 import com.ghn.poker.tracker.ui.tracker.TrackerLandingPage
 import com.multiplatform.webview.web.LoadingState
 import com.multiplatform.webview.web.WebView
 import com.multiplatform.webview.web.rememberWebViewState
-import gizmopoker.composeapp.generated.resources.*
-import kotlinx.serialization.Serializable
-import moe.tlaster.precompose.PreComposeApp
-import moe.tlaster.precompose.navigation.NavOptions
-import moe.tlaster.precompose.navigation.Navigator
-import moe.tlaster.precompose.navigation.PopUpTo
-import moe.tlaster.precompose.navigation.rememberNavigator
-import moe.tlaster.precompose.navigation.transition.NavTransition
-import org.jetbrains.compose.resources.DrawableResource
+import gizmopoker.composeapp.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.news_feed
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import tech.annexflow.precompose.navigation.typesafe.ExperimentalTypeSafeApi
-import tech.annexflow.precompose.navigation.typesafe.Route
-import tech.annexflow.precompose.navigation.typesafe.TypesafeNavHost
-import tech.annexflow.precompose.navigation.typesafe.navigate
-import tech.annexflow.precompose.navigation.typesafe.scene
 
-sealed interface AppRoutes : Route {
-    @Serializable
-    data object Welcome : AppRoutes
+@Composable
+fun App(
+    viewModel: Store<AppState> = koinInject(),
+    navController: NavHostController = rememberNavController()
+) {
+    GizmoTheme {
+        val bottomBarState = rememberSaveable { (mutableStateOf(false)) }
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+//                modifier = Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding(),
+            bottomBar = {
+                BottomNavigationBar(navController, bottomBarState)
+            },
+//                containerColor = MaterialTheme.colorScheme.background
+        ) { padding ->
+            AppStateListener(viewModel, navController)
+            NavHost(
+                navController = navController,
+                startDestination = SplashScreen,
+                modifier = Modifier.padding(bottom = padding.calculateBottomPadding())
+            ) {
+                composable<SplashScreen>() {
+                    SplashScreen(onSplashScreenFinished = viewModel::checkForToken)
+                }
 
-    @Serializable
-    data object Login : AppRoutes
+                composable<Welcome>() {
+                    GetStartedScreen(
+                        onSignInClick = { navController.navigate(Login) },
+                        onCreateAccountClick = { navController.navigate(CreateAccount) }
+                    )
+                }
 
-    @Serializable
-    data object CreateAccount : AppRoutes
+                composable<Login>() {
+                    LoginScreen(onBackClick = navController::popBackStack)
+                }
 
-    @Serializable
-    data object SessionInsert : AppRoutes
+                composable<CreateAccount>() {
+                    SignUpScreen(onBackClick = navController::popBackStack)
+                }
 
-    @Serializable
-    data object SplashScreen : AppRoutes
+                composable<BottomNavItem.Home>(
+                    enterTransition = { fadeIn() },
+                    exitTransition = { fadeOut() }
+                ) {
+                    bottomBarState.value = true
+                    TrackerLandingPage(
+                        onCreateSessionClick = {
+                            bottomBarState.value = false
+                            navController.navigate(SessionInsert)
+                        },
+                        onSignOutClick = { viewModel.signout() }
+                    )
+                }
 
-    @Serializable
-    data class WebView(val url: String) : AppRoutes
+                composable<BottomNavItem.News>(
+                    enterTransition = { fadeIn() },
+                    exitTransition = { fadeOut() }
+                ) {
+                    bottomBarState.value = true
+                    FeedScreen {
+                        navController.navigate(WebView(it))
+                    }
+                }
 
-    @Serializable
-    sealed class BottomNavItem(
-        val route: String,
-        val title: String
-    ) : AppRoutes {
-        @Serializable
-        data object Home : BottomNavItem("home", "Home")
+                composable<WebView>() { backStackEntry ->
+//                        bottomBarState.value = false
+                    val webView: WebView = backStackEntry.toRoute()
+                    WebViewCompose(
+                        url = webView.url,
+                        onBackClick = navController::popBackStack
+                    )
+                }
 
-        @Serializable
-        data object News : BottomNavItem("news", "News")
+                composable<SessionInsert>() {
+                    SessionEntryScreen(onBackClick = navController::popBackStack)
+                }
 
-        @Serializable
-        data object Profile : BottomNavItem("profile", "Account")
-
-        fun icon(): DrawableResource {
-            return when (this) {
-                Home -> Res.drawable.ic_home
-                News -> Res.drawable.ic_baseline_assignment
-                Profile -> Res.drawable.ic_person
+                composable<BottomNavItem.Profile>() {
+                    CardsScreen()
+                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalTypeSafeApi::class)
 @Composable
-fun App(viewModel: Store<AppState> = koinInject()) {
-    GizmoTheme {
-        PreComposeApp {
-            val navigator = rememberNavigator()
-            val bottomBarState = rememberSaveable { (mutableStateOf(false)) }
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                bottomBar = {
-                    BottomNavigationBar(navigator, bottomBarState)
-                },
-            ) { padding ->
-                LaunchedEffect(Unit) {
-                    viewModel.userState.collect { state ->
-                        when (state) {
-                            AppState.Init -> Unit
-                            AppState.LoggedIn -> navigator.navigate(
-                                route = AppRoutes.BottomNavItem.Home,
-                                options = NavOptions(popUpTo = PopUpTo("", inclusive = true))
-                            )
+private fun AppStateListener(
+    viewModel: Store<AppState>,
+    navController: NavHostController
+) {
+    LaunchedEffect(Unit) {
+        viewModel.userState.collect { state ->
+            when (state) {
+                AppState.Init -> Unit
+                AppState.LoggedIn -> navController.navigate(
+                    route = BottomNavItem.Home,
+//                                options = NavOptions(popUpTo = PopUpTo("", inclusive = true))
+                )
 
-                            AppState.LoggedOut -> navigator.navigate(
-                                route = AppRoutes.Welcome,
-                                options = NavOptions(popUpTo = PopUpTo("", inclusive = true))
-                            )
-                        }
-                    }
-                }
-
-                TypesafeNavHost(
-                    navigator = navigator,
-                    navTransition = NavTransition(),
-                    initialRoute = AppRoutes.SplashScreen,
-//                    swipeProperties = remember { SwipeProperties() },
-                    modifier = Modifier.padding(bottom = padding.calculateBottomPadding())
-                ) {
-                    scene<AppRoutes.SplashScreen>(navTransition = NavTransition()) {
-                        SplashScreen(onSplashScreenFinished = viewModel::checkForToken)
-                    }
-
-                    scene<AppRoutes.Welcome>(navTransition = NavTransition()) {
-                        GetStartedScreen(
-                            onSignInClick = { navigator.navigate(AppRoutes.Login) },
-                            onCreateAccountClick = { navigator.navigate(AppRoutes.CreateAccount) }
-                        )
-                    }
-
-                    scene<AppRoutes.Login>(navTransition = NavTransition()) {
-                        LoginScreen(onBackClick = navigator::goBack)
-                    }
-
-                    scene<AppRoutes.CreateAccount>(navTransition = NavTransition()) {
-                        SignUpScreen(onBackClick = navigator::goBack)
-                    }
-
-                    scene<AppRoutes.BottomNavItem.Home>(
-                        navTransition = NavTransition(
-                            createTransition = fadeIn(),
-                            destroyTransition = fadeOut(),
-                            pauseTransition = fadeOut(),
-                            resumeTransition = fadeIn()
-                        )
-                    ) {
-                        bottomBarState.value = true
-                        TrackerLandingPage(
-                            onCreateSessionClick = {
-                                bottomBarState.value = false
-                                navigator.navigate(AppRoutes.SessionInsert)
-                            },
-                            onSignOutClick = { viewModel.signout() }
-                        )
-                    }
-
-                    scene<AppRoutes.BottomNavItem.News>(
-                        navTransition = NavTransition(
-                            createTransition = fadeIn(),
-                            destroyTransition = fadeOut(),
-                            pauseTransition = fadeOut(),
-                            resumeTransition = fadeIn()
-                        )
-                    ) {
-                        bottomBarState.value = true
-                        FeedScreen {
-                            navigator.navigate(AppRoutes.WebView(it))
-                        }
-                    }
-
-                    scene<AppRoutes.WebView>(navTransition = NavTransition()) {
-                        bottomBarState.value = false
-                        WebViewCompose(url, onBackClick = navigator::goBack)
-                    }
-
-                    scene<AppRoutes.SessionInsert>(navTransition = NavTransition()) {
-                        SessionEntryScreen(onBackClick = navigator::goBack)
-                    }
-
-                    scene<AppRoutes.BottomNavItem.Profile>(navTransition = NavTransition()) {
-                        CardsScreen()
-                    }
-                }
+                AppState.LoggedOut -> navController.navigate(
+                    route = Welcome,
+//                                options = NavOptions(popUpTo = PopUpTo("", inclusive = true))
+                )
             }
         }
     }
@@ -254,12 +217,12 @@ private fun WebViewCompose(url: String, onBackClick: () -> Unit) {
 }
 
 @Composable
-fun BottomNavigationBar(navController: Navigator, bottomBarState: MutableState<Boolean>) {
+fun BottomNavigationBar(navController: NavHostController, bottomBarState: MutableState<Boolean>) {
     val items = remember {
         listOf(
-            AppRoutes.BottomNavItem.Home,
-            AppRoutes.BottomNavItem.News,
-            AppRoutes.BottomNavItem.Profile
+            BottomNavItem.Home,
+            BottomNavItem.News,
+            BottomNavItem.Profile
         )
     }
     AnimatedVisibility(
@@ -267,16 +230,15 @@ fun BottomNavigationBar(navController: Navigator, bottomBarState: MutableState<B
         enter = slideInVertically(initialOffsetY = { it }),
         exit = slideOutVertically(targetOffsetY = { it }),
         content = {
-            NavigationBar {
+            NavigationBar(
 //                backgroundColor = MaterialTheme.colors.whiteColor,
-//                modifier = Modifier.height(56.dp + Dimens.grid_1) // Default nav bar height + padding
-//            ) {
-                val navBackStackEntry = navController.currentEntry.collectAsState(null)
-                val currentRoute = navBackStackEntry.value?.route
+                modifier = Modifier.height(56.dp + Dimens.grid_1) // Default nav bar height + padding
+            ) {
+                val currentRoute by navController.currentBackStackEntryAsState()
 
                 items.forEach { item ->
                     val selected = remember(currentRoute, item) {
-                        currentRoute?.route == item.route
+                        currentRoute?.destination?.route == item.route
                     }
                     NavigationBarItem(
                         icon = { Icon(painterResource(item.icon()), contentDescription = null) },
@@ -291,10 +253,10 @@ fun BottomNavigationBar(navController: Navigator, bottomBarState: MutableState<B
                         onClick = {
                             navController.navigate(
                                 route = item,
-                                options = NavOptions(
-//                                    popUpTo = PopUpTo("", inclusive = true)
-                                    launchSingleTop = true,
-                                )
+//                                options = NavOptions(
+////                                    popUpTo = PopUpTo("", inclusive = true)
+//                                    launchSingleTop = true,
+//                                )
                             )
                         },
                     )

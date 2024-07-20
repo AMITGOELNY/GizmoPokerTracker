@@ -19,7 +19,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.ghn.poker.tracker.domain.model.Card
+import com.ghn.gizmodb.common.models.Card
 import com.ghn.poker.tracker.presentation.cards.model.CardSize
 import com.ghn.poker.tracker.presentation.cards.model.color
 import com.ghn.poker.tracker.presentation.cards.model.drawable

@@ -1,8 +1,9 @@
 package com.ghn.poker.tracker.domain.usecase.impl
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.ghn.poker.tracker.data.preferences.PreferenceManager
-import com.ghn.poker.tracker.presentation.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 
 internal class UserStore(
     private val preferenceManager: PreferenceManager
-) : BaseViewModel(), Store<AppState> {
+) : ViewModel(), Store<AppState> {
     private val _userState: MutableStateFlow<AppState> = MutableStateFlow(AppState.Init)
     override val userState = _userState.asStateFlow()
 
