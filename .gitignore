@@ -22,3 +22,5 @@ composeApp/cache/
 composeApp/DawnCache/
 composeApp/GPUCache/
 .fleet
+
+.kotlin/
