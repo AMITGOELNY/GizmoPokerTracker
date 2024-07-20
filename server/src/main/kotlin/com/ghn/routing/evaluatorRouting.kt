@@ -20,15 +20,14 @@ internal fun Routing.evaluatorRouting() {
             val results: EvaluatorResponse = evaluator.processCards(hero, villain, board)
             call.respond(results)
         }
-
-        route("/hand-rank") {
-            post {
-                val log = call.application.environment.log
-                val cards = call.receive<List<Card>>()
-                val evaluator = Evaluator { log.debug(it) }
-                val results: Short = evaluator.evaluateCards(cards)
-                call.respond(results)
-            }
+    }
+    route("/evaluator/hand-rank") {
+        post {
+            val log = call.application.environment.log
+            val cards = call.receive<List<Card>>()
+            val evaluator = Evaluator { log.debug(it) }
+            val results: Short = evaluator.evaluateCards(cards)
+            call.respond(results)
         }
     }
 }
