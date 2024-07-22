@@ -177,4 +177,5 @@ tasks.matching {
     it.name == "movePojos"
 }.configureEach {
     dependsOn(":common:runKtlintFormatOverCommonMainSourceSet")
+    dependsOn(":common:runKtlintCheckOverCommonMainSourceSet")
 }
