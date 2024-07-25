@@ -4,8 +4,6 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.ghn.gizmodb.common.models.UserDTO
-import io.ktor.server.auth.Principal
-import kotlinx.serialization.Serializable
 import java.util.Date
 
 object JwtConfig {
@@ -40,10 +38,3 @@ object JwtConfig {
      */
     private fun getExpiration() = Date(System.currentTimeMillis() + VALIDITY_IN_MS)
 }
-
-@Serializable
-data class User(
-    val id: Int? = null,
-    val username: String,
-    val password: String
-) : Principal

@@ -13,20 +13,29 @@ import kotlin.random.Random
 import kotlin.time.DurationUnit
 import kotlin.time.measureTime
 
-class Evaluator(private val logger: (String) -> Unit) {
+class Evaluator(
+    private val logger: (String) -> Unit
+) {
     private val results = intArrayOf(0, 0, 0)
     private val measureTimes = mutableListOf<Long>()
 
-    suspend fun processCards(heroCards: List<Card>, villain: List<Card>, board: List<Card>): EvaluatorResponse {
+    suspend fun processCards(
+        heroCards: List<Card>,
+        villain: List<Card>,
+        board: List<Card>,
+        simulationCount: Int
+    ): EvaluatorResponse {
         results[0] = 0
         results[1] = 0
         results[2] = 0
 
         val time = measureTime {
             withContext(Dispatchers.IO) {
-                val newDeck = Deck.cards.filter { !heroCards.contains(it) && !board.contains(it) && !villain.contains(it) }
+                val newDeck = Deck.cards.filter {
+                    !heroCards.contains(it) && !board.contains(it) && !villain.contains(it)
+                }
 
-                val chunkSimulate = (SIMULATION_COUNT / 16).toInt()
+                val chunkSimulate = (simulationCount / 16).toInt()
                 val deferredEvaluators: Deferred<List<IntArray>> = async {
                     buildList {
                         repeat((0 until 16).count()) {
@@ -167,8 +176,6 @@ class Evaluator(private val logger: (String) -> Unit) {
             0x800, 0x800, 0x800, 0x800,
             0x1000, 0x1000, 0x1000, 0x1000,
         )
-
-        const val SIMULATION_COUNT = 20000.0
     }
 }
 

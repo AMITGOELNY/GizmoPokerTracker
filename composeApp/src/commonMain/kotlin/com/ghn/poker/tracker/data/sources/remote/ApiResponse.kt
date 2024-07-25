@@ -7,7 +7,7 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.ServerResponseException
-import kotlinx.io.IOException
+import io.ktor.utils.io.errors.IOException
 import kotlinx.serialization.SerializationException
 
 sealed class ApiResponse<out T, out E> {

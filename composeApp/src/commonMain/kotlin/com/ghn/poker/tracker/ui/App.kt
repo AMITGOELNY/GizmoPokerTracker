@@ -26,6 +26,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +34,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -216,11 +218,7 @@ private fun WebViewCompose(url: String, onBackClick: () -> Unit) {
 @Composable
 fun BottomNavigationBar(navController: NavHostController, bottomBarState: MutableState<Boolean>) {
     val items = remember {
-        listOf(
-            BottomNavItem.Home,
-            BottomNavItem.News,
-            BottomNavItem.Profile
-        )
+        listOf(BottomNavItem.Home, BottomNavItem.News, BottomNavItem.Profile)
     }
     AnimatedVisibility(
         visible = bottomBarState.value,
@@ -231,11 +229,13 @@ fun BottomNavigationBar(navController: NavHostController, bottomBarState: Mutabl
 //                backgroundColor = MaterialTheme.colors.whiteColor,
 //                modifier = Modifier.height(56.dp + Dimens.grid_1) // Default nav bar height + padding
             ) {
-                val currentRoute by navController.currentBackStackEntryAsState()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+                    ?: BottomNavItem.Home::class.qualifiedName.orEmpty()
 
                 items.forEach { item ->
-                    val selected = remember(currentRoute, item) {
-                        currentRoute?.destination?.route == item.route
+                    val selected by remember(currentRoute) {
+                        derivedStateOf { currentRoute == item::class.qualifiedName }
                     }
                     NavigationBarItem(
                         icon = { Icon(painterResource(item.icon()), contentDescription = null) },
@@ -250,10 +250,10 @@ fun BottomNavigationBar(navController: NavHostController, bottomBarState: Mutabl
                         onClick = {
                             navController.navigate(
                                 route = item,
-//                                options = NavOptions(
-// //                                    popUpTo = PopUpTo("", inclusive = true)
-//                                    launchSingleTop = true,
-//                                )
+                                navOptions = NavOptions.Builder()
+                                    .setLaunchSingleTop(true)
+                                    .setPopUpTo(BottomNavItem.Home, inclusive = true)
+                                    .build()
                             )
                         },
                     )

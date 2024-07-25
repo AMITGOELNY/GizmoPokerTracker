@@ -58,6 +58,10 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     implementation("ch.qos.logback:logback-classic:${libs.versions.logbackVersion.get()}")
 
+    implementation(libs.koinCore)
+//    implementation(libs.koin.core.ktx)
+    implementation(libs.koin.ktor)
+
     implementation(libs.bouncyCastle)
     implementation(libs.datetime)
     implementation(libs.flyway.core)
@@ -178,4 +182,8 @@ tasks.matching {
 }.configureEach {
     dependsOn(":common:runKtlintFormatOverCommonMainSourceSet")
     dependsOn(":common:runKtlintCheckOverCommonMainSourceSet")
+    dependsOn(":common:compileKotlinIosArm64")
+    dependsOn(":common:compileKotlinIosX64")
+    dependsOn(":common:compileCommonMainKotlinMetadata")
+    dependsOn(":common:compileKotlinIosSimulatorArm64")
 }

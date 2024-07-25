@@ -1,12 +1,22 @@
 package com.ghn
 
-import com.ghn.plugins.*
+import com.ghn.di.appModule
+import com.ghn.plugins.JwtConfig
+import com.ghn.plugins.configureHTTP
+import com.ghn.plugins.configureInfoFetch
+import com.ghn.plugins.configureMonitoring
+import com.ghn.plugins.configureRouting
+import com.ghn.plugins.configureSecurity
+import com.ghn.plugins.configureSerialization
 import io.ktor.server.application.Application
+import io.ktor.server.application.install
 import io.ktor.server.netty.EngineMain
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.FlywayException
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
+import org.koin.dsl.module
+import org.koin.ktor.plugin.Koin
 import org.slf4j.Logger
 import org.sqlite.javax.SQLiteConnectionPoolDataSource
 
@@ -36,16 +46,24 @@ fun Application.module() {
     JwtConfig.initialize(secret)
     val dbUrl = "jdbc:${environment.config.property("ktor.databaseUrl").getString()}"
     runMigrations(dbUrl)
-    val source = SQLiteConnectionPoolDataSource().apply {
-        url = dbUrl
-        check(url.isNotBlank())
-    }
 
-    val db = DSL.using(source, SQLDialect.SQLITE)
+    install(Koin) {
+        modules(appModule)
+        modules(
+            module {
+                val source = SQLiteConnectionPoolDataSource().apply {
+                    url = dbUrl
+                    check(url.isNotBlank())
+                }
+
+                single { DSL.using(source, SQLDialect.SQLITE) }
+            }
+        )
+    }
     configureSerialization()
     configureMonitoring()
     configureHTTP()
     configureSecurity()
-    configureRouting(db)
-    configureInfoFetch(db)
+    configureRouting()
+    configureInfoFetch()
 }

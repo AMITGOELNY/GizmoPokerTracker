@@ -4,7 +4,6 @@ import com.ghn.client.GizmoRSSClient
 import com.ghn.gizmodb.common.models.NewsCategory
 import com.ghn.gizmodb.tables.records.FeedRecord
 import com.ghn.gizmodb.tables.references.FEED
-import com.prof18.rssparser.RssParser
 import io.ktor.server.application.Application
 import io.ktor.server.application.log
 import it.skrape.core.htmlDocument
@@ -23,12 +22,15 @@ import kotlinx.coroutines.time.delay
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toKotlinLocalDate
 import org.jooq.DSLContext
+import org.koin.ktor.ext.inject
 import java.time.Duration
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-fun Application.configureInfoFetch(db: DSLContext) {
-    val gizmoRSSClient = GizmoRSSClient(RssParser())
+fun Application.configureInfoFetch() {
+    val db by inject<DSLContext>()
+    val gizmoRSSClient by inject<GizmoRSSClient>()
+
     launch {
         while (true) {
             log.info("Starting fetch for feed!")

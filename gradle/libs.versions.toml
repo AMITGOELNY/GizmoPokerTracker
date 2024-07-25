@@ -25,13 +25,13 @@ android-minSdk = "26"
 android-compileSdk = "34"
 android-targetSdk = "34"
 
-androidx-activityCompose = "1.9.0"
+androidx-activityCompose = "1.9.1"
 androidx-core-ktx = "1.13.1"
 androidx-material = "1.10.0"
 androidx-test-junit = "1.2.1"
 androidx-espresso-core = "3.6.1"
 
-coilVersion = "3.0.0-alpha08"
+coilVersion = "3.0.0-alpha04"
 koinVersion = "3.6.0-Beta5"
 koinKspVersion = "1.4.0-RC2"
 kotlinxCoroutinesCore = "1.9.0-RC"
@@ -40,7 +40,7 @@ multiplatformSettings = "1.1.1"
 navigationCompose = "2.8.0-alpha08"
 sqldelightVersion = "2.0.2"
 
-ktorVersion = "3.0.0-beta-2"
+ktorVersion = "2.3.12"
 
 # Server
 jdbc_sqlite = "3.43.2.2"
@@ -82,6 +82,9 @@ koinCompose = { module = "io.insert-koin:koin-compose", version = "1.2.0-Beta4" 
 koinCore = { module = "io.insert-koin:koin-core", version.ref = "koinVersion" }
 koinAnnotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinKspVersion" }
 koinCompiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinKspVersion" }
+
+koin-core-ktx = { module = "io.insert-koin:koin-core-ktx", version.ref = "koinVersion" }
+koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koinVersion" }
 
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.0" }
 kermit = { module = "co.touchlab:kermit", version = "2.0.3" }

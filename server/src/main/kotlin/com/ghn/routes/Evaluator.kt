@@ -1,23 +1,23 @@
-package com.ghn.routing
+package com.ghn.routes
 
 import com.ghn.gizmodb.common.models.Card
 import com.ghn.gizmodb.common.models.EvaluatorRequest
-import com.ghn.gizmodb.common.models.EvaluatorResponse
 import com.ghn.gizmodb.evaluator.models.Evaluator
+import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 
-internal fun Routing.evaluatorRouting() {
+internal fun Routing.evaluator() {
     route("/evaluator") {
         post {
             val log = call.application.environment.log
             val request = call.receive<EvaluatorRequest>()
-            val (hero, board, villain) = request
-            val evaluator = Evaluator { log.debug(it) }
-            val results: EvaluatorResponse = evaluator.processCards(hero, villain, board)
+            val (hero, board, villain, simulationCount) = request
+            val evaluator = Evaluator { }
+            val results = evaluator.processCards(hero, villain, board, simulationCount)
             call.respond(results)
         }
     }

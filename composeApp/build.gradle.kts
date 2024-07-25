@@ -1,5 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -15,6 +15,8 @@ plugins {
 val JAVA_TARGET = JavaVersion.VERSION_17
 
 kotlin {
+    applyDefaultHierarchyTemplate()
+
     androidTarget {
         compilations.all {
             kotlinOptions {
@@ -66,7 +68,7 @@ kotlin {
             implementation(libs.navigation.compose)
 
             implementation(compose.components.resources)
-            implementation("org.jetbrains.compose.components:components-ui-tooling-preview:1.6.0-beta01")
+//            implementation("org.jetbrains.compose.components:components-ui-tooling-preview:1.6.0-beta01")
 
             implementation(libs.coil.core)
             implementation(libs.coil.compose)
@@ -112,12 +114,16 @@ kotlin {
     }
 }
 
+composeCompiler {
+    enableStrongSkippingMode = true
+}
+
 dependencies {
-    add("kspCommonMainMetadata", "io.insert-koin:koin-ksp-compiler:1.3.0")
+    add("kspCommonMainMetadata", "io.insert-koin:koin-ksp-compiler:1.4.0-RC2")
 //    add("kspJvm", "io.insert-koin:koin-ksp-compiler:1.3.0")
 }
 
-tasks.withType<KotlinCompile<*>>().configureEach {
+tasks.withType<KotlinCompilationTask<*>>().configureEach {
     if (name != "kspCommonMainKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
     }
@@ -126,10 +132,6 @@ tasks.withType<KotlinCompile<*>>().configureEach {
 // Koin Annotation Config
 kotlin.sourceSets.commonMain {
     kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
-    resources.srcDirs(
-        rootProject.file("evaluator/src/commonMain/composeResources"),
-        rootProject.file("evaluator/src/commonMain/resources"),
-    )
 }
 
 android {
@@ -149,9 +151,6 @@ android {
     }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-//        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
     packaging {
         resources {

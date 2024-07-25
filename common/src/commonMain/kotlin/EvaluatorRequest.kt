@@ -7,4 +7,5 @@ data class EvaluatorRequest(
     val heroCards: List<Card>,
     val boardCardsFiltered: List<Card>,
     val villainCards: List<Card>,
+    val simulationCount: Int = 20000
 )
