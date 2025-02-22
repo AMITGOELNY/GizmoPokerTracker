@@ -8,7 +8,6 @@ import com.ghn.gizmodb.common.models.CardSuit
 import com.ghn.gizmodb.common.models.Deck
 import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.domain.usecase.EquityCalculationUseCase
-import com.ghn.poker.tracker.domain.usecase.impl.EquityCalculationUseCaseImpl.Companion.SIMULATION_COUNT
 import com.ghn.poker.tracker.util.DecimalFormat
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.mutate
@@ -58,10 +57,12 @@ class EquityCalculatorViewModel(
     private suspend fun calculateEquity() {
         _state.update { it.copy(isCalculating = true, results = null) }
 
+        val simulationCount = 50000
         val result = calculatorUseCase.getResults(
-            _state.value.heroCard.filterNotNull(),
-            _state.value.boardCards.filterNotNull(),
-            _state.value.villainCard.filterNotNull(),
+            heroCards = _state.value.heroCard.filterNotNull(),
+            boardCardsFiltered = _state.value.boardCards.filterNotNull(),
+            villainCards = _state.value.villainCard.filterNotNull(),
+            simulationCount = simulationCount
         )
 
         when (result) {
@@ -70,9 +71,9 @@ class EquityCalculatorViewModel(
 
             is ApiResponse.Success -> {
                 val (hero, villain, tied) = result.body
-                val winPercent = hero / SIMULATION_COUNT
-                val lossPercent = villain / SIMULATION_COUNT
-                val tiePercent = tied / SIMULATION_COUNT
+                val winPercent = hero / simulationCount.toDouble()
+                val lossPercent = villain / simulationCount.toDouble()
+                val tiePercent = tied / simulationCount.toDouble()
 
                 val formatter = DecimalFormat()
                 val winPercentFormatted = formatter.format(winPercent * 100)

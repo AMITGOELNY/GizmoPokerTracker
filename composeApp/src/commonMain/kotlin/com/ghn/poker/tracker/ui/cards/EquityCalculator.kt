@@ -172,7 +172,7 @@ fun EquityCalculator(
 }
 
 @Composable
-private fun CardRow(
+internal fun CardRow(
     board: CardRowType,
     cardsCat: List<Card?>,
     results: HandResults? = null,
@@ -218,7 +218,10 @@ private fun CardRow(
                 }
             }
 
-            this@Row.AnimatedVisibility(results != null) {
+            this@Row.AnimatedVisibility(
+                visible = results != null,
+                modifier = Modifier.align(Alignment.CenterStart)
+            ) {
                 if (board == CardRowType.HERO) {
                     Text("${results?.winPercent}%")
                 } else if (board == CardRowType.VILLAIN) {

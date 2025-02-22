@@ -57,14 +57,21 @@ import com.ghn.poker.tracker.presentation.feed.FeedsContainer
 import com.ghn.poker.tracker.presentation.session.LoadableDataState
 import com.ghn.poker.tracker.ui.shared.LoadingAnimation
 import com.ghn.poker.tracker.ui.theme.Dimens
-import gizmopoker.composeapp.generated.resources.*
+import gizmopoker.composeapp.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.articles
+import gizmopoker.composeapp.generated.resources.ic_placeholder
+import gizmopoker.composeapp.generated.resources.news_feed
+import gizmopoker.composeapp.generated.resources.strategy
+import gizmopoker.composeapp.generated.resources.trending_news
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 
+@OptIn(KoinExperimentalAPI::class)
 @Composable
 fun FeedScreen(
-    viewModel: FeedViewModel = koinInject(),
+    viewModel: FeedViewModel = koinViewModel(),
     onFeedItemClick: (String) -> Unit
 ) {
     val state = viewModel.state.collectAsState()
@@ -275,7 +282,7 @@ fun NewsItemList(
                     .border(1.dp, Color(0xFF2A2B39), RoundedCornerShape(size = 8.dp))
                     .background(Color(0xFF23252F), RoundedCornerShape(size = 8.dp))
                     .clickable { onFeedItemClick(it.link) }
-                    .animateItemPlacement(),
+                    .animateItem(),
                 horizontalArrangement = Arrangement.spacedBy(Dimens.grid_1_5)
             ) {
                 AsyncImage(

@@ -1,13 +1,10 @@
 package com.ghn.poker.tracker.ui.cards
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -106,11 +103,7 @@ internal fun FiveCardGame(
         }
 
         AnimatedContent(
-            state.winnerInfo,
-            modifier = Modifier.align(Alignment.CenterStart),
-            transitionSpec = {
-                scaleIn(animationSpec = tween(durationMillis = 500)) togetherWith ExitTransition.None
-            }
+            targetState = state.winnerInfo,
         ) { state ->
             if (state != null) {
                 Text(

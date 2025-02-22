@@ -80,6 +80,7 @@ kotlin {
 
             api(libs.koinCore)
             api(libs.koinCompose)
+            api(libs.koin.compose.viewmodel)
             implementation(libs.koinAnnotations)
 
             implementation(libs.bundles.commonKtor)
@@ -112,10 +113,6 @@ kotlin {
             implementation(libs.ktor.client.ios)
         }
     }
-}
-
-composeCompiler {
-    enableStrongSkippingMode = true
 }
 
 dependencies {
@@ -175,7 +172,7 @@ android {
 
 compose.desktop {
     application {
-        mainClass = "MainKt"
+        mainClass = "com.ghn.poker.tracker.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)

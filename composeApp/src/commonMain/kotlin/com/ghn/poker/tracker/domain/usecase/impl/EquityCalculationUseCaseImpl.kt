@@ -16,11 +16,13 @@ internal class EquityCalculationUseCaseImpl(
         heroCards: List<Card>,
         boardCardsFiltered: List<Card>,
         villainCards: List<Card>,
+        simulationCount: Int
     ): ApiResponse<EvaluatorResponse, Exception> {
-        return evaluatorRepository.evaluate(heroCards, boardCardsFiltered, villainCards)
-    }
-
-    companion object {
-        const val SIMULATION_COUNT = 20000.0
+        return evaluatorRepository.evaluate(
+            heroCards = heroCards,
+            boardCardsFiltered = boardCardsFiltered,
+            villainCards = villainCards,
+            simulationCount = simulationCount
+        )
     }
 }

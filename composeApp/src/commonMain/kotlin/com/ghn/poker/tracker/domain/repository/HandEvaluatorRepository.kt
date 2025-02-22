@@ -9,6 +9,7 @@ interface HandEvaluatorRepository {
         heroCards: List<Card>,
         boardCardsFiltered: List<Card>,
         villainCards: List<Card>,
+        simulationCount: Int,
     ): ApiResponse<EvaluatorResponse, Exception>
 
     suspend fun getFiveCardRank(

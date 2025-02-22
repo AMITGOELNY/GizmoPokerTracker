@@ -14,7 +14,8 @@ interface EvaluatorRemoteDataSource {
     suspend fun evaluate(
         heroCards: List<Card>,
         boardCardsFiltered: List<Card>,
-        villainCards: List<Card>
+        villainCards: List<Card>,
+        simulationCount: Int
     ): ApiResponse<EvaluatorResponse, Exception>
 
     suspend fun getFiveCardRank(heroCards: List<Card>): ApiResponse<Short, Exception>
@@ -27,7 +28,8 @@ internal class EvaluatorRemoteDataSourceImpl(
     override suspend fun evaluate(
         heroCards: List<Card>,
         boardCardsFiltered: List<Card>,
-        villainCards: List<Card>
+        villainCards: List<Card>,
+        simulationCount: Int
     ): ApiResponse<EvaluatorResponse, Exception> {
         return try {
             return apiClient.http.safeRequest {
@@ -37,7 +39,8 @@ internal class EvaluatorRemoteDataSourceImpl(
                         EvaluatorRequest(
                             heroCards = heroCards,
                             villainCards = villainCards,
-                            boardCardsFiltered = boardCardsFiltered
+                            boardCardsFiltered = boardCardsFiltered,
+                            simulationCount = simulationCount
                         )
                     )
                 }

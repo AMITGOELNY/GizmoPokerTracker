@@ -15,9 +15,15 @@ class HandEvaluatorRepositoryImpl(
     override suspend fun evaluate(
         heroCards: List<Card>,
         boardCardsFiltered: List<Card>,
-        villainCards: List<Card>
+        villainCards: List<Card>,
+        simulationCount: Int
     ): ApiResponse<EvaluatorResponse, Exception> {
-        return evaluatorRemoteDataSource.evaluate(heroCards, boardCardsFiltered, villainCards)
+        return evaluatorRemoteDataSource.evaluate(
+            heroCards = heroCards,
+            boardCardsFiltered = boardCardsFiltered,
+            villainCards = villainCards,
+            simulationCount = simulationCount
+        )
     }
 
     override suspend fun getFiveCardRank(heroCards: List<Card>): ApiResponse<Short, Exception> {
