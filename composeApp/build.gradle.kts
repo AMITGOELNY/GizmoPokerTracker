@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
@@ -64,7 +64,6 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.animation)
 
-            implementation(libs.lifecycle.viewmodel.compose)
             implementation(libs.navigation.compose)
 
             implementation(compose.components.resources)
@@ -78,12 +77,12 @@ kotlin {
             implementation(libs.kermit)
             api(libs.webview.multiplatform)
 
-            api(libs.koinCore)
-            api(libs.koinCompose)
+            api(libs.koin.compose)
             api(libs.koin.compose.viewmodel)
-            implementation(libs.koinAnnotations)
+            api(libs.koin.core)
+            implementation(libs.koin.annotations)
 
-            implementation(libs.bundles.commonKtor)
+            api(libs.bundles.common.ktor)
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.coroutines)
 

@@ -5,7 +5,7 @@ import org.jooq.meta.jaxb.Logging
 
 plugins {
     kotlin("jvm")
-    id("io.ktor.plugin") version libs.versions.ktorVersion.get()
+    id("io.ktor.plugin") version "2.3.13" // libs.versions.ktor.get()
     alias(libs.plugins.serialization)
     alias(libs.plugins.jooq)
     alias(libs.plugins.flyway)
@@ -58,7 +58,7 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     implementation("ch.qos.logback:logback-classic:${libs.versions.logbackVersion.get()}")
 
-    implementation(libs.koinCore)
+    implementation(libs.koin.core)
 //    implementation(libs.koin.core.ktx)
     implementation(libs.koin.ktor)
 
