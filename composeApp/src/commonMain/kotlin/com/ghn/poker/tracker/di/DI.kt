@@ -6,14 +6,6 @@ import com.ghn.poker.tracker.data.preferences.PrefsManager
 import com.ghn.poker.tracker.domain.usecase.impl.AppState
 import com.ghn.poker.tracker.domain.usecase.impl.Store
 import com.ghn.poker.tracker.domain.usecase.impl.UserStore
-import com.ghn.poker.tracker.presentation.cards.CardScreenHoldEmViewModel
-import com.ghn.poker.tracker.presentation.cards.CardScreenViewModel
-import com.ghn.poker.tracker.presentation.cards.EquityCalculatorViewModel
-import com.ghn.poker.tracker.presentation.feed.FeedViewModel
-import com.ghn.poker.tracker.presentation.login.CreateAccountViewModel
-import com.ghn.poker.tracker.presentation.login.LoginViewModel
-import com.ghn.poker.tracker.presentation.session.SessionEntryViewModel
-import com.ghn.poker.tracker.presentation.session.SessionListViewModel
 import io.ktor.client.HttpClient
 import org.koin.core.KoinApplication
 import org.koin.core.annotation.ComponentScan
@@ -37,6 +29,7 @@ fun initKoin(appModule: () -> Module): KoinApplication =
             DatabaseModule().module,
             SourcesModule().module,
             APIModule().module,
+            ViewModelModule().module,
             storageModule,
             sharedViewModelModule
         ).also {
@@ -64,24 +57,18 @@ class SourcesModule
 @ComponentScan("com.ghn.poker.tracker.data.api")
 class APIModule
 
+@org.koin.core.annotation.Module
+@ComponentScan(
+    "com.ghn.poker.tracker.presentation.session",
+    "com.ghn.poker.tracker.presentation.login",
+    "com.ghn.poker.tracker.presentation.feed",
+    "com.ghn.poker.tracker.presentation.cards"
+)
+class ViewModelModule
+
 internal expect val platformModule: Module
 
 val sharedViewModelModule = module {
-    factory { SessionListViewModel(useCase = get()) }
-
-    factory { SessionEntryViewModel(useCase = get()) }
-
-    factory { LoginViewModel(loginUseCase = get()) }
-
-    factory { CreateAccountViewModel(createAccountUseCase = get()) }
-
-    factory { FeedViewModel(feedUseCase = get()) }
-
-    factory { CardScreenViewModel(fiveCardSimulatedEvaluationUseCase = get()) }
-
-    factory { EquityCalculatorViewModel(calculatorUseCase = get()) }
-
-    factory { CardScreenHoldEmViewModel(fiveCardSimulatedEvaluationUseCase = get()) }
 
     single<Store<AppState>> { UserStore(get()) }
 }

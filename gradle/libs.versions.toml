@@ -32,10 +32,10 @@ androidx-test-junit = "1.2.1"
 androidx-espresso-core = "3.6.1"
 
 coilVersion = "3.1.0"
-koinVersion = "3.6.0-Beta5"
-koinKspVersion = "1.4.0-RC2"
+koin = "4.1.0-Beta5"
+koinKspVersion = "2.0.0-RC5"
 kotlinxCoroutinesCore = "1.10.1"
-kotlinxSerializationJson = "1.7.3"
+kotlinxSerializationJson = "1.8.0"
 multiplatformSettings = "1.2.0"
 navigationCompose = "2.8.0-alpha13"
 sqldelightVersion = "2.0.2"
@@ -77,20 +77,20 @@ coil-core = { module = "io.coil-kt.coil3:coil", version.ref = "coilVersion" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilVersion" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coilVersion" }
 
-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinVersion" }
-koin-compose = { module = "io.insert-koin:koin-compose", version = "1.2.0-Beta5" }
-koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel", version = "1.2.0-Beta5" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinKspVersion" }
 koinCompiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinKspVersion" }
 
-koin-core-ktx = { module = "io.insert-koin:koin-core-ktx", version.ref = "koinVersion" }
-koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koinVersion" }
+koin-core-ktx = { module = "io.insert-koin:koin-core-ktx", version.ref = "koin" }
+koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
 
 collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.7" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.1" }
 kermit = { module = "co.touchlab:kermit", version = "2.0.3" }
-lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.8.0" }
+lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.8.4" }
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatformSettings" }
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatformSettings" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }

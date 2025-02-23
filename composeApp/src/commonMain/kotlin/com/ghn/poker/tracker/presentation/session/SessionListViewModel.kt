@@ -12,7 +12,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class SessionListViewModel(useCase: SessionUseCase) : ViewModel() {
     private val _state = MutableStateFlow(SessionListState())
     val state = _state.asStateFlow()

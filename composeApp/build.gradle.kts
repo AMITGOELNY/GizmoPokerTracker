@@ -114,8 +114,12 @@ kotlin {
     }
 }
 
+ksp {
+    arg("KOIN_USE_COMPOSE_VIEWMODEL", "true")
+}
+
 dependencies {
-    add("kspCommonMainMetadata", "io.insert-koin:koin-ksp-compiler:1.4.0-RC2")
+    add("kspCommonMainMetadata", "io.insert-koin:koin-ksp-compiler:2.0.0-RC5")
 //    add("kspJvm", "io.insert-koin:koin-ksp-compiler:1.3.0")
 }
 
