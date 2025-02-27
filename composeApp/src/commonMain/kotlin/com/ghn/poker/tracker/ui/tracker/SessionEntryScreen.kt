@@ -55,7 +55,15 @@ import com.ghn.poker.tracker.presentation.session.SessionEntryEffect
 import com.ghn.poker.tracker.presentation.session.SessionEntryViewModel
 import com.ghn.poker.tracker.ui.shared.PrimaryButton
 import com.ghn.poker.tracker.ui.theme.Dimens
-import gizmopoker.composeapp.generated.resources.*
+import gizmopoker.composeapp.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.confirm
+import gizmopoker.composeapp.generated.resources.create_session
+import gizmopoker.composeapp.generated.resources.create_session_date
+import gizmopoker.composeapp.generated.resources.create_session_end_amount
+import gizmopoker.composeapp.generated.resources.create_session_enter_amount
+import gizmopoker.composeapp.generated.resources.create_session_game_type
+import gizmopoker.composeapp.generated.resources.create_session_location_type
+import gizmopoker.composeapp.generated.resources.create_session_save
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.stringResource

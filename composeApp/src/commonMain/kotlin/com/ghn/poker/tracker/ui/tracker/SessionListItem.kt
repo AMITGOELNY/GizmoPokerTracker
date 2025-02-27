@@ -24,7 +24,8 @@ import com.ghn.poker.tracker.domain.usecase.SessionData
 import com.ghn.poker.tracker.domain.usecase.netAmountColor
 import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.title200
-import gizmopoker.composeapp.generated.resources.*
+import gizmopoker.composeapp.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.magic_city_casino
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

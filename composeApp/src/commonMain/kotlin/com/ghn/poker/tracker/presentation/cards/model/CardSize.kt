@@ -9,7 +9,11 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ghn.gizmodb.common.models.CardSuit
-import gizmopoker.composeapp.generated.resources.*
+import gizmopoker.composeapp.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.ic_clubs
+import gizmopoker.composeapp.generated.resources.ic_diamond
+import gizmopoker.composeapp.generated.resources.ic_hearts
+import gizmopoker.composeapp.generated.resources.ic_spades
 import org.jetbrains.compose.resources.DrawableResource
 
 val CardSuit.drawable: DrawableResource
