@@ -12,6 +12,10 @@ fun Application.configureHTTP() {
         allowMethod(HttpMethod.Patch)
         allowHeader(HttpHeaders.Authorization)
 //        allowHeader("MyCustomHeader")
-        anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
+        methods.addAll(HttpMethod.DefaultMethods)
+        allowNonSimpleContentTypes = true
+        allowHeaders { true }
+        exposeHeader("as_user_session")
+        anyHost() // TODO: Don't do this in production if possible. Try to limit it.
     }
 }

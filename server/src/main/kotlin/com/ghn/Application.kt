@@ -8,11 +8,9 @@ import com.ghn.plugins.configureMonitoring
 import com.ghn.plugins.configureRouting
 import com.ghn.plugins.configureSecurity
 import com.ghn.plugins.configureSerialization
-import io.ktor.http.HttpMethod
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.netty.EngineMain
-import io.ktor.server.plugins.cors.routing.CORS
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.FlywayException
 import org.jooq.SQLDialect
@@ -61,13 +59,6 @@ fun Application.module() {
                 single { DSL.using(source, SQLDialect.SQLITE) }
             }
         )
-    }
-    install(CORS) {
-        methods.addAll(HttpMethod.DefaultMethods)
-        allowNonSimpleContentTypes = true
-        allowHeaders { true }
-        exposeHeader("as_user_session")
-        anyHost()
     }
     configureSerialization()
     configureMonitoring()
