@@ -26,7 +26,7 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build with Gradle
-      run: ./gradlew generateJooq build
+      run: ./gradlew generateJooq
       
     - name: Cache KMP tooling
       uses: actions/cache@v4
