@@ -12,26 +12,27 @@ import io.ktor.server.routing.Routing
 import io.ktor.server.routing.post
 import org.koin.ktor.ext.inject
 
+/**
+ * This function configures the authentication routes for the application.
+ * It handles user login and user creation requests.
+ */
 internal fun Routing.auth() {
     val userService by inject<UserService>()
     post("/login") {
         val user = call.receive<User>()
         when (val result = userService.login(user.username, user.password)) {
-            ApiCallResult.BadPassword ->
-                call.respond(
-                    HttpStatusCode.BadRequest,
-                    "User not found for username: ${user.username}"
-                )
+            ApiCallResult.BadPassword,
+            ApiCallResult.NotFound,
+            ApiCallResult.Unauthorized ->
+                call.respond(HttpStatusCode.Unauthorized, "Invalid credentials")
 
-            is ApiCallResult.Failure -> call.respond(HttpStatusCode.InternalServerError)
-            ApiCallResult.NotFound ->
-                call.respond(HttpStatusCode.BadRequest, "user: ${user.username} not found")
+            is ApiCallResult.Failure ->
+                call.respond(HttpStatusCode.InternalServerError, "An error occurred")
 
             is ApiCallResult.Success -> call.respondText(result.data)
-            ApiCallResult.Unauthorized -> call.respond(HttpStatusCode.Unauthorized)
         }
     }
-    post("/createUser") {
+    post("/register") {
         val user = call.receive<User>()
         val result = userService.create(user)
         call.respond(HttpStatusCode.OK)

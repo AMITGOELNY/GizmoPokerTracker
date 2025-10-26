@@ -70,14 +70,16 @@ dependencies {
     implementation(libs.bouncyCastle)
     implementation(libs.datetime)
     implementation(libs.flyway.core)
+
     jooqGenerator(libs.jdbc.sqlite)
     jooqGenerator(projects.server.jooqGenerator)
+
     implementation(libs.jdbc.sqlite)
     implementation(libs.ktor.client.core.v203)
     implementation(libs.bundles.scrapeIt)
     implementation(libs.rssparser)
 
-//    testImplementation("io.ktor:ktor-server-tests-jvm")
+    testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${libs.versions.kotlin.get()}")
 }
 

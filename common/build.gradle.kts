@@ -1,13 +1,16 @@
+@file:OptIn(ExperimentalWasmDsl::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("multiplatform")
     alias(libs.plugins.serialization)
+    alias(libs.plugins.kotlinMultiplatform)
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 kotlin {
@@ -15,6 +18,9 @@ kotlin {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+
+    wasmJs { browser() }
+
     sourceSets {
         val commonMain by getting {
             kotlin.srcDir(layout.buildDirectory.dir("generated-src/jooq/main"))

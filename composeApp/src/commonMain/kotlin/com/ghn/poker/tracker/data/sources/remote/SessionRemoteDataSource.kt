@@ -6,7 +6,6 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.http.path
 import org.koin.core.annotation.Single
 
 interface SessionRemoteDataSource {
@@ -20,8 +19,7 @@ internal class SessionRemoteDataSourceImpl(
 ) : SessionRemoteDataSource {
     override suspend fun getSessions(): ApiResponse<List<SessionDTO>, Exception> {
         return apiClient.http.safeRequest {
-            get { url { path("sessions") } }
-                .body<List<SessionDTO>>()
+            get("sessions").body<List<SessionDTO>>()
         }
     }
 
@@ -29,10 +27,7 @@ internal class SessionRemoteDataSourceImpl(
         session: SessionDTO,
     ): ApiResponse<Unit, Exception> {
         return apiClient.http.safeRequest {
-            post {
-                url { path("sessions") }
-                setBody(session)
-            }.body<String>()
+            post("sessions") { setBody(session) }.body<String>()
         }
     }
 }

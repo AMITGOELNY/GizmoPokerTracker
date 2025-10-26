@@ -22,6 +22,15 @@ import org.sqlite.javax.SQLiteConnectionPoolDataSource
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
+//    embeddedServer(Netty, port = 8080, configure = {
+//        connectionGroupSize = 2
+//        workerGroupSize = 9
+//        callGroupSize = 200
+//        shutdownGracePeriod = 2000
+//        shutdownTimeout = 3000
+//    }) {
+//        // ...
+//    }.start(wait = true)
 }
 
 fun runMigrations(

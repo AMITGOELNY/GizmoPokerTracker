@@ -41,9 +41,9 @@ subprojects {
     }
 }
 
-tasks.register("clean", Delete::class) {
-    delete(rootProject.layout.buildDirectory)
-}
+// tasks.register("clean", Delete::class) {
+//    delete(rootProject.layout.buildDirectory)
+// }
 
 // afterEvaluate {
 //    tasks["clean"].dependsOn(tasks.getByName("addKtlintFormatGitPreCommitHook"))
