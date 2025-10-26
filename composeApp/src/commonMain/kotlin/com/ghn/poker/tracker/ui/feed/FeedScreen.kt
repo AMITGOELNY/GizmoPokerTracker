@@ -50,6 +50,7 @@ import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.crossfade
+import coil3.util.DebugLogger
 import com.ghn.poker.tracker.domain.model.FeedItem
 import com.ghn.poker.tracker.presentation.feed.FeedActions
 import com.ghn.poker.tracker.presentation.feed.FeedViewModel
@@ -136,6 +137,7 @@ fun NewsItemList(
     val imageLoader = remember(context) {
         ImageLoader.Builder(context)
             .crossfade(true)
+            .logger(DebugLogger())
             .build()
     }
 
