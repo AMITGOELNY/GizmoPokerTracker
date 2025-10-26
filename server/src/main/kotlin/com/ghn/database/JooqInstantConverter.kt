@@ -1,14 +1,14 @@
 @file:Suppress("ktlint")
 package com.ghn.database
 
-import kotlinx.datetime.Instant
-import kotlinx.datetime.toJavaInstant
-import kotlinx.datetime.toKotlinInstant
 import org.jooq.BindingGetResultSetContext
 import org.jooq.BindingSetStatementContext
 import org.jooq.Converter
 import org.jooq.impl.AbstractBinding
 import java.sql.Timestamp
+import kotlin.time.Instant
+import kotlin.time.toJavaInstant
+import kotlin.time.toKotlinInstant
 
 @Suppress("UNUSED")
 private class JooqInstantConverter : Converter<Timestamp, Instant> {

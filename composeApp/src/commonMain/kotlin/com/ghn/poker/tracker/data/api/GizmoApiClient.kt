@@ -15,7 +15,6 @@ import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.HttpRequestPipeline
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
-import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
@@ -46,10 +45,7 @@ internal class GizmoApiClient(
         }
         defaultRequest {
             contentType(ContentType.Application.Json)
-            url {
-                protocol = URLProtocol.HTTP
-                host = "$BASE_URL/poker-api"
-            }
+            url("http://$BASE_URL/poker-api/")
         }
         expectSuccess = true
         addDefaultResponseValidation()

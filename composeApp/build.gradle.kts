@@ -68,6 +68,7 @@ kotlin {
             languageSettings {
                 optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
                 optIn("androidx.compose.material3.ExperimentalMaterial3Api")
+                optIn("kotlin.time.ExperimentalTime")
             }
 
             compilerOptions {
@@ -78,40 +79,44 @@ kotlin {
 
         val desktopMain by getting
 
-        commonMain.dependencies {
-            implementation(project(":common"))
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.animation)
+        commonMain {
+            languageSettings {
+                languageVersion = "2.2"
+                apiVersion = "2.2"
+            }
 
-            implementation(libs.navigation.compose)
-            api(libs.lifecycle.viewmodel.compose)
+            dependencies {
+                implementation(project(":common"))
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.materialIconsExtended)
+                implementation(compose.animation)
 
-            implementation(compose.components.resources)
-//            implementation("org.jetbrains.compose.components:components-ui-tooling-preview:1.6.0-beta01")
+                implementation(libs.navigation.compose)
+                api(libs.lifecycle.viewmodel.compose)
 
-            implementation(libs.coroutines.core)
+                implementation(compose.components.resources)
 
-            implementation(libs.coil.core)
-            implementation(libs.coil.compose)
-            implementation(libs.coil.network)
-            implementation(libs.collections.immutable)
-            implementation(libs.datetime)
-            implementation(libs.kermit)
-            api(libs.webview.multiplatform)
+                implementation(libs.coroutines.core)
 
-            api(libs.koin.compose)
-            api(libs.koin.compose.viewmodel)
-            api(libs.koin.core)
-            implementation(libs.koin.annotations)
+                implementation(libs.coil.core)
+                implementation(libs.coil.compose)
+                implementation(libs.coil.network)
+                implementation(libs.collections.immutable)
+                implementation(libs.datetime)
+                implementation(libs.kermit)
+                api(libs.webview.multiplatform)
 
-            api(libs.bundles.common.ktor)
-            implementation(libs.multiplatform.settings)
-            implementation(libs.multiplatform.settings.coroutines)
+                api(libs.koin.compose)
+                api(libs.koin.compose.viewmodel)
+                api(libs.koin.core)
+                implementation(libs.koin.annotations)
 
-            // Required until SQLite upgrade
-//            implementation("co.touchlab:stately-common:2.0.5")
+                api(libs.bundles.common.ktor)
+                implementation(libs.multiplatform.settings)
+                implementation(libs.multiplatform.settings.coroutines)
+            }
         }
 
         androidMain.dependencies {
@@ -223,11 +228,11 @@ sqldelight {
 }
 
 kover {
-    filters {
-        classes {
-            excludes += listOf()
-        }
-    }
+//    filters {
+//        classes {
+//            excludes += listOf()
+//        }
+//    }
 }
 
 afterEvaluate {

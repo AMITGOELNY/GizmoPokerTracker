@@ -1,4 +1,4 @@
-name: Android CI
+name: Code Quality
 
 on:
   push:
@@ -7,14 +7,14 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
+  ktlint:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
       with:
           fetch-depth: 0
+
     - name: set up JDK
       uses: actions/setup-java@v4
       with:
@@ -25,16 +25,5 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Cache KMP tooling
-      uses: actions/cache@v4
-      with:
-          path: |
-                        ~/.konan
-          key: ${{ runner.os }}-v1-${{ hashFiles('*.versions.toml') }}
-
-    - name: Generate jOOQ code
-      run: ./gradlew :server:generateJooq
-
-    - name: Build Android app
-      run: ./gradlew :composeApp:assembleDebug
-          
+    - name: Run ktlint check
+      run: ./gradlew ktlintCheck

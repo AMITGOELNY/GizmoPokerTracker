@@ -33,6 +33,7 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,10 +46,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
-import coil3.request.CachePolicy
-import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.ghn.poker.tracker.domain.model.FeedItem
 import com.ghn.poker.tracker.presentation.feed.FeedActions
@@ -132,6 +132,13 @@ fun NewsItemList(
 ) {
     val tabs = listOf(Res.string.articles, Res.string.strategy)
 
+    val context = LocalPlatformContext.current
+    val imageLoader = remember(context) {
+        ImageLoader.Builder(context)
+            .crossfade(true)
+            .build()
+    }
+
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(Dimens.grid_2),
         modifier = Modifier.padding(horizontal = 20.dp),
@@ -161,11 +168,8 @@ fun NewsItemList(
 
                     ) {
                         AsyncImage(
-                            model = ImageRequest.Builder(LocalPlatformContext.current)
-                                .data(it.image)
-                                .crossfade(true)
-                                .diskCachePolicy(CachePolicy.ENABLED)
-                                .build(),
+                            model = it.image,
+                            imageLoader = imageLoader,
                             placeholder = painterResource(Res.drawable.ic_placeholder),
                             error = painterResource(Res.drawable.ic_placeholder),
                             contentDescription = null,
@@ -286,11 +290,8 @@ fun NewsItemList(
                 horizontalArrangement = Arrangement.spacedBy(Dimens.grid_1_5)
             ) {
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalPlatformContext.current)
-                        .data(it.image)
-                        .crossfade(true)
-                        .diskCachePolicy(CachePolicy.ENABLED)
-                        .build(),
+                    model = it.image,
+                    imageLoader = imageLoader,
                     placeholder = painterResource(Res.drawable.ic_placeholder),
                     error = painterResource(Res.drawable.ic_placeholder),
                     contentDescription = null,

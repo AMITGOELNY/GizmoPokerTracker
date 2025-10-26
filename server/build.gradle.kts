@@ -5,7 +5,7 @@ import org.jooq.meta.jaxb.Logging
 
 plugins {
     kotlin("jvm")
-    id("io.ktor.plugin") version "2.3.13" // libs.versions.ktor.get()
+    id("io.ktor.plugin") version "3.3.1"
     alias(libs.plugins.serialization)
     alias(libs.plugins.jooq)
     alias(libs.plugins.flyway)
@@ -46,6 +46,12 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 }
 
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
+    }
+}
+
 dependencies {
     implementation(project(":common"))
     implementation(project(":evaluator"))
@@ -79,7 +85,7 @@ dependencies {
     implementation(libs.bundles.scrapeIt)
     implementation(libs.rssparser)
 
-    testImplementation("io.ktor:ktor-server-tests-jvm")
+    testImplementation(libs.ktor.server.tests.jvm)
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${libs.versions.kotlin.get()}")
 }
 
@@ -106,7 +112,7 @@ jooq {
                             listOf(
                                 ForcedType().apply {
                                     includeTypes = "DATETIME"
-                                    userType = "kotlinx.datetime.Instant"
+                                    userType = "kotlin.time.Instant"
                                     binding = "com.ghn.database.JooqInstantBinding"
                                 },
                                 ForcedType().apply {

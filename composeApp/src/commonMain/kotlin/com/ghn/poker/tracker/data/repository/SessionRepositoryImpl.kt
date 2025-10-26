@@ -9,7 +9,6 @@ import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.data.sources.remote.SessionRemoteDataSource
 import com.ghn.poker.tracker.domain.repository.SessionRepository
 import com.ghn.poker.tracker.util.randomUUID
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import org.koin.core.annotation.Single
 
@@ -34,7 +33,7 @@ class SessionRepositoryImpl(
     }
 
     override suspend fun createSession(
-        date: Instant,
+        date: kotlin.time.Instant,
         startAmount: Double?,
         endAmount: Double?,
         gameType: GameType,
@@ -73,7 +72,7 @@ class SessionRepositoryImpl(
 
 data class Session(
     val id: String,
-    val date: Instant,
+    val date: kotlin.time.Instant,
     val startAmount: String?,
     val endAmount: String?,
     val venue: Venue?,

@@ -4,7 +4,6 @@ import com.ghn.gizmodb.common.models.GameType
 import com.ghn.gizmodb.common.models.Venue
 import com.ghn.poker.tracker.data.repository.Session
 import com.ghn.poker.tracker.data.sources.remote.ApiResponse
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 
 interface SessionRepository {
@@ -15,7 +14,7 @@ interface SessionRepository {
     )
 
     suspend fun createSession(
-        date: Instant,
+        date: kotlin.time.Instant,
         startAmount: Double?,
         endAmount: Double?,
         gameType: GameType,

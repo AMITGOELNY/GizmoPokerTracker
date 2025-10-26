@@ -3,7 +3,7 @@ package com.ghn.mappers
 import com.ghn.gizmodb.common.models.UserDTO
 import com.ghn.model.User
 import com.ghn.util.PasswordValidator
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 fun User.toUserDTO(): UserDTO = UserDTO(
     id = null,

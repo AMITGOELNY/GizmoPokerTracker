@@ -11,7 +11,7 @@ import com.ghn.poker.tracker.domain.usecase.SessionData
 import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.GizmoTheme
 import com.ghn.poker.tracker.ui.tracker.SessionListItem
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
