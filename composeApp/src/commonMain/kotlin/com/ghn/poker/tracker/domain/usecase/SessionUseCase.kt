@@ -8,7 +8,6 @@ import com.ghn.gizmodb.common.models.Venue
 import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.util.DAY_MONTH_AND_YEAR_FORMAT
 import com.ghn.poker.tracker.util.format
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -23,7 +22,7 @@ interface SessionUseCase {
     )
 
     suspend fun createSession(
-        date: Instant,
+        date: kotlin.time.Instant,
         startAmount: Double?,
         endAmount: Double?,
         gameType: GameType,
@@ -34,7 +33,7 @@ interface SessionUseCase {
 }
 
 data class SessionData(
-    val date: Instant,
+    val date: kotlin.time.Instant,
     val startAmount: String?,
     val endAmount: String?,
     val venue: Venue?,

@@ -19,11 +19,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.android.annotation.KoinViewModel
+import kotlin.time.Clock
 
 @KoinViewModel
 class SessionEntryViewModel(
@@ -62,7 +61,7 @@ class SessionEntryViewModel(
         }
     }
 
-    private fun updateDate(date: Instant) {
+    private fun updateDate(date: kotlin.time.Instant) {
         _state.update { it.copy(date = date) }
     }
 
@@ -97,7 +96,7 @@ class SessionEntryViewModel(
 }
 
 data class SessionEntryState(
-    val date: Instant = Clock.System.now(),
+    val date: kotlin.time.Instant = Clock.System.now(),
     val startAmount: Double? = null,
     val endAmount: Double? = null,
     val gameType: GameType = GameType.PLO_2_2,
@@ -116,7 +115,7 @@ data class SessionEntryState(
 sealed interface SessionEntryAction {
     data object Init : SessionEntryAction
 
-    data class UpdateDate(val date: Instant) : SessionEntryAction
+    data class UpdateDate(val date: kotlin.time.Instant) : SessionEntryAction
 
     data class UpdateStartAmount(val startAmount: Double?) : SessionEntryAction
 

@@ -64,10 +64,10 @@ import gizmopoker.composeapp.generated.resources.create_session_enter_amount
 import gizmopoker.composeapp.generated.resources.create_session_game_type
 import gizmopoker.composeapp.generated.resources.create_session_location_type
 import gizmopoker.composeapp.generated.resources.create_session_save
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -264,7 +264,7 @@ private fun TextEntryField(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun SimpleDateRangePickerInDatePickerDialog(
     onDismiss: () -> Unit,
-    onDateSelected: (Instant) -> Unit
+    onDateSelected: (kotlin.time.Instant) -> Unit
 ) {
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = Clock.System.now().toEpochMilliseconds()

@@ -22,8 +22,20 @@ kotlin {
     wasmJs { browser() }
 
     sourceSets {
+        all {
+            languageSettings {
+                optIn("kotlin.time.ExperimentalTime")
+            }
+        }
+
         val commonMain by getting {
             kotlin.srcDir(layout.buildDirectory.dir("generated-src/jooq/main"))
+
+            languageSettings {
+                languageVersion = "2.2"
+                apiVersion = "2.2"
+            }
+
             dependencies {
                 api(libs.datetime)
                 implementation(libs.kotlinx.serialization.json)

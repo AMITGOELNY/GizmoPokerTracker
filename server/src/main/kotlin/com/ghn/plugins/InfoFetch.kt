@@ -19,13 +19,13 @@ import it.skrape.selects.html5.time
 import it.skrape.selects.html5.title
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
-import kotlinx.datetime.Clock
 import kotlinx.datetime.toKotlinLocalDate
 import org.jooq.DSLContext
 import org.koin.ktor.ext.inject
 import java.time.Duration
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.time.Clock
 
 fun Application.configureInfoFetch() {
     val db by inject<DSLContext>()
@@ -125,7 +125,7 @@ suspend fun infoFetch(db: DSLContext): List<FeedRecord> {
         }
     }
 
-    links.forEach { (text, link) -> println("$text --> $link") }
+    links.forEach { record -> println("${record.title} --> ${record.link}") }
     return links
 }
 

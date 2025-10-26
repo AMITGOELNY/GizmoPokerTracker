@@ -7,7 +7,6 @@ import com.ghn.poker.tracker.data.sources.remote.ApiResponse
 import com.ghn.poker.tracker.domain.repository.SessionRepository
 import com.ghn.poker.tracker.domain.usecase.SessionData
 import com.ghn.poker.tracker.domain.usecase.SessionUseCase
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import org.koin.core.annotation.Factory
 
@@ -24,7 +23,7 @@ class SessionUseCaseImpl(
     }
 
     override suspend fun createSession(
-        date: Instant,
+        date: kotlin.time.Instant,
         startAmount: Double?,
         endAmount: Double?,
         gameType: GameType,
