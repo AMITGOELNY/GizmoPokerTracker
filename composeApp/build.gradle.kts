@@ -11,18 +11,19 @@ plugins {
     alias(libs.plugins.serialization)
 }
 
-@Suppress("PropertyName")
-val JAVA_TARGET = JavaVersion.VERSION_17
-
 kotlin {
     applyDefaultHierarchyTemplate()
 
     androidTarget {
         compilations.all {
             kotlinOptions {
-                jvmTarget = JAVA_TARGET.majorVersion
+                jvmTarget = JavaVersion.VERSION_21.majorVersion
             }
         }
+
+//        compilerOptions {
+//            jvmTarget.set(JvmTarget.JVM_21)
+//        }
     }
 
     jvm("desktop")
@@ -41,6 +42,26 @@ kotlin {
             nativeBinary.linkerOpts.add("-lsqlite3")
         }
     }
+
+//    wasmJs {
+//        moduleName = "composeApp"
+//        browser {
+//            val rootDirPath = project.rootDir.path
+//            val projectDirPath = project.projectDir.path
+//            commonWebpackConfig {
+//                outputFileName = "composeApp.js"
+//                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+//                    static = (static ?: mutableListOf()).apply {
+//                        // Serve sources to debug inside browser
+//                        add(rootDirPath)
+//                        add(projectDirPath)
+//                    }
+//                }
+//            }
+//
+//        }
+//        binaries.executable()
+//    }
 
     sourceSets {
         all {
@@ -65,9 +86,12 @@ kotlin {
             implementation(compose.animation)
 
             implementation(libs.navigation.compose)
+            api(libs.lifecycle.viewmodel.compose)
 
             implementation(compose.components.resources)
 //            implementation("org.jetbrains.compose.components:components-ui-tooling-preview:1.6.0-beta01")
+
+            implementation(libs.coroutines.core)
 
             implementation(libs.coil.core)
             implementation(libs.coil.compose)
@@ -87,7 +111,7 @@ kotlin {
             implementation(libs.multiplatform.settings.coroutines)
 
             // Required until SQLite upgrade
-            implementation("co.touchlab:stately-common:2.0.5")
+//            implementation("co.touchlab:stately-common:2.0.5")
         }
 
         androidMain.dependencies {
@@ -105,6 +129,8 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.jvm.sqldelight.driver)
             implementation(libs.ktor.client.okhttp)
+
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.1")
         }
 
         iosMain.dependencies {
@@ -163,8 +189,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     dependencies {
         debugImplementation(libs.compose.ui.tooling)

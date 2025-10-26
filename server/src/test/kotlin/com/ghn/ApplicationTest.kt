@@ -1,22 +1,23 @@
 package com.ghn
 
-import com.ghn.plugins.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.server.testing.*
-import kotlin.test.*
+import com.ghn.plugins.configureRouting
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.testing.testApplication
+import junit.framework.TestCase.assertEquals
+import kotlin.test.Test
 
 class ApplicationTest {
-//    @Test
-//    fun testRoot() =
-//        testApplication {
-//            application {
-//                configureRouting(db)
-//            }
-//            client.get("/").apply {
-//                assertEquals(HttpStatusCode.OK, status)
-//                assertEquals("Hello World!", bodyAsText())
-//            }
-//        }
+    @Test
+    fun testRoot() =
+        testApplication {
+            application {
+                configureRouting()
+            }
+            client.get("/").apply {
+                assertEquals(HttpStatusCode.OK, status)
+                assertEquals("Hello World!", bodyAsText())
+            }
+        }
 }

@@ -22,6 +22,7 @@ import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Single
 
 private const val BASE_URL = "138.197.84.104"
+// private const val BASE_URL = "10.0.2.2:8080"
 
 @Single([GizmoApiClient::class])
 internal class GizmoApiClient(
@@ -47,7 +48,7 @@ internal class GizmoApiClient(
             contentType(ContentType.Application.Json)
             url {
                 protocol = URLProtocol.HTTP
-                host = BASE_URL
+                host = "$BASE_URL/poker-api"
             }
         }
         expectSuccess = true
@@ -55,7 +56,7 @@ internal class GizmoApiClient(
 
         install("TokenHandler") {
             requestPipeline.intercept(HttpRequestPipeline.Before) {
-                if (context.url.pathSegments.first() != "login") {
+                if (!context.url.pathSegments.contains("login")) {
                     preferenceManager.get<String>(Preferences.USER_TOKEN_KEY)?.let {
                         context.header("Authorization", "Bearer $it")
                     }

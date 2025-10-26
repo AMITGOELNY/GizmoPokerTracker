@@ -7,6 +7,7 @@ import com.ghn.poker.tracker.domain.usecase.impl.AppState
 import com.ghn.poker.tracker.domain.usecase.impl.Store
 import com.ghn.poker.tracker.domain.usecase.impl.UserStore
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.HttpClientEngine
 import org.koin.core.KoinApplication
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.context.startKoin
@@ -22,7 +23,12 @@ fun initKoin(appModule: () -> Module): KoinApplication =
     startKoin {
         modules(
             appModule(),
-            module { single { HttpClient(engine = get()) } },
+            module {
+                single<HttpClient> {
+                    val engine: HttpClientEngine? = getOrNull()
+                    if (engine != null) HttpClient(engine) else HttpClient()
+                }
+            },
             platformModule,
             RepositoryModule().module,
             UseCaseModule().module,

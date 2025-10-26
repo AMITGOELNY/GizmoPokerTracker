@@ -4,7 +4,6 @@ import com.ghn.poker.tracker.data.api.GizmoApiClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.http.path
 import org.koin.core.annotation.Single
 
 interface LoginRemoteDataSource {
@@ -19,8 +18,7 @@ internal class LoginRemoteDataSourceImpl(
 ) : LoginRemoteDataSource {
     override suspend fun login(username: String, password: String): ApiResponse<String, Exception> {
         return apiClient.http.safeRequest {
-            val response = post {
-                url { path("login") }
+            val response = post("login") {
                 setBody(mapOf("username" to username, "password" to password))
             }
             val token = response.body<String>()
@@ -34,8 +32,7 @@ internal class LoginRemoteDataSourceImpl(
         password: String
     ): ApiResponse<String, Exception> {
         val result: ApiResponse<String, Exception> = apiClient.http.safeRequest {
-            val response = post {
-                url { path("createUser") }
+            val response = post("createUser") {
                 setBody(mapOf("username" to username, "password" to password))
             }
 

@@ -7,7 +7,6 @@ import com.ghn.poker.tracker.data.api.GizmoApiClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.http.path
 import org.koin.core.annotation.Single
 
 interface EvaluatorRemoteDataSource {
@@ -33,8 +32,7 @@ internal class EvaluatorRemoteDataSourceImpl(
     ): ApiResponse<EvaluatorResponse, Exception> {
         return try {
             return apiClient.http.safeRequest {
-                post {
-                    url { path("evaluator") }
+                post("evaluator") {
                     setBody(
                         EvaluatorRequest(
                             heroCards = heroCards,
@@ -54,11 +52,7 @@ internal class EvaluatorRemoteDataSourceImpl(
     override suspend fun getFiveCardRank(heroCards: List<Card>): ApiResponse<Short, Exception> {
         return try {
             return apiClient.http.safeRequest {
-                post {
-                    url { path("evaluator/hand-rank") }
-                    setBody(heroCards)
-                }
-                    .body<Short>()
+                post("evaluator/hand-rank") { setBody(heroCards) }.body<Short>()
             }
         } catch (e: Exception) {
             ApiResponse.Error.NetworkError

@@ -15,6 +15,7 @@ captures
 !*.xcodeproj/project.xcworkspace/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
+**/xcshareddata/IDEWorkspaceChecks.plist
 gizmopoker.db
 docker-compose.yml
 composeApp/kcef-bundle/
@@ -24,3 +25,5 @@ composeApp/GPUCache/
 .fleet
 
 .kotlin/
+kotlin-js-store/
+build/js/
