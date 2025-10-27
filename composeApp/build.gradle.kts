@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.mokkery)
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.serialization)
 }
@@ -120,6 +121,16 @@ kotlin {
                 api(libs.bundles.common.ktor)
                 implementation(libs.multiplatform.settings)
                 implementation(libs.multiplatform.settings.coroutines)
+            }
+        }
+
+        commonTest {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(libs.coroutines.test)
+                implementation(libs.kotest.assertions.core)
+                implementation(libs.mokkery.core)
+                implementation(libs.mokkery.coroutines)
             }
         }
 
