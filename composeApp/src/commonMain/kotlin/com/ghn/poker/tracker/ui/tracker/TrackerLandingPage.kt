@@ -35,6 +35,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.EventNote
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.automirrored.filled.TrendingDown
@@ -93,8 +94,18 @@ import com.ghn.poker.tracker.ui.theme.Dimens
 import gizmopoker.composeapp.generated.resources.Res
 import gizmopoker.composeapp.generated.resources.app_name
 import gizmopoker.composeapp.generated.resources.charts
+import gizmopoker.composeapp.generated.resources.charts_coming_soon
+import gizmopoker.composeapp.generated.resources.connection_issue
 import gizmopoker.composeapp.generated.resources.create_session
+import gizmopoker.composeapp.generated.resources.no_sessions_yet
 import gizmopoker.composeapp.generated.resources.recent_sessions
+import gizmopoker.composeapp.generated.resources.sessions
+import gizmopoker.composeapp.generated.resources.start_poker_journey
+import gizmopoker.composeapp.generated.resources.total_pl
+import gizmopoker.composeapp.generated.resources.try_again
+import gizmopoker.composeapp.generated.resources.unable_load_sessions
+import gizmopoker.composeapp.generated.resources.win_rate
+import gizmopoker.composeapp.generated.resources.working_on_charts
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
@@ -407,7 +418,7 @@ private fun StatsSummaryCard(sessions: List<SessionData>) {
             ) {
                 StatItem(
                     icon = Icons.Default.AttachMoney,
-                    label = "Total P/L",
+                    label = stringResource(Res.string.total_pl),
                     value = if (totalProfit >= 0) "+$${totalProfit.toInt()}" else "-$${(-totalProfit).toInt()}",
                     valueColor = if (totalProfit >= 0) Color(0xFF4CAF50) else Color(0xFFEF5350),
                     modifier = Modifier.weight(1f)
@@ -421,8 +432,8 @@ private fun StatsSummaryCard(sessions: List<SessionData>) {
                 )
 
                 StatItem(
-                    icon = Icons.Default.EventNote,
-                    label = "Sessions",
+                    icon = Icons.AutoMirrored.Filled.EventNote,
+                    label = stringResource(Res.string.sessions),
                     value = totalSessions.toString(),
                     valueColor = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.weight(1f)
@@ -437,7 +448,7 @@ private fun StatsSummaryCard(sessions: List<SessionData>) {
 
                 StatItem(
                     icon = if (winRate >= 50) Icons.AutoMirrored.Default.TrendingUp else Icons.AutoMirrored.Default.TrendingDown,
-                    label = "Win Rate",
+                    label = stringResource(Res.string.win_rate),
                     value = "$winRate%",
                     valueColor = if (winRate >= 50) Color(0xFF4CAF50) else Color(0xFFEF5350),
                     modifier = Modifier.weight(1f)
@@ -513,14 +524,14 @@ private fun ComingSoonView() {
                 )
             }
             Text(
-                text = "Charts Coming Soon",
+                text = stringResource(Res.string.charts_coming_soon),
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold
                 ),
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = "We're working on beautiful charts\nto visualize your poker journey",
+                text = stringResource(Res.string.working_on_charts),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                 textAlign = TextAlign.Center
@@ -614,14 +625,14 @@ private fun EmptySessionsState() {
             Spacer(Modifier.height(Dimens.grid_1))
 
             Text(
-                text = "No Sessions Yet",
+                text = stringResource(Res.string.no_sessions_yet),
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold
                 ),
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = "Start your poker journey by\nrecording your first session",
+                text = stringResource(Res.string.start_poker_journey),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                 textAlign = TextAlign.Center,
@@ -713,14 +724,14 @@ private fun ErrorSessionsState(onRetry: () -> Unit) {
             Spacer(Modifier.height(Dimens.grid_1))
 
             Text(
-                text = "Connection Issue",
+                text = stringResource(Res.string.connection_issue),
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold
                 ),
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = "Unable to load your sessions.\nPlease check your connection and try again.",
+                text = stringResource(Res.string.unable_load_sessions),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                 textAlign = TextAlign.Center,
@@ -751,7 +762,7 @@ private fun ErrorSessionsState(onRetry: () -> Unit) {
                         .size(20.dp)
                 )
                 Text(
-                    "Try Again",
+                    stringResource(Res.string.try_again),
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.SemiBold
                     )

@@ -29,7 +29,10 @@ import com.ghn.poker.tracker.presentation.cards.CardScreenHoldEmActions
 import com.ghn.poker.tracker.presentation.cards.CardScreenHoldEmViewModel
 import com.ghn.poker.tracker.presentation.cards.model.CardSize
 import com.ghn.poker.tracker.ui.theme.Dimens
+import gizmopoker.composeapp.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.plus
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
@@ -107,7 +110,7 @@ fun HoldemGame(
             modifier = Modifier.align(Alignment.BottomEnd).padding(Dimens.grid_2_5),
             containerColor = Color(0xFFc42727)
         ) {
-            Text("+")
+            Text(stringResource(Res.string.plus))
         }
     }
 }

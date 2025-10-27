@@ -79,6 +79,7 @@ import com.ghn.poker.tracker.ui.shared.LoadingAnimation
 import com.ghn.poker.tracker.ui.theme.Dimens
 import gizmopoker.composeapp.generated.resources.Res
 import gizmopoker.composeapp.generated.resources.articles
+import gizmopoker.composeapp.generated.resources.featured
 import gizmopoker.composeapp.generated.resources.ic_placeholder
 import gizmopoker.composeapp.generated.resources.news_feed
 import gizmopoker.composeapp.generated.resources.strategy
@@ -350,7 +351,7 @@ fun NewsItemList(
                                         .padding(horizontal = 12.dp, vertical = 6.dp)
                                 ) {
                                     Text(
-                                        text = "Featured",
+                                        text = stringResource(Res.string.featured),
                                         style = MaterialTheme.typography.labelSmall.copy(
                                             fontWeight = FontWeight.Bold,
                                             color = Color.White
@@ -631,13 +632,12 @@ private class FeedsContainerProvider : PreviewParameterProvider<FeedsContainer> 
 
 @Preview
 @Composable
-private fun NewsItemListPreview(@PreviewParameter(FeedsContainerProvider::class) feed: FeedsContainer) =
-    SurfacePreview {
-        NewsItemList(
-            feed = feed,
-            tabIndex = 0,
-            selectedFeed = feed.articles,
-            onFeedItemClick = {},
-            onTabItemClick = { _ -> }
-        )
-    }
+private fun NewsItemListPreview(@PreviewParameter(FeedsContainerProvider::class) feed: FeedsContainer) = SurfacePreview {
+    NewsItemList(
+        feed = feed,
+        tabIndex = 0,
+        selectedFeed = feed.articles,
+        onFeedItemClick = {},
+        onTabItemClick = { _ -> }
+    )
+}
