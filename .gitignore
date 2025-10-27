@@ -23,6 +23,7 @@ composeApp/cache/
 composeApp/DawnCache/
 composeApp/GPUCache/
 .fleet
+CLAUDE.md
 
 .kotlin/
 kotlin-js-store/

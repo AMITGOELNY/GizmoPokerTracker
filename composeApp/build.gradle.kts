@@ -69,6 +69,9 @@ kotlin {
                 optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
                 optIn("androidx.compose.material3.ExperimentalMaterial3Api")
                 optIn("kotlin.time.ExperimentalTime")
+
+                languageVersion = "2.2"
+                apiVersion = "2.2"
             }
 
             compilerOptions {
@@ -97,6 +100,7 @@ kotlin {
                 api(libs.lifecycle.viewmodel.compose)
 
                 implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
 
                 implementation(libs.coroutines.core)
 
