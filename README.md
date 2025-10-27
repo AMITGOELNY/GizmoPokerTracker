@@ -12,9 +12,9 @@ A Kotlin Multiplatform poker session tracker with support for Android, iOS, Desk
 
 ## Screenshots
 
-| Sessions Screen | Charts Screen |
-|:---:|:---:|
-| <img src="assets/sessions.png" height="700" alt="Sessions Screen" /> | <img src="assets/Charts.png" height="700" alt="Charts Screen" /> |
+| Sessions Screen | Charts Screen | News Feed Screen |
+|:---:|:---:|:---:|
+| <img src="assets/sessions.png" height="450" alt="Sessions Screen" /> | <img src="assets/Charts.png" height="450" alt="Charts Screen" /> | <img src="assets/Feed.png" height="450" alt="News Feed Screen" /> |
 
 ## Tech Stack
 
