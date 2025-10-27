@@ -35,4 +35,8 @@
     <string name="total_pl">Total P/L</string>
     <string name="sessions">Sessions</string>
     <string name="win_rate">Win Rate</string>
+    <string name="calculate">Calculate</string>
+    <string name="hero">HERO</string>
+    <string name="villain">VILLAIN</string>
+    <string name="vs">VS</string>
 </resources>

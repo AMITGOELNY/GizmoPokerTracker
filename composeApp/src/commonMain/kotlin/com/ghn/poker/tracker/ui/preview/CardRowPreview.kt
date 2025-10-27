@@ -8,7 +8,6 @@ import androidx.compose.ui.unit.dp
 import com.ghn.gizmodb.common.models.Card
 import com.ghn.gizmodb.common.models.CardSuit
 import com.ghn.poker.tracker.presentation.cards.CardRowType
-import com.ghn.poker.tracker.presentation.cards.HandResults
 import com.ghn.poker.tracker.ui.cards.CardRow
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -30,7 +29,6 @@ private fun CardRowPreview() = SurfacePreview {
                     value = 14
                 )
             ),
-            results = HandResults(winPercent = "22.3", lossPercent = "22.3", tiePercent = "22.3"),
             onClick = { _, _ -> }
         )
     }
