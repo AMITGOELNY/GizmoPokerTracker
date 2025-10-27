@@ -34,7 +34,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -248,13 +247,12 @@ fun BottomNavigationBar(navController: NavHostController, bottomBarState: Mutabl
                         alwaysShowLabel = true,
                         selected = selected,
                         onClick = {
-                            navController.navigate(
-                                route = item,
-                                navOptions = NavOptions.Builder()
-                                    .setLaunchSingleTop(true)
-                                    .setPopUpTo(BottomNavItem.Home, inclusive = true)
-                                    .build()
-                            )
+                            navController.navigate(item) {
+                                launchSingleTop = true
+                                popUpTo(BottomNavItem.Home) {
+                                    inclusive = true
+                                }
+                            }
                         },
                     )
                 }
