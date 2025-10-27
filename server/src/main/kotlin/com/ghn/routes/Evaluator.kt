@@ -3,7 +3,6 @@ package com.ghn.routes
 import com.ghn.gizmodb.common.models.Card
 import com.ghn.gizmodb.common.models.EvaluatorRequest
 import com.ghn.gizmodb.evaluator.models.Evaluator
-import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing

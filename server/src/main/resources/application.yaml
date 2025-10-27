@@ -1,6 +1,9 @@
 ktor:
     databaseUrl: "$DATABASE_URL:"
     SECRET_JWT: "$SECRET_JWT:"
+    infoFetch:
+        initialDelayHours: 1
+        intervalHours: 6
     application:
         modules:
             - com.ghn.ApplicationKt.module
