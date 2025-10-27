@@ -1,0 +1,85 @@
+name: Server Tests
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+    paths:
+      - 'server/**'
+      - 'evaluator/**'
+      - 'common/**'
+      - 'gradle/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - '.github/workflows/server-tests.yml'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'server/**'
+      - 'evaluator/**'
+      - 'common/**'
+      - 'gradle/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - '.github/workflows/server-tests.yml'
+
+jobs:
+  test:
+    name: Run Server Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+
+      - name: Run Flyway migrations
+        run: ./gradlew :server:flywayMigrate
+
+      - name: Generate jOOQ code
+        run: ./gradlew :server:generateJooq
+
+      - name: Run server tests
+        run: ./gradlew :server:test --no-daemon
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-test-results
+          path: server/build/reports/tests/test/
+          retention-days: 7
+
+      - name: Upload test coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-test-coverage
+          path: server/build/reports/kover/
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Publish test report
+        uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          report_paths: 'server/build/test-results/test/TEST-*.xml'
+          check_name: Server Test Results
+          fail_on_failure: true

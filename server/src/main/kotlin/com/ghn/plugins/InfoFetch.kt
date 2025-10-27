@@ -17,6 +17,7 @@ import it.skrape.selects.html5.h2
 import it.skrape.selects.html5.img
 import it.skrape.selects.html5.time
 import it.skrape.selects.html5.title
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
 import kotlinx.datetime.toKotlinLocalDate
@@ -31,53 +32,104 @@ fun Application.configureInfoFetch() {
     val db by inject<DSLContext>()
     val gizmoRSSClient by inject<GizmoRSSClient>()
 
+    // Read configuration values
+    val initialDelayHours = environment.config.propertyOrNull("ktor.infoFetch.initialDelayHours")
+        ?.getString()?.toLongOrNull() ?: 6L
+    val intervalHours = environment.config.propertyOrNull("ktor.infoFetch.intervalHours")
+        ?.getString()?.toLongOrNull() ?: 6L
+
+    log.info("InfoFetch scheduler configured - Initial delay: ${initialDelayHours}h, Interval: ${intervalHours}h")
+
     launch {
+        // Wait before first run
+        log.info("InfoFetch scheduler waiting ${initialDelayHours}h before first run")
+        delay(Duration.ofHours(initialDelayHours))
+
         while (true) {
-            log.info("Starting fetch for feed!")
-            val feed1 = infoFetch(db)
-            val feed2 = infoFetch2(db)
-            val feed3 = infoFetch3(db)
+            val startTime = System.currentTimeMillis()
+            log.info("Starting scheduled feed fetch")
+            var totalRecords = 0
 
+            // Fetch from all sources
+            val feed1 = try {
+                infoFetch(db)
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                log.error("Failed to fetch from Upswing Poker", e)
+                emptyList()
+            }
+
+            val feed2 = try {
+                infoFetch2(db)
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                log.error("Failed to fetch from CardsChat", e)
+                emptyList()
+            }
+
+            val feed3 = try {
+                infoFetch3(db)
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                log.error("Failed to fetch from Phil Galfond", e)
+                emptyList()
+            }
+
+            // Clear existing feed data
             db.delete(FEED).execute()
+            log.info("Cleared existing feed records")
 
+            // Store scraped feed items
             listOf(feed1, feed2, feed3).flatten().forEach {
-                println("Found: $it")
                 it.store()
+                totalRecords++
             }
 
-            val rssFeed = gizmoRSSClient.getFeed()
-            val feedItems = rssFeed.items.mapNotNull {
-                val title = it.title
-                val subtitle = it.description
-                val pubDate = it.pubDate
+            // Fetch and store RSS feed
+            val rssFeedItems = try {
+                val rssFeed = gizmoRSSClient.getFeed()
+                rssFeed.items.mapNotNull {
+                    val title = it.title
+                    val subtitle = it.description
+                    val pubDate = it.pubDate
 
-                if (title == null || subtitle == null || pubDate == null) {
-                    return@mapNotNull null
+                    if (title == null || subtitle == null || pubDate == null) {
+                        return@mapNotNull null
+                    }
+
+                    val localDate = LocalDate.parse(
+                        pubDate,
+                        DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z")
+                    )
+
+                    db.newRecord(FEED).apply {
+                        this.link = it.link.orEmpty()
+                        this.image = it.image
+                        this.title = it.title.orEmpty()
+                        this.pubDate = localDate.toKotlinLocalDate()
+                        this.site = "Poker News"
+                        this.createdAt = Clock.System.now()
+                        this.updatedAt = Clock.System.now()
+                        this.category = NewsCategory.NEWS
+                    }
                 }
-
-                val localDate = LocalDate.parse(
-                    pubDate,
-                    DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z")
-                )
-
-                db.newRecord(FEED).apply {
-                    this.link = it.link.orEmpty()
-                    this.image = it.image
-                    this.title = it.title.orEmpty()
-                    this.pubDate = localDate.toKotlinLocalDate()
-                    this.site = "Poker News"
-                    this.createdAt = Clock.System.now()
-                    this.updatedAt = Clock.System.now()
-                    this.category = NewsCategory.NEWS
-                }
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                log.error("Failed to fetch RSS feed from Poker News", e)
+                emptyList()
             }
 
-            feedItems.forEach {
-                println("Found: $it")
+            rssFeedItems.forEach {
                 it.store()
+                totalRecords++
             }
 
-            delay(Duration.ofHours(6L))
+            val duration = System.currentTimeMillis() - startTime
+            log.info("Feed fetch completed successfully - Stored $totalRecords records in ${duration}ms")
+
+            // Wait for next run
+            log.info("Next feed fetch scheduled in ${intervalHours}h")
+            delay(Duration.ofHours(intervalHours))
         }
     }
 }

@@ -4,7 +4,6 @@ import com.ghn.gizmodb.common.models.SessionDTO
 import com.ghn.repository.SessionResponse
 import com.ghn.service.SessionService
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal

@@ -41,6 +41,8 @@ sqldelightVersion = "2.1.0"
 
 # Test
 mokkery = "2.10.2"
+mockk = "1.13.14"
+kotest = "6.0.4"
 
 ktor = "3.3.1"
 
@@ -139,7 +141,9 @@ skrapeit-ktor-extension = { module = "it.skrape:skrapeit-ktor-extension", versio
 
 # Test
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesCore" }
-kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version = "6.0.4" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mokkery-core = { module = "dev.mokkery:mokkery-core", version.ref = "mokkery" }
 mokkery-coroutines = { module = "dev.mokkery:mokkery-coroutines", version.ref = "mokkery" }
 
