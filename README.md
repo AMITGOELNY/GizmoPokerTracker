@@ -1,6 +1,20 @@
-# GizmoPoker
+<h1>GizmoPoker</h1>
+
+![Kotlin](https://img.shields.io/badge/Kotlin-2.0.0-orange)
+[![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-blue)](https://kotlinlang.org/docs/reference/multiplatform.html)
+
+![Platform](https://img.shields.io/badge/Android-3aab58)
+![Platform](https://img.shields.io/badge/Desktop-097cd5)
+![Platform](https://img.shields.io/badge/IOS-d32408)
+![Platform](https://img.shields.io/badge/WasmJS-f7e025)
 
 A Kotlin Multiplatform poker session tracker with support for Android, iOS, Desktop, and a backend server.
+
+## Screenshots
+
+| Sessions Screen | Charts Screen |
+|:---:|:---:|
+| <img src="assets/sessions.png" height="700" alt="Sessions Screen" /> | <img src="assets/Charts.png" height="700" alt="Charts Screen" /> |
 
 ## Tech Stack
 
