@@ -21,4 +21,18 @@
 
     <string name="articles">Articles</string>
     <string name="strategy">Strategy</string>
+    <string name="pick_a_suit">Pick a Suit</string>
+    <string name="featured">Featured</string>
+    <string name="plus">+</string>
+    <string name="percent">%</string>
+    <string name="no_sessions_yet">No Sessions Yet</string>
+    <string name="start_poker_journey">Start your poker journey by\nrecording your first session</string>
+    <string name="connection_issue">Connection Issue</string>
+    <string name="unable_load_sessions">Unable to load your sessions.\nPlease check your connection and try again.</string>
+    <string name="try_again">Try Again</string>
+    <string name="charts_coming_soon">Charts Coming Soon</string>
+    <string name="working_on_charts">We\'re working on beautiful charts\nto visualize your poker journey</string>
+    <string name="total_pl">Total P/L</string>
+    <string name="sessions">Sessions</string>
+    <string name="win_rate">Win Rate</string>
 </resources>

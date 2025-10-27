@@ -46,7 +46,11 @@ import com.ghn.poker.tracker.presentation.cards.model.CardSize
 import com.ghn.poker.tracker.presentation.cards.model.drawable
 import com.ghn.poker.tracker.ui.shared.PrimaryButton
 import com.ghn.poker.tracker.ui.theme.Dimens
+import gizmopoker.composeapp.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.percent
+import gizmopoker.composeapp.generated.resources.pick_a_suit
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
@@ -98,7 +102,7 @@ fun EquityCalculator(
                 modifier = Modifier.fillMaxWidth().padding(bottom = Dimens.grid_3),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Pick a Suit")
+                Text(stringResource(Res.string.pick_a_suit))
                 Spacer(Modifier.height(Dimens.grid_1))
                 LazyRow {
                     items(itemsList) { item ->
@@ -223,9 +227,9 @@ internal fun CardRow(
                 modifier = Modifier.align(Alignment.CenterStart)
             ) {
                 if (board == CardRowType.HERO) {
-                    Text("${results?.winPercent}%")
+                    Text("${results?.winPercent}${stringResource(Res.string.percent)}")
                 } else if (board == CardRowType.VILLAIN) {
-                    Text("${results?.lossPercent}%")
+                    Text("${results?.lossPercent}${stringResource(Res.string.percent)}")
                 }
             }
         }
