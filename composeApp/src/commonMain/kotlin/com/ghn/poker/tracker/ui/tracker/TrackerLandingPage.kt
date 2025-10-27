@@ -1,6 +1,5 @@
 package com.ghn.poker.tracker.ui.tracker
 
-import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -21,8 +20,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Inbox
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -36,7 +39,6 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -49,13 +51,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ghn.gizmodb.common.models.Venue
+import com.ghn.poker.tracker.domain.usecase.SessionData
 import com.ghn.poker.tracker.presentation.session.LoadableDataState
+import com.ghn.poker.tracker.presentation.session.SessionListAction
 import com.ghn.poker.tracker.presentation.session.SessionListViewModel
+import com.ghn.poker.tracker.ui.preview.SurfacePreview
 import com.ghn.poker.tracker.ui.shared.LoadingAnimation
 import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.title200
-import gizmopoker.composeapp.generated.resources.*
+import gizmopoker.composeapp.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.app_name
+import gizmopoker.composeapp.generated.resources.charts
+import gizmopoker.composeapp.generated.resources.create_session
+import gizmopoker.composeapp.generated.resources.recent_sessions
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,7 +96,7 @@ fun TrackerLandingPage(
                 },
                 actions = {
                     IconButton(onClick = onSignOutClick) {
-                        Icon(Icons.Filled.ExitToApp, contentDescription = "Sign out")
+                        Icon(Icons.AutoMirrored.Default.ExitToApp, contentDescription = "Sign out")
                     }
                 }
             )
@@ -127,7 +138,11 @@ fun TrackerLandingPage(
 
             Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
                 when (tabIndex) {
-                    0 -> SessionList(viewModel, padding)
+                    0 -> SessionList(
+                        viewModel = viewModel,
+                        onRetry = { viewModel.onDispatch(SessionListAction.Retry) }
+                    )
+
                     1 -> Column { }
                 }
 
@@ -157,37 +172,174 @@ fun TrackerLandingPage(
 }
 
 @Composable
-fun SessionList(viewModel: SessionListViewModel, padding: PaddingValues) {
+fun SessionList(viewModel: SessionListViewModel, onRetry: () -> Unit) {
     val state = viewModel.state.collectAsState().value
-    val color = remember { Animatable(Color.Gray) }
-    LaunchedEffect(Unit) {
-        while (true) {
-            color.animateTo(Color.Green, animationSpec = tween(1000))
-            color.animateTo(Color.Gray, animationSpec = tween(500))
-        }
-    }
 
     AnimatedContent(
         targetState = state.sessions,
-        transitionSpec = { fadeIn(tween(3000)) togetherWith fadeOut(tween(3000)) },
+        transitionSpec = { fadeIn(tween(300)) togetherWith fadeOut(tween(300)) },
         label = "Animated Content"
     ) { targetState ->
         when (targetState) {
-            LoadableDataState.Empty -> Unit
-            LoadableDataState.Error -> Unit
+            LoadableDataState.Empty -> EmptySessionsState()
+            LoadableDataState.Error -> ErrorSessionsState(onRetry = onRetry)
             is LoadableDataState.Loaded -> {
-                LazyColumn(Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        start = Dimens.grid_2,
+                        end = Dimens.grid_2,
+                        top = Dimens.grid_2,
+                        // Extra padding for FAB
+                        bottom = 100.dp
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(Dimens.grid_2)
+                ) {
                     items(targetState.data) { session ->
                         SessionListItem(session)
-                        Spacer(Modifier.height(Dimens.grid_2))
                     }
                 }
             }
 
             LoadableDataState.Loading ->
-                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     LoadingAnimation()
                 }
+        }
+    }
+}
+
+@Composable
+private fun EmptySessionsState() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(Dimens.grid_2)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Inbox,
+                contentDescription = null,
+                modifier = Modifier.height(120.dp).fillMaxWidth(),
+                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
+            )
+            Text(
+                text = "No Sessions Yet",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+            )
+            Text(
+                text = "Start tracking your poker sessions\nby creating your first one",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun ErrorSessionsState(onRetry: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(Dimens.grid_2)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Error,
+                contentDescription = null,
+                modifier = Modifier.height(120.dp).fillMaxWidth(),
+                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f)
+            )
+            Text(
+                text = "Unable to Load Sessions",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+            )
+            Text(
+                text = "Something went wrong while loading\nyour poker sessions",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(Dimens.grid_1))
+            Button(
+                onClick = onRetry,
+                modifier = Modifier.padding(horizontal = Dimens.grid_2)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = Dimens.grid_1)
+                )
+                Text("Try Again")
+            }
+        }
+    }
+}
+
+// Previews
+@Preview
+@Composable
+private fun EmptySessionsStatePreview() = SurfacePreview {
+    EmptySessionsState()
+}
+
+@Preview
+@Composable
+private fun ErrorSessionsStatePreview() = SurfacePreview {
+    ErrorSessionsState(onRetry = {})
+}
+
+@Preview
+@Composable
+private fun SessionListLoadingPreview() = SurfacePreview {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        LoadingAnimation()
+    }
+}
+
+@Preview
+@Composable
+private fun SessionListLoadedPreview() = SurfacePreview {
+    val sampleSessions = listOf(
+        SessionData(
+            date = kotlin.time.Clock.System.now(),
+            startAmount = "500",
+            endAmount = "1200",
+            venue = Venue.HARD_ROCK_FL
+        ),
+        SessionData(
+            date = kotlin.time.Clock.System.now(),
+            startAmount = "1000",
+            endAmount = "800",
+            venue = Venue.MAGIC_CITY
+        ),
+        SessionData(
+            date = kotlin.time.Clock.System.now(),
+            startAmount = "300",
+            endAmount = "650",
+            venue = Venue.HIALEAH_PARK
+        )
+    )
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            start = Dimens.grid_2,
+            end = Dimens.grid_2,
+            top = Dimens.grid_2,
+            bottom = 100.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(Dimens.grid_2)
+    ) {
+        items(sampleSessions) { session ->
+            SessionListItem(session)
         }
     }
 }

@@ -28,6 +28,7 @@ class SessionListViewModel(useCase: SessionUseCase) : ViewModel() {
             viewStateTrigger
                 .onEach { Logger.d("SessionListViewModel") { "Triggered new action : $it" } }
                 .collect {
+                    _state.update { it.copy(sessions = LoadableDataState.Loading) }
                     when (val sessions = useCase.getSessions()) {
                         is ApiResponse.Error ->
                             _state.update { it.copy(sessions = LoadableDataState.Error) }
@@ -43,6 +44,12 @@ class SessionListViewModel(useCase: SessionUseCase) : ViewModel() {
                         }
                     }
                 }
+        }
+    }
+
+    fun onDispatch(action: SessionListAction) {
+        viewModelScope.launch {
+            viewStateTrigger.emit(action)
         }
     }
 }
@@ -69,4 +76,5 @@ sealed class LoadableDataState<out T> {
 
 sealed interface SessionListAction {
     data object Init : SessionListAction
+    data object Retry : SessionListAction
 }
