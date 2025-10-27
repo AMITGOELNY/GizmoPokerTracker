@@ -5,12 +5,15 @@ import com.ghn.repository.SessionRepository
 import com.ghn.repository.SessionRepositoryImpl
 import com.ghn.repository.UserRepository
 import com.ghn.repository.UserRepositoryImpl
+import com.ghn.service.EvaluatorService
+import com.ghn.service.EvaluatorServiceImpl
 import com.ghn.service.SessionService
 import com.ghn.service.SessionServiceImpl
 import com.ghn.service.UserService
 import com.ghn.service.UserServiceImpl
 import com.prof18.rssparser.RssParser
 import org.koin.dsl.module
+import org.slf4j.LoggerFactory
 
 val appModule = module {
     single<SessionService> { SessionServiceImpl(get()) }
@@ -18,5 +21,8 @@ val appModule = module {
 
     single<UserService> { UserServiceImpl(get()) }
     single<UserRepository> { UserRepositoryImpl(get()) }
+
+    single<EvaluatorService> { EvaluatorServiceImpl(LoggerFactory.getLogger("EvaluatorService")) }
+
     single { GizmoRSSClient(RssParser()) }
 }
