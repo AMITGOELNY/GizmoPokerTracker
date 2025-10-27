@@ -76,7 +76,18 @@ class CardScreenHoldEmViewModel(
         }
 
         Logger.d { "player: ${lowestRankIndex + 1}, rank: $lowestRank, Best Hand: ${lowestRank.getHandRankName}" }
-        _state.update { it.copy(boardCards = boardCards) }
+
+        val winnerInfo = if (lowestRankIndex >= 0) {
+            WinnerInfo(
+                winnerIndex = lowestRankIndex,
+                winningHand = lowestRank.getHandRankName,
+                winningHandValue = lowestRank
+            )
+        } else {
+            null
+        }
+
+        _state.update { it.copy(boardCards = boardCards, winnerInfo = winnerInfo) }
     }
 
     fun dispatch(action: CardScreenHoldEmActions) {

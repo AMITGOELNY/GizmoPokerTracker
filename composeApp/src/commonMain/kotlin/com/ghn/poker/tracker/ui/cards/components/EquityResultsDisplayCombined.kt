@@ -83,8 +83,8 @@ fun EquityResultsDisplayCombined(results: HandResults) {
     // 0.325 - 1.000 (6.5-20s): Idle with gentle pulse
 
     val isCountingUp = animationProgress < 0.125f
-    val isEnergyBurst = animationProgress >= 0.125f && animationProgress < 0.175f
-    val isCelebrating = animationProgress >= 0.175f && animationProgress < 0.325f
+    val isEnergyBurst = animationProgress in 0.125f..<0.175f
+    val isCelebrating = animationProgress in 0.175f..<0.325f
 
     Card(
         modifier = Modifier
@@ -132,7 +132,7 @@ fun EquityResultsDisplayCombined(results: HandResults) {
                     val particleCount = 12
 
                     for (i in 0 until particleCount) {
-                        val angle = (i.toFloat() / particleCount) * 2 * Math.PI
+                        val angle = (i.toFloat() / particleCount) * 2 * kotlin.math.PI
                         val distance = 150f * burstProgress
                         val x = centerX + (cos(angle) * distance).toFloat()
                         val y = centerY + (sin(angle) * distance).toFloat()
