@@ -47,7 +47,6 @@ jdbc_sqlite = "3.43.2.2"
 jooq = "3.20.8"
 logbackVersion = "1.4.11"
 jetbrainsKotlinJvm = "1.9.0"
-ktorClientCore203 = "2.0.3"
 rssparser = "6.1.1"
 skrapeit = "1.3.0-alpha.2"
 securityCryptoKtx = "1.1.0-alpha06"
@@ -130,7 +129,7 @@ bouncyCastle = { module = "org.bouncycastle:bcprov-jdk15on", version = "1.70" }
 flyway-core = { module = "org.flywaydb:flyway-core", version = "11.15.0" }
 jdbc-sqlite = { module = "org.xerial:sqlite-jdbc", version = "3.50.3.0" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
-ktor-client-core-v203 = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientCore203" }
+ktor-client-core-v203 = { module = "io.ktor:ktor-client-core", version = "2.0.3" }
 rssparser = { module = "com.prof18.rssparser:rssparser", version.ref = "rssparser" }
 skrapeit-core = { module = "it.skrape:skrapeit", version.ref = "skrapeit" }
 skrapeit-async-fetcher = { module = "it.skrape:skrapeit-async-fetcher", version.ref = "skrapeit" }
@@ -149,5 +148,5 @@ kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.3" }
 ksp = { id = "com.google.devtools.ksp", version = "2.2.20-2.0.2" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.0.2" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-shadowjar = { id = "com.gradleup.shadow", version = "9.1.0" }
+shadowjar = { id = "com.gradleup.shadow", version = "9.2.2" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelightVersion" }
