@@ -2,39 +2,53 @@ name: Android CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
+    paths:
+      - 'common/**'
+      - 'composeApp/**'
+      - 'gradle/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
+    paths:
+      - 'common/**'
+      - 'composeApp/**'
+      - 'gradle/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-      with:
+      - uses: actions/checkout@v4
+        with:
           fetch-depth: 0
-    - name: set up JDK
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'zulu'
-        java-version: 21
-        cache: gradle
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      - name: set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 21
+          cache: gradle
 
-    - name: Cache KMP tooling
-      uses: actions/cache@v4
-      with:
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Cache KMP tooling
+        uses: actions/cache@v4
+        with:
           path: |
-                        ~/.konan
+            ~/.konan
           key: ${{ runner.os }}-v1-${{ hashFiles('*.versions.toml') }}
 
-    - name: Generate jOOQ code
-      run: ./gradlew :server:generateJooq
+      - name: Generate jOOQ code
+        run: ./gradlew :server:generateJooq
 
-    - name: Build Android app
-      run: ./gradlew :composeApp:assembleDebug
-          
+      - name: Build Android app
+        run: ./gradlew :composeApp:assembleDebug
+
+      - name: Run composeApp debug unit tests
+        run: ./gradlew :composeApp:testDebugUnitTest
