@@ -19,8 +19,6 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
-    wasmJs { browser() }
-
     sourceSets {
         all {
             languageSettings {
@@ -41,12 +39,16 @@ kotlin {
                 implementation(libs.kotlinx.serialization.json)
             }
         }
+
+        val jvmMain by getting {
+        }
     }
 }
 
 tasks.withType<KotlinCompile> {
-    mustRunAfter(
+    dependsOn(
         ":server:generateJooq",
         ":server:movePojos"
     )
+    inputs.dir(layout.buildDirectory.dir("generated-src/jooq/main"))
 }

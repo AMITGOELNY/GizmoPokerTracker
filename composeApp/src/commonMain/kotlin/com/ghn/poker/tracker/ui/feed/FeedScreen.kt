@@ -68,11 +68,13 @@ import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.crossfade
 import coil3.util.DebugLogger
+import com.ghn.gizmodb.common.models.NewsCategory
 import com.ghn.poker.tracker.domain.model.FeedItem
 import com.ghn.poker.tracker.presentation.feed.FeedActions
 import com.ghn.poker.tracker.presentation.feed.FeedViewModel
 import com.ghn.poker.tracker.presentation.feed.FeedsContainer
 import com.ghn.poker.tracker.presentation.session.LoadableDataState
+import com.ghn.poker.tracker.ui.preview.SurfacePreview
 import com.ghn.poker.tracker.ui.shared.LoadingAnimation
 import com.ghn.poker.tracker.ui.theme.Dimens
 import gizmopoker.composeapp.generated.resources.Res
@@ -81,8 +83,12 @@ import gizmopoker.composeapp.generated.resources.ic_placeholder
 import gizmopoker.composeapp.generated.resources.news_feed
 import gizmopoker.composeapp.generated.resources.strategy
 import gizmopoker.composeapp.generated.resources.trending_news
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
+import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
@@ -551,3 +557,87 @@ fun NewsItemList(
         }
     }
 }
+
+private class FeedsContainerProvider : PreviewParameterProvider<FeedsContainer> {
+    override val values = sequenceOf(
+        FeedsContainer(
+            featured = listOf(
+                FeedItem(
+                    title = "Breaking: Poker Tournament Results",
+                    link = "https://example.com/1",
+                    image = "https://via.placeholder.com/300x200?text=Featured1",
+                    site = "PokerNews",
+                    pubDate = LocalDate(2023, 10, 26),
+                    category = NewsCategory.NEWS
+                ),
+                FeedItem(
+                    title = "Top Strategies for Texas Hold'em",
+                    link = "https://example.com/2",
+                    image = "https://via.placeholder.com/300x200?text=Featured2",
+                    site = "StrategySite",
+                    pubDate = LocalDate(2023, 10, 25),
+                    category = NewsCategory.STRATEGY
+                )
+            ),
+            items = listOf(
+                FeedItem(
+                    title = "Daily Poker Tips",
+                    link = "https://example.com/3",
+                    image = "https://via.placeholder.com/300x200?text=Item1",
+                    site = "DailyTips",
+                    pubDate = LocalDate(2023, 10, 24),
+                    category = NewsCategory.NEWS
+                )
+            ),
+            articles = listOf(
+                FeedItem(
+                    title = "In-depth Analysis of Recent Games",
+                    link = "https://example.com/4",
+                    image = "https://via.placeholder.com/300x200?text=Article1",
+                    site = "AnalysisHub",
+                    pubDate = LocalDate(2023, 10, 23),
+                    category = NewsCategory.NEWS
+                ),
+                FeedItem(
+                    title = "Beginner Guide to Poker",
+                    link = "https://example.com/5",
+                    image = "https://via.placeholder.com/300x200?text=Article2",
+                    site = "BeginnersGuide",
+                    pubDate = LocalDate(2023, 10, 22),
+                    category = NewsCategory.STRATEGY
+                )
+            ),
+            strategy = listOf(
+                FeedItem(
+                    title = "Advanced Bluffing Techniques",
+                    link = "https://example.com/6",
+                    image = "https://via.placeholder.com/300x200?text=Strategy1",
+                    site = "ProTips",
+                    pubDate = LocalDate(2023, 10, 21),
+                    category = NewsCategory.STRATEGY
+                ),
+                FeedItem(
+                    title = "Reading Opponents Like a Pro",
+                    link = "https://example.com/7",
+                    image = "https://via.placeholder.com/300x200?text=Strategy2",
+                    site = "MindGames",
+                    pubDate = LocalDate(2023, 10, 20),
+                    category = NewsCategory.STRATEGY
+                )
+            )
+        )
+    )
+}
+
+@Preview
+@Composable
+private fun NewsItemListPreview(@PreviewParameter(FeedsContainerProvider::class) feed: FeedsContainer) =
+    SurfacePreview {
+        NewsItemList(
+            feed = feed,
+            tabIndex = 0,
+            selectedFeed = feed.articles,
+            onFeedItemClick = {},
+            onTabItemClick = { _ -> }
+        )
+    }
