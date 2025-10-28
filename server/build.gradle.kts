@@ -86,6 +86,8 @@ dependencies {
     implementation(libs.rssparser)
 
     testImplementation(libs.ktor.server.tests.jvm)
+    testImplementation(libs.ktor.client.negotiation)
+    testImplementation(libs.ktor.serialization.kotlinx.json.jvm)
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:${libs.versions.kotlin.get()}")
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.runner.junit5)
