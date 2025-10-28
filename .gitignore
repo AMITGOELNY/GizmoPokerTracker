@@ -29,3 +29,6 @@ Agents.md
 .kotlin/
 kotlin-js-store/
 build/js/
+# Database persistence directory
+poker-data/
+*.db

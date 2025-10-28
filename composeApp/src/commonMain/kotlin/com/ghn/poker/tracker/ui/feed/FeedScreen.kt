@@ -34,8 +34,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Newspaper
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -80,10 +85,18 @@ import com.ghn.poker.tracker.ui.theme.Dimens
 import gizmopoker.composeapp.generated.resources.Res
 import gizmopoker.composeapp.generated.resources.articles
 import gizmopoker.composeapp.generated.resources.featured
+import gizmopoker.composeapp.generated.resources.feed_empty_message
+import gizmopoker.composeapp.generated.resources.feed_empty_title
+import gizmopoker.composeapp.generated.resources.feed_error_message
+import gizmopoker.composeapp.generated.resources.feed_error_title
+import gizmopoker.composeapp.generated.resources.feed_refresh
+import gizmopoker.composeapp.generated.resources.feed_section_empty_message
+import gizmopoker.composeapp.generated.resources.feed_section_empty_title
 import gizmopoker.composeapp.generated.resources.ic_placeholder
 import gizmopoker.composeapp.generated.resources.news_feed
 import gizmopoker.composeapp.generated.resources.strategy
 import gizmopoker.composeapp.generated.resources.trending_news
+import gizmopoker.composeapp.generated.resources.try_again
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -164,8 +177,12 @@ fun FeedScreen(
                     verticalArrangement = Arrangement.spacedBy(Dimens.grid_2_5)
                 ) {
                     when (targetState) {
-                        LoadableDataState.Empty -> TODO()
-                        LoadableDataState.Error -> TODO()
+                        LoadableDataState.Empty ->
+                            EmptyState(onRetry = { viewModel.dispatch(FeedActions.Init) })
+
+                        LoadableDataState.Error ->
+                            ErrorState(onRetry = { viewModel.dispatch(FeedActions.Init) })
+
                         is LoadableDataState.Loaded ->
                             NewsItemList(
                                 feed = targetState.data,
@@ -238,6 +255,305 @@ private fun AnimatedBackgroundElements() {
                     )
                 }
         )
+    }
+}
+
+@Composable
+private fun EmptyState(onRetry: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF1F2438).copy(alpha = 0.6f)
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Icon with gradient background
+                Box(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(CircleShape)
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    Color(0xFF5265FF).copy(alpha = 0.2f),
+                                    Color(0xFF5265FF).copy(alpha = 0.05f)
+                                )
+                            )
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.SearchOff,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+
+                // Title
+                Text(
+                    text = stringResource(Res.string.feed_empty_title),
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+                // Message
+                Text(
+                    text = stringResource(Res.string.feed_empty_message),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Retry button
+                Button(
+                    onClick = onRetry,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 4.dp,
+                        pressedElevation = 8.dp
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(Res.string.feed_refresh),
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ErrorState(onRetry: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF1F2438).copy(alpha = 0.6f)
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFFFF5252).copy(alpha = 0.1f),
+                                Color.Transparent
+                            )
+                        )
+                    )
+                    .border(
+                        width = 1.dp,
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                Color(0xFFFF5252).copy(alpha = 0.3f),
+                                Color(0xFFFF5252).copy(alpha = 0.1f)
+                            )
+                        ),
+                        shape = RoundedCornerShape(24.dp)
+                    )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Icon with gradient background
+                    Box(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                            .background(
+                                Brush.radialGradient(
+                                    colors = listOf(
+                                        Color(0xFFFF5252).copy(alpha = 0.2f),
+                                        Color(0xFFFF5252).copy(alpha = 0.05f)
+                                    )
+                                )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ErrorOutline,
+                            contentDescription = null,
+                            tint = Color(0xFFFF5252),
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+
+                    // Title
+                    Text(
+                        text = stringResource(Res.string.feed_error_title),
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+
+                    // Message
+                    Text(
+                        text = stringResource(Res.string.feed_error_message),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Retry button
+                    Button(
+                        onClick = onRetry,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFFF5252)
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 4.dp,
+                            pressedElevation = 8.dp
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(Res.string.try_again),
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SectionEmptyState(sectionName: String) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 24.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF1F2438).copy(alpha = 0.6f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF5265FF).copy(alpha = 0.08f),
+                            Color.Transparent
+                        )
+                    )
+                )
+                .border(
+                    width = 1.dp,
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFF5265FF).copy(alpha = 0.3f),
+                            Color(0xFF5265FF).copy(alpha = 0.1f)
+                        )
+                    ),
+                    shape = RoundedCornerShape(20.dp)
+                )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(40.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Icon
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)
+                        .background(
+                            Brush.radialGradient(
+                                colors = listOf(
+                                    Color(0xFF5265FF).copy(alpha = 0.15f),
+                                    Color(0xFF5265FF).copy(alpha = 0.05f)
+                                )
+                            )
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.SearchOff,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+
+                // Text
+                Text(
+                    text = stringResource(Res.string.feed_section_empty_title, sectionName),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+                Text(
+                    text = stringResource(Res.string.feed_section_empty_message, sectionName),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+            }
+        }
     }
 }
 
@@ -446,110 +762,118 @@ fun NewsItemList(
             }
         }
 
-        items(selectedFeed, key = { it.link }) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onFeedItemClick(it.link) }
-                    .animateItem(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF1F2438).copy(alpha = 0.6f)
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-            ) {
-                Box(
+        if (selectedFeed.isEmpty()) {
+            item {
+                SectionEmptyState(
+                    sectionName = stringResource(if (tabIndex == 0) Res.string.articles else Res.string.strategy)
+                )
+            }
+        } else {
+            items(selectedFeed, key = { it.link }) {
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(
-                            Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color(0xFF5265FF).copy(alpha = 0.05f),
-                                    Color.Transparent
-                                )
-                            )
-                        )
-                        .border(
-                            width = 1.dp,
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color(0xFF5265FF).copy(alpha = 0.3f),
-                                    Color(0xFF5265FF).copy(alpha = 0.1f)
-                                )
-                            ),
-                            shape = RoundedCornerShape(16.dp)
-                        )
+                        .clickable { onFeedItemClick(it.link) }
+                        .animateItem(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFF1F2438).copy(alpha = 0.6f)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(Dimens.grid_1_5)
-                    ) {
-                        // Image
-                        Card(
-                            modifier = Modifier.size(120.dp),
-                            shape = RoundedCornerShape(
-                                topStart = 16.dp,
-                                bottomStart = 16.dp,
-                                topEnd = 12.dp,
-                                bottomEnd = 12.dp
-                            ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                        ) {
-                            AsyncImage(
-                                model = it.image,
-                                imageLoader = imageLoader,
-                                placeholder = painterResource(Res.drawable.ic_placeholder),
-                                error = painterResource(Res.drawable.ic_placeholder),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color(0xFF5265FF).copy(alpha = 0.05f),
+                                        Color.Transparent
+                                    )
+                                )
                             )
-                        }
-
-                        // Content
-                        Column(
-                            modifier = Modifier
-                                .height(120.dp)
-                                .weight(1f)
-                                .padding(end = Dimens.grid_2)
-                                .padding(vertical = Dimens.grid_1_5),
-                            verticalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            Text(
-                                it.title,
-                                style = MaterialTheme.typography.titleSmall.copy(
-                                    fontWeight = FontWeight.SemiBold
+                            .border(
+                                width = 1.dp,
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color(0xFF5265FF).copy(alpha = 0.3f),
+                                        Color(0xFF5265FF).copy(alpha = 0.1f)
+                                    )
                                 ),
-                                color = MaterialTheme.colorScheme.onBackground,
-                                maxLines = 3,
-                                overflow = TextOverflow.Ellipsis
+                                shape = RoundedCornerShape(16.dp)
                             )
-
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(Dimens.grid_1_5)
+                        ) {
+                            // Image
+                            Card(
+                                modifier = Modifier.size(120.dp),
+                                shape = RoundedCornerShape(
+                                    topStart = 16.dp,
+                                    bottomStart = 16.dp,
+                                    topEnd = 12.dp,
+                                    bottomEnd = 12.dp
+                                ),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
-                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                AsyncImage(
+                                    model = it.image,
+                                    imageLoader = imageLoader,
+                                    placeholder = painterResource(Res.drawable.ic_placeholder),
+                                    error = painterResource(Res.drawable.ic_placeholder),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+
+                            // Content
+                            Column(
+                                modifier = Modifier
+                                    .height(120.dp)
+                                    .weight(1f)
+                                    .padding(end = Dimens.grid_2)
+                                    .padding(vertical = Dimens.grid_1_5),
+                                verticalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Text(
+                                    it.title,
+                                    style = MaterialTheme.typography.titleSmall.copy(
+                                        fontWeight = FontWeight.SemiBold
+                                    ),
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    maxLines = 3,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(6.dp))
+                                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                                    ) {
+                                        Text(
+                                            it.site,
+                                            style = MaterialTheme.typography.labelSmall.copy(
+                                                fontWeight = FontWeight.Bold
+                                            ),
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+
                                     Text(
-                                        it.site,
-                                        style = MaterialTheme.typography.labelSmall.copy(
-                                            fontWeight = FontWeight.Bold
-                                        ),
-                                        color = MaterialTheme.colorScheme.primary
+                                        it.dateFormatted,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f)
                                     )
                                 }
-
-                                Text(
-                                    it.dateFormatted,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f)
-                                )
                             }
                         }
                     }
@@ -632,12 +956,13 @@ private class FeedsContainerProvider : PreviewParameterProvider<FeedsContainer> 
 
 @Preview
 @Composable
-private fun NewsItemListPreview(@PreviewParameter(FeedsContainerProvider::class) feed: FeedsContainer) = SurfacePreview {
-    NewsItemList(
-        feed = feed,
-        tabIndex = 0,
-        selectedFeed = feed.articles,
-        onFeedItemClick = {},
-        onTabItemClick = { _ -> }
-    )
-}
+private fun NewsItemListPreview(@PreviewParameter(FeedsContainerProvider::class) feed: FeedsContainer) =
+    SurfacePreview {
+        NewsItemList(
+            feed = feed,
+            tabIndex = 0,
+            selectedFeed = feed.articles,
+            onFeedItemClick = {},
+            onTabItemClick = { _ -> }
+        )
+    }

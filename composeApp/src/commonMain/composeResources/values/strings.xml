@@ -39,4 +39,13 @@
     <string name="hero">HERO</string>
     <string name="villain">VILLAIN</string>
     <string name="vs">VS</string>
+
+    <!-- Feed Screen Empty/Error States -->
+    <string name="feed_empty_title">No News Available</string>
+    <string name="feed_empty_message">We couldn\'t find any news articles at the moment. Please try again later.</string>
+    <string name="feed_refresh">Refresh</string>
+    <string name="feed_error_title">Something Went Wrong</string>
+    <string name="feed_error_message">We encountered an error while loading the news feed. Please check your connection and try again.</string>
+    <string name="feed_section_empty_title">No %s Yet</string>
+    <string name="feed_section_empty_message">Check back later for new %s content</string>
 </resources>
