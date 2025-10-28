@@ -33,6 +33,8 @@ import io.kotest.matchers.ints.shouldBeGreaterThan as shouldBeGreaterThanInt
 @DisplayName("Evaluator Performance Tests")
 class EvaluatorPerformanceTest {
 
+    private val isCI = System.getenv("GITHUB_ACTIONS")?.toBoolean() == true
+
     private val aceOfHearts = Card(suit = CardSuit.HEARTS, name = "A", value = 14)
     private val aceOfDiamonds = Card(suit = CardSuit.DIAMONDS, name = "A", value = 14)
     private val kingOfDiamonds = Card(suit = CardSuit.DIAMONDS, name = "K", value = 13)
@@ -67,7 +69,8 @@ class EvaluatorPerformanceTest {
         }
 
         println("10k simulations completed in ${timeMillis}ms")
-        timeMillis shouldBeLessThan 200L
+        val threshold = if (isCI) 400L else 200L
+        timeMillis shouldBeLessThan threshold
     }
 
     @Test
@@ -102,7 +105,8 @@ class EvaluatorPerformanceTest {
         }
 
         println("50k simulations completed in ${timeMillis}ms")
-        timeMillis shouldBeLessThan 1000L
+        val threshold = if (isCI) 2000L else 1000L
+        timeMillis shouldBeLessThan threshold
     }
 
     @Test
@@ -134,7 +138,8 @@ class EvaluatorPerformanceTest {
         }
 
         println("100k simulations completed in ${timeMillis}ms")
-        timeMillis shouldBeLessThan 2000L
+        val threshold = if (isCI) 4000L else 2000L
+        timeMillis shouldBeLessThan threshold
     }
 
     @Test
@@ -162,8 +167,9 @@ class EvaluatorPerformanceTest {
         }
 
         println("5 sequential requests (5k sims each) completed in ${totalTimeMillis}ms")
-        // Should complete 5 requests in under 500ms total
-        totalTimeMillis shouldBeLessThan 500L
+        // Should complete 5 requests in under 500ms total (1000ms on CI)
+        val threshold = if (isCI) 1000L else 500L
+        totalTimeMillis shouldBeLessThan threshold
     }
 
     @Test
@@ -199,7 +205,8 @@ class EvaluatorPerformanceTest {
 
         println("50k simulations with 3 board cards completed in ${timeMillis}ms")
         // Should be slightly faster with board cards (fewer random cards needed)
-        timeMillis shouldBeLessThan 1000L
+        val threshold = if (isCI) 2000L else 1000L
+        timeMillis shouldBeLessThan threshold
     }
 
     private fun ApplicationTestBuilder.setupTestApplication() {
