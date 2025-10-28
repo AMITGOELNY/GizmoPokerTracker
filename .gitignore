@@ -25,6 +25,7 @@ composeApp/GPUCache/
 .fleet
 CLAUDE.md
 Agents.md
+DEPLOYMENT.md
 
 .kotlin/
 kotlin-js-store/
