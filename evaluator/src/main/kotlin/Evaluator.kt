@@ -107,10 +107,8 @@ class Evaluator(
                     else -> results[1]++
                 }
             } catch (e: Exception) {
-                logger("Failed at index: $seq")
-                logger("player: $playerCardsPlusBoard")
-                logger("villain: $villainCardsPlusBoard")
-//                logger("", e)
+                // Error during simulation - skip this iteration
+                logger("Simulation error at index $seq: ${e.message}")
             }
         }
         return results
@@ -201,8 +199,6 @@ fun List<Card>.convertCardsToIds(log: (String) -> Unit): List<Int> {
             CardSuit.SPADES -> 3
         }
 
-        val convert = ((card.value - 2) * 4) + suitValue
-        log("Converting ${card.name}${card.suit} to binary: ${convert.toString(2)}, decimal: $convert")
-        convert
+        ((card.value - 2) * 4) + suitValue
     }
 }

@@ -58,7 +58,7 @@ class FeedViewModel(
                         FeedsContainer(
                             featured = articles.take(7),
                             items = articles,
-                            articles = articles.subList(7, articles.lastIndex),
+                            articles = articles.drop(7),
                             strategy = strategy
                         )
                     )
