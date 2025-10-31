@@ -16,10 +16,11 @@ class UserRepositoryImpl(
     override fun login(username: String, password: String): ApiCallResult<TokenResponse> {
         val userDTO = db.fetchOne(USER, USER.USERNAME.eq(username))?.into(UserDTO::class.java)
         return if (userDTO != null) {
+            val userId = userDTO.id ?: return ApiCallResult.Failure("User ID not found")
             val passwordValid = PasswordValidator.verifyPassword(password, userDTO.password)
             if (passwordValid) {
                 val accessToken = JwtConfig.makeToken(userDTO)
-                val refreshToken = refreshTokenRepository.generateRefreshToken(userDTO.id)
+                val refreshToken = refreshTokenRepository.generateRefreshToken(userId)
                 val tokenResponse = TokenResponse(accessToken, refreshToken)
                 ApiCallResult.Success(tokenResponse)
             } else {
