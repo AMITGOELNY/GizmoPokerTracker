@@ -22,7 +22,8 @@ class SessionRepositoryImplTest : RepositoryTestBase() {
     @BeforeEach
     fun setup() {
         repository = SessionRepositoryImpl(db)
-        userRepository = UserRepositoryImpl(db)
+        val refreshTokenRepository = RefreshTokenRepositoryImpl(db)
+        userRepository = UserRepositoryImpl(db, refreshTokenRepository)
         clearAllTables()
 
         // Create a test user for session tests

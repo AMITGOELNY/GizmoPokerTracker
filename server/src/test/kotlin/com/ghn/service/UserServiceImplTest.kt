@@ -1,5 +1,6 @@
 package com.ghn.service
 
+import com.ghn.model.TokenResponse
 import com.ghn.model.User
 import com.ghn.repository.ApiCallResult
 import com.ghn.repository.UserRepository
@@ -30,12 +31,12 @@ class UserServiceImplTest {
         fun `should return success when repository returns success`() {
             val username = "testuser"
             val password = "testpass"
-            val token = "jwt-token-123"
-            every { repository.login(username, password) } returns ApiCallResult.Success(token)
+            val tokenResponse = TokenResponse("access-token", "refresh-token")
+            every { repository.login(username, password) } returns ApiCallResult.Success(tokenResponse)
 
             val result = service.login(username, password)
 
-            result shouldBe ApiCallResult.Success(token)
+            result shouldBe ApiCallResult.Success(tokenResponse)
             verify(exactly = 1) { repository.login(username, password) }
         }
 
