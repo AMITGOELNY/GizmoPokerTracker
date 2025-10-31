@@ -15,13 +15,10 @@ internal class FeedRemoteDataSourceImpl(
     private val apiClient: GizmoApiClient
 ) : FeedRemoteDataSource {
     override suspend fun getFeed(): ApiResponse<List<FeedDTO>, Exception> {
-        return try {
-            return apiClient.http.safeRequest {
-                get("feed")
-                    .body<List<FeedDTO>>()
+        return apiClient.executeWithAutoRefresh {
+            apiClient.http.safeRequest {
+                get("feed").body<List<FeedDTO>>()
             }
-        } catch (e: Exception) {
-            ApiResponse.Error.NetworkError
         }
     }
 }

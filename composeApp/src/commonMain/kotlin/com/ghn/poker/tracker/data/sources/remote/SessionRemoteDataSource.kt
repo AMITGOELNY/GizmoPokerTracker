@@ -18,16 +18,20 @@ internal class SessionRemoteDataSourceImpl(
     private val apiClient: GizmoApiClient
 ) : SessionRemoteDataSource {
     override suspend fun getSessions(): ApiResponse<List<SessionDTO>, Exception> {
-        return apiClient.http.safeRequest {
-            get("sessions").body<List<SessionDTO>>()
+        return apiClient.executeWithAutoRefresh {
+            apiClient.http.safeRequest {
+                get("sessions").body<List<SessionDTO>>()
+            }
         }
     }
 
     override suspend fun createSession(
         session: SessionDTO,
     ): ApiResponse<Unit, Exception> {
-        return apiClient.http.safeRequest {
-            post("sessions") { setBody(session) }.body<String>()
+        return apiClient.executeWithAutoRefresh {
+            apiClient.http.safeRequest<Unit, Exception> {
+                post("sessions") { setBody(session) }.body<String>()
+            }
         }
     }
 }
