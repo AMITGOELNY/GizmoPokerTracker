@@ -1,5 +1,6 @@
 package com.ghn.service
 
+import com.ghn.model.TokenResponse
 import com.ghn.model.User
 import com.ghn.repository.ApiCallResult
 import com.ghn.repository.UserRepository
@@ -7,7 +8,7 @@ import com.ghn.repository.UserRepository
 class UserServiceImpl(
     private val repository: UserRepository
 ) : UserService {
-    override fun login(username: String, password: String): ApiCallResult<String> {
+    override fun login(username: String, password: String): ApiCallResult<TokenResponse> {
         return repository.login(username, password)
     }
 
