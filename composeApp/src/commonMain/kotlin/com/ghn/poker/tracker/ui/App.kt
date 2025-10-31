@@ -73,6 +73,13 @@ fun App(
 ) {
     GizmoTheme {
         val bottomBarState = rememberSaveable { (mutableStateOf(false)) }
+        val currentBackStackEntry by navController.currentBackStackEntryAsState()
+        val isOnSplashScreen by remember {
+            derivedStateOf {
+                currentBackStackEntry?.destination?.route == SplashScreen::class.qualifiedName
+            }
+        }
+
         Scaffold(
             modifier = Modifier.fillMaxSize(),
 //                modifier = Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding(),
@@ -85,7 +92,11 @@ fun App(
             NavHost(
                 navController = navController,
                 startDestination = SplashScreen,
-                modifier = Modifier.padding(bottom = padding.calculateBottomPadding())
+                modifier = if (isOnSplashScreen) {
+                    Modifier.fillMaxSize()
+                } else {
+                    Modifier.padding(bottom = padding.calculateBottomPadding())
+                }
             ) {
                 composable<SplashScreen> {
                     SplashScreen(onSplashScreenFinished = viewModel::checkForToken)
