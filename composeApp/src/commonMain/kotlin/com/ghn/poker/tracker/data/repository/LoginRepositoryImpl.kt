@@ -14,7 +14,7 @@ class LoginRepositoryImpl(
         return when (val result = remoteDataSource.login(username, password)) {
             is ApiResponse.Error -> result
             is ApiResponse.Success -> {
-                Logger.d { "login success, token: ${result.body}" }
+                Logger.d { "login success, tokens received: accessToken=${result.body.accessToken.take(20)}..., refreshToken=${result.body.refreshToken.take(20)}..." }
                 ApiResponse.Success(Unit)
             }
         }
@@ -24,7 +24,7 @@ class LoginRepositoryImpl(
         return when (val result = remoteDataSource.create(username, password)) {
             is ApiResponse.Error -> result
             is ApiResponse.Success -> {
-                Logger.d { "login success, token: ${result.body}" }
+                Logger.d { "create success, tokens received: accessToken=${result.body.accessToken.take(20)}..., refreshToken=${result.body.refreshToken.take(20)}..." }
                 ApiResponse.Success(Unit)
             }
         }
