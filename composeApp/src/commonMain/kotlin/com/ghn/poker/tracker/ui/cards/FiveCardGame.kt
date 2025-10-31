@@ -25,12 +25,15 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import com.ghn.poker.tracker.presentation.cards.CardScreenActions
 import com.ghn.poker.tracker.presentation.cards.CardScreenViewModel
+import com.ghn.poker.tracker.presentation.cards.CardScreenViewState
 import com.ghn.poker.tracker.presentation.cards.model.CardSize
+import com.ghn.poker.tracker.ui.preview.SurfacePreview
 import com.ghn.poker.tracker.ui.theme.Dimens
 import gizmopoker.composeapp.generated.resources.Res
 import gizmopoker.composeapp.generated.resources.plus
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
 @Composable
@@ -38,6 +41,18 @@ internal fun FiveCardGame(
     viewModel: CardScreenViewModel = koinInject()
 ) {
     val state = viewModel.state.collectAsState().value
+
+    FiveCardGameContent(
+        state = state,
+        onNewGame = { viewModel.dispatch(CardScreenActions.NewGame) }
+    )
+}
+
+@Composable
+internal fun FiveCardGameContent(
+    state: CardScreenViewState,
+    onNewGame: () -> Unit
+) {
     var started by remember { mutableStateOf(false) }
     val cardSize by remember { mutableStateOf(CardSize.EXTRA_EXTRA_SMALL) }
     val transition = updateTransition(started, label = "selected state")
@@ -120,7 +135,7 @@ internal fun FiveCardGame(
         SmallFloatingActionButton(
             onClick = {
                 started = false
-                viewModel.dispatch(CardScreenActions.NewGame)
+                onNewGame()
             },
             modifier = Modifier.align(Alignment.BottomEnd).padding(Dimens.grid_2_5),
             containerColor = Color(0xFFc42727)
@@ -128,4 +143,13 @@ internal fun FiveCardGame(
             Text(stringResource(Res.string.plus))
         }
     }
+}
+
+@Preview
+@Composable
+private fun FiveCardGamePreview() = SurfacePreview {
+    FiveCardGameContent(
+        state = CardScreenViewState(),
+        onNewGame = {}
+    )
 }

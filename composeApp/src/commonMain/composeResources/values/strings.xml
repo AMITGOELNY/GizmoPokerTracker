@@ -48,4 +48,16 @@
     <string name="feed_error_message">We encountered an error while loading the news feed. Please check your connection and try again.</string>
     <string name="feed_section_empty_title">No %s Yet</string>
     <string name="feed_section_empty_message">Check back later for new %s content</string>
+
+    <!-- Login Screen -->
+    <string name="welcome_back">Welcome Back</string>
+    <string name="sign_in_to_continue">Sign in to continue</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="hide_password">Hide password</string>
+    <string name="show_password">Show password</string>
+
+    <!-- Sign Up Screen -->
+    <string name="create_your_account_title">Create Your Account</string>
+    <string name="join_gizmopoker">Sign up to get started</string>
 </resources>

@@ -3,6 +3,7 @@ package com.ghn.poker.tracker.data.sources.remote
 import com.ghn.gizmodb.common.models.Card
 import com.ghn.gizmodb.common.models.EvaluatorRequest
 import com.ghn.gizmodb.common.models.EvaluatorResponse
+import com.ghn.gizmodb.common.models.HandRankResponse
 import com.ghn.poker.tracker.data.api.GizmoApiClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
@@ -50,7 +51,8 @@ internal class EvaluatorRemoteDataSourceImpl(
     override suspend fun getFiveCardRank(heroCards: List<Card>): ApiResponse<Short, Exception> {
         return apiClient.executeWithAutoRefresh {
             apiClient.http.safeRequest {
-                post("evaluator/hand-rank") { setBody(heroCards) }.body<Short>()
+                val response = post("evaluator/hand-rank") { setBody(heroCards) }.body<HandRankResponse>()
+                response.rank
             }
         }
     }

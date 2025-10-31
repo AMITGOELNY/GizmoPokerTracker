@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -74,35 +75,38 @@ fun App(
     GizmoTheme {
         val bottomBarState = rememberSaveable { (mutableStateOf(false)) }
         val currentBackStackEntry by navController.currentBackStackEntryAsState()
-        val isOnSplashScreen by remember {
+        val currentRoute = currentBackStackEntry?.destination?.route
+        val isFullScreen by remember {
             derivedStateOf {
-                currentBackStackEntry?.destination?.route == SplashScreen::class.qualifiedName
+                currentRoute == SplashScreen::class.qualifiedName ||
+                    currentRoute == Welcome::class.qualifiedName
             }
         }
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-//                modifier = Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding(),
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
             bottomBar = {
                 BottomNavigationBar(navController, bottomBarState)
             },
-//                containerColor = MaterialTheme.colorScheme.background
         ) { padding ->
             AppStateListener(viewModel, navController)
             NavHost(
                 navController = navController,
                 startDestination = SplashScreen,
-                modifier = if (isOnSplashScreen) {
+                modifier = if (isFullScreen) {
                     Modifier.fillMaxSize()
                 } else {
                     Modifier.padding(bottom = padding.calculateBottomPadding())
                 }
             ) {
                 composable<SplashScreen> {
+                    bottomBarState.value = false
                     SplashScreen(onSplashScreenFinished = viewModel::checkForToken)
                 }
 
                 composable<Welcome> {
+                    bottomBarState.value = false
                     GetStartedScreen(
                         onSignInClick = { navController.navigate(Login) },
                         onCreateAccountClick = { navController.navigate(CreateAccount) }
@@ -110,10 +114,12 @@ fun App(
                 }
 
                 composable<Login> {
+                    bottomBarState.value = false
                     LoginScreen(onBackClick = navController::popBackStack)
                 }
 
                 composable<CreateAccount> {
+                    bottomBarState.value = false
                     SignUpScreen(onBackClick = navController::popBackStack)
                 }
 
