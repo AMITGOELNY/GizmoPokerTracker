@@ -76,7 +76,7 @@ internal expect val platformModule: Module
 
 val sharedViewModelModule = module {
 
-    single<Store<AppState>> { UserStore(get()) }
+    single<Store<AppState>> { UserStore(get(), get()) }
 }
 
 internal val storageModule = module {

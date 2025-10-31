@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.ghn.poker.tracker.data.preferences.PreferenceManager
+import com.ghn.poker.tracker.domain.repository.LoginRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +13,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class UserStore(
-    private val preferenceManager: PreferenceManager
+    private val preferenceManager: PreferenceManager,
+    private val loginRepository: LoginRepository
 ) : ViewModel(), Store<AppState> {
     private val _userState: MutableStateFlow<AppState> = MutableStateFlow(AppState.Init)
     override val userState = _userState.asStateFlow()
@@ -32,7 +34,13 @@ internal class UserStore(
     }
 
     override fun signout() {
-        preferenceManager.clearPrefs()
+        viewModelScope.launch {
+            // Call server logout endpoint to revoke all refresh tokens
+            loginRepository.logout()
+            // Clear local tokens (already done in logout data source, but ensure it's cleared)
+            preferenceManager.clearPrefs()
+            Logger.d { "User signed out successfully" }
+        }
     }
 }
 
