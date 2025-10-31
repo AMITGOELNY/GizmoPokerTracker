@@ -1,5 +1,6 @@
 package com.ghn.repository
 
+import com.ghn.model.TokenResponse
 import com.ghn.model.User
 import com.ghn.plugins.JwtConfig
 import io.kotest.matchers.shouldBe
@@ -14,10 +15,12 @@ import org.junit.jupiter.api.Test
 class UserRepositoryImplTest : RepositoryTestBase() {
 
     private lateinit var repository: UserRepositoryImpl
+    private lateinit var refreshTokenRepository: RefreshTokenRepository
 
     @BeforeEach
     fun setup() {
-        repository = UserRepositoryImpl(db)
+        refreshTokenRepository = RefreshTokenRepositoryImpl(db)
+        repository = UserRepositoryImpl(db, refreshTokenRepository)
         JwtConfig.initialize("test-secret-key")
         clearAllTables()
     }
@@ -40,11 +43,11 @@ class UserRepositoryImplTest : RepositoryTestBase() {
 
         // Verify user was created by attempting to login
         val loginResult = repository.login("newuser", "password123")
-        loginResult.shouldBeInstanceOf<ApiCallResult.Success<String>>()
+        loginResult.shouldBeInstanceOf<ApiCallResult.Success<TokenResponse>>()
     }
 
     @Test
-    @DisplayName("should return Success with token when login credentials are valid")
+    @DisplayName("should return Success with TokenResponse when login credentials are valid")
     fun `test successful login`() {
         // Given
         val username = "testuser"
@@ -60,9 +63,11 @@ class UserRepositoryImplTest : RepositoryTestBase() {
         val result = repository.login(username, password)
 
         // Then
-        result.shouldBeInstanceOf<ApiCallResult.Success<String>>()
-        val token = result.data
-        token.shouldNotBeEmpty()
+        result.shouldBeInstanceOf<ApiCallResult.Success<TokenResponse>>()
+        val tokenResponse = result.data
+        tokenResponse.accessToken.shouldNotBeEmpty()
+        tokenResponse.refreshToken.shouldNotBeEmpty()
+        tokenResponse.accessToken shouldNotBe tokenResponse.refreshToken
     }
 
     @Test
@@ -118,13 +123,14 @@ class UserRepositoryImplTest : RepositoryTestBase() {
         // Verify both users can login
         val login1 = repository.login("user1", "password1")
         val login2 = repository.login("user2", "password2")
-        login1.shouldBeInstanceOf<ApiCallResult.Success<String>>()
-        login2.shouldBeInstanceOf<ApiCallResult.Success<String>>()
+        login1.shouldBeInstanceOf<ApiCallResult.Success<TokenResponse>>()
+        login2.shouldBeInstanceOf<ApiCallResult.Success<TokenResponse>>()
 
         // Verify tokens are different
-        val token1 = login1.data
-        val token2 = login2.data
-        token1 shouldNotBe token2
+        val tokenResponse1 = login1.data
+        val tokenResponse2 = login2.data
+        tokenResponse1.accessToken shouldNotBe tokenResponse2.accessToken
+        tokenResponse1.refreshToken shouldNotBe tokenResponse2.refreshToken
     }
 
     @Test

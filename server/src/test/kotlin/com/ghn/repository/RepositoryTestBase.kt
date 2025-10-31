@@ -31,14 +31,18 @@ abstract class RepositoryTestBase {
 
         // Execute migration SQL directly on this connection
         // We can't use Flyway because it creates its own connections, and SQLite in-memory databases are per-connection
-        val migrationSql = javaClass.classLoader.getResourceAsStream("db/migration/V1__Create_database.sql")
-            ?.bufferedReader()
-            ?.use { it.readText() }
-            ?: throw IllegalStateException("Could not find migration file V1__Create_database.sql")
+        val migrations = listOf("V1__Create_database.sql", "V2__Create_refresh_token_table.sql")
 
-        val statement = connection.createStatement()
-        statement.executeUpdate(migrationSql)
-        statement.close()
+        migrations.forEach { migrationFile ->
+            val migrationSql = javaClass.classLoader.getResourceAsStream("db/migration/$migrationFile")
+                ?.bufferedReader()
+                ?.use { it.readText() }
+                ?: throw IllegalStateException("Could not find migration file $migrationFile")
+
+            val statement = connection.createStatement()
+            statement.executeUpdate(migrationSql)
+            statement.close()
+        }
 
         // Create jOOQ DSLContext using the same connection
         db = DSL.using(connection, SQLDialect.SQLITE)
@@ -57,6 +61,7 @@ abstract class RepositoryTestBase {
      * Useful for tests that need a fresh database state.
      */
     protected fun clearAllTables() {
+        db.execute("DELETE FROM refresh_token")
         db.execute("DELETE FROM session")
         db.execute("DELETE FROM user")
     }
