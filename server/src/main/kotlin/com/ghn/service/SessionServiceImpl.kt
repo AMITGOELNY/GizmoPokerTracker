@@ -4,7 +4,9 @@ import com.ghn.gizmodb.common.models.SessionDTO
 import com.ghn.repository.SessionRepository
 import com.ghn.repository.SessionResponse
 import io.ktor.http.HttpStatusCode
+import org.koin.core.annotation.Single
 
+@Single([SessionService::class])
 class SessionServiceImpl(
     private val repository: SessionRepository
 ) : SessionService {

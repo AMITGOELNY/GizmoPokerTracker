@@ -4,7 +4,9 @@ import com.ghn.model.TokenResponse
 import com.ghn.plugins.JwtConfig
 import com.ghn.repository.ApiCallResult
 import com.ghn.repository.RefreshTokenRepository
+import org.koin.core.annotation.Single
 
+@Single([RefreshTokenService::class])
 class RefreshTokenServiceImpl(
     private val refreshTokenRepository: RefreshTokenRepository
 ) : RefreshTokenService {

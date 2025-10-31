@@ -4,10 +4,12 @@ import com.ghn.gizmodb.common.models.UserDTO
 import com.ghn.gizmodb.tables.references.REFRESH_TOKEN
 import com.ghn.gizmodb.tables.references.USER
 import org.jooq.DSLContext
+import org.koin.core.annotation.Single
 import java.security.MessageDigest
 import java.util.UUID
 import kotlin.time.Duration.Companion.days
 
+@Single([RefreshTokenRepository::class])
 class RefreshTokenRepositoryImpl(
     private val db: DSLContext
 ) : RefreshTokenRepository {
