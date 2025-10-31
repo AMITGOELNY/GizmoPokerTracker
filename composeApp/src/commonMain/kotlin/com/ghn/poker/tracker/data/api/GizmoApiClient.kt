@@ -64,4 +64,18 @@ internal class GizmoApiClient(
     fun storeToken(token: String) {
         preferenceManager[Preferences.USER_TOKEN_KEY] = token
     }
+
+    fun storeTokens(accessToken: String, refreshToken: String) {
+        preferenceManager[Preferences.USER_TOKEN_KEY] = accessToken
+        preferenceManager[Preferences.REFRESH_TOKEN_KEY] = refreshToken
+    }
+
+    fun getRefreshToken(): String? {
+        return preferenceManager.get<String>(Preferences.REFRESH_TOKEN_KEY)
+    }
+
+    fun clearTokens() {
+        preferenceManager[Preferences.USER_TOKEN_KEY] = ""
+        preferenceManager[Preferences.REFRESH_TOKEN_KEY] = ""
+    }
 }
