@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.jooq)
     alias(libs.plugins.flyway)
     alias(libs.plugins.shadowjar)
+    alias(libs.plugins.ksp)
 }
 
 val dbUrl = "jdbc:sqlite:${buildDir.resolve("reference.db")}"
@@ -72,6 +73,7 @@ dependencies {
     implementation(libs.koin.core)
 //    implementation(libs.koin.core.ktx)
     implementation(libs.koin.ktor)
+    implementation(libs.koin.annotations)
 
     implementation(libs.bouncyCastle)
     implementation(libs.datetime)
@@ -93,6 +95,12 @@ dependencies {
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.mockk)
     testImplementation(libs.coroutines.test)
+
+    add("ksp", libs.koinCompiler)
+}
+
+kotlin.sourceSets.main {
+    kotlin.srcDir("build/generated/ksp/main/kotlin")
 }
 
 tasks.withType<Test> {

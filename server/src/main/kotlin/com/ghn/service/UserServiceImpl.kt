@@ -4,7 +4,9 @@ import com.ghn.model.TokenResponse
 import com.ghn.model.User
 import com.ghn.repository.ApiCallResult
 import com.ghn.repository.UserRepository
+import org.koin.core.annotation.Single
 
+@Single([UserService::class])
 class UserServiceImpl(
     private val repository: UserRepository
 ) : UserService {

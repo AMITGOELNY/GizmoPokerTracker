@@ -4,7 +4,9 @@ import com.ghn.gizmodb.common.models.SessionDTO
 import com.ghn.gizmodb.tables.references.SESSION
 import io.ktor.http.HttpStatusCode
 import org.jooq.DSLContext
+import org.koin.core.annotation.Single
 
+@Single([SessionRepository::class])
 class SessionRepositoryImpl(private val db: DSLContext) : SessionRepository {
     override fun getUserSessions(id: Int): List<SessionDTO> {
         return db.fetch(SESSION, SESSION.USERID.eq(id)).into(SessionDTO::class.java)

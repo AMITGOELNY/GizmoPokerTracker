@@ -8,7 +8,9 @@ import com.ghn.model.User
 import com.ghn.plugins.JwtConfig
 import com.ghn.util.PasswordValidator
 import org.jooq.DSLContext
+import org.koin.core.annotation.Single
 
+@Single([UserRepository::class])
 class UserRepositoryImpl(
     private val db: DSLContext,
     private val refreshTokenRepository: RefreshTokenRepository

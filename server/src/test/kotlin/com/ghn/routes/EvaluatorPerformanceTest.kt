@@ -1,6 +1,8 @@
 package com.ghn.routes
 
-import com.ghn.di.appModule
+import com.ghn.di.ClientModule
+import com.ghn.di.RepositoryModule
+import com.ghn.di.ServiceModule
 import com.ghn.gizmodb.common.models.Card
 import com.ghn.gizmodb.common.models.CardSuit
 import com.ghn.gizmodb.common.models.EvaluatorRequest
@@ -9,6 +11,9 @@ import com.ghn.plugins.JwtConfig
 import com.ghn.plugins.configureRouting
 import com.ghn.plugins.configureSecurity
 import com.ghn.plugins.configureSerialization
+import com.ghn.service.EvaluatorService
+import com.ghn.service.EvaluatorServiceImpl
+import com.prof18.rssparser.RssParser
 import io.kotest.matchers.comparables.shouldBeGreaterThan
 import io.kotest.matchers.longs.shouldBeLessThan
 import io.kotest.matchers.shouldBe
@@ -24,9 +29,15 @@ import io.ktor.server.application.install
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import kotlinx.serialization.json.Json
+import org.jooq.SQLDialect
+import org.jooq.impl.DSL
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.koin.dsl.module
+import org.koin.ksp.generated.module
 import org.koin.ktor.plugin.Koin
+import org.slf4j.LoggerFactory
+import org.sqlite.javax.SQLiteConnectionPoolDataSource
 import kotlin.system.measureTimeMillis
 import io.kotest.matchers.ints.shouldBeGreaterThan as shouldBeGreaterThanInt
 
@@ -213,7 +224,21 @@ class EvaluatorPerformanceTest {
         application {
             JwtConfig.initialize("test-secret-key")
             install(Koin) {
-                modules(appModule)
+                modules(
+                    ServiceModule().module,
+                    RepositoryModule().module,
+                    ClientModule().module
+                )
+                modules(
+                    module {
+                        val source = SQLiteConnectionPoolDataSource().apply {
+                            url = "jdbc:sqlite::memory:"
+                        }
+                        single { DSL.using(source, SQLDialect.SQLITE) }
+                        single { RssParser() }
+                        single<EvaluatorService> { EvaluatorServiceImpl(LoggerFactory.getLogger("EvaluatorService")) }
+                    }
+                )
             }
             configureSerialization()
             configureSecurity()
