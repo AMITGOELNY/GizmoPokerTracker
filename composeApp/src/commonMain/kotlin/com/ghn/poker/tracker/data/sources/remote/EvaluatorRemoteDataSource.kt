@@ -30,8 +30,8 @@ internal class EvaluatorRemoteDataSourceImpl(
         villainCards: List<Card>,
         simulationCount: Int
     ): ApiResponse<EvaluatorResponse, Exception> {
-        return try {
-            return apiClient.http.safeRequest {
+        return apiClient.executeWithAutoRefresh {
+            apiClient.http.safeRequest {
                 post("evaluator") {
                     setBody(
                         EvaluatorRequest(
@@ -44,18 +44,14 @@ internal class EvaluatorRemoteDataSourceImpl(
                 }
                     .body<EvaluatorResponse>()
             }
-        } catch (e: Exception) {
-            ApiResponse.Error.NetworkError
         }
     }
 
     override suspend fun getFiveCardRank(heroCards: List<Card>): ApiResponse<Short, Exception> {
-        return try {
-            return apiClient.http.safeRequest {
+        return apiClient.executeWithAutoRefresh {
+            apiClient.http.safeRequest {
                 post("evaluator/hand-rank") { setBody(heroCards) }.body<Short>()
             }
-        } catch (e: Exception) {
-            ApiResponse.Error.NetworkError
         }
     }
 }
