@@ -3,21 +3,25 @@ package com.ghn.repository
 import com.ghn.gizmodb.common.models.UserDTO
 import com.ghn.gizmodb.tables.references.USER
 import com.ghn.mappers.toUserDTO
+import com.ghn.model.TokenResponse
 import com.ghn.model.User
 import com.ghn.plugins.JwtConfig
 import com.ghn.util.PasswordValidator
 import org.jooq.DSLContext
 
 class UserRepositoryImpl(
-    private val db: DSLContext
+    private val db: DSLContext,
+    private val refreshTokenRepository: RefreshTokenRepository
 ) : UserRepository {
-    override fun login(username: String, password: String): ApiCallResult<String> {
+    override fun login(username: String, password: String): ApiCallResult<TokenResponse> {
         val userDTO = db.fetchOne(USER, USER.USERNAME.eq(username))?.into(UserDTO::class.java)
         return if (userDTO != null) {
             val passwordValid = PasswordValidator.verifyPassword(password, userDTO.password)
             if (passwordValid) {
-                val token = JwtConfig.makeToken(userDTO)
-                ApiCallResult.Success(token)
+                val accessToken = JwtConfig.makeToken(userDTO)
+                val refreshToken = refreshTokenRepository.generateRefreshToken(userDTO.id)
+                val tokenResponse = TokenResponse(accessToken, refreshToken)
+                ApiCallResult.Success(tokenResponse)
             } else {
                 ApiCallResult.BadPassword
             }
