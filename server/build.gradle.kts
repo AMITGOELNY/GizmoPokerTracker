@@ -96,7 +96,7 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.coroutines.test)
 
-    add("ksp", libs.koinCompiler)
+    add("ksp", libs.koin.compiler)
 }
 
 kotlin.sourceSets.main {

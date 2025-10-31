@@ -2,6 +2,7 @@ package com.ghn.routes
 
 import com.ghn.gizmodb.common.models.Card
 import com.ghn.gizmodb.common.models.EvaluatorRequest
+import com.ghn.gizmodb.common.models.HandRankResponse
 import com.ghn.service.EvaluatorService
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
@@ -44,7 +45,7 @@ internal fun Routing.evaluator() {
             try {
                 val cards = call.receive<List<Card>>()
                 val rank = evaluatorService.evaluateHandRank(cards)
-                call.respond(HttpStatusCode.OK, mapOf("rank" to rank))
+                call.respond(HttpStatusCode.OK, HandRankResponse(rank))
             } catch (e: IllegalArgumentException) {
                 call.respond(HttpStatusCode.BadRequest, mapOf("error" to e.message))
             } catch (e: IllegalStateException) {

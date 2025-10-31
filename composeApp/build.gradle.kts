@@ -165,12 +165,22 @@ ksp {
 }
 
 dependencies {
-    add("kspCommonMainMetadata", "io.insert-koin:koin-ksp-compiler:2.0.0-RC5")
-//    add("kspJvm", "io.insert-koin:koin-ksp-compiler:1.3.0")
+    add("kspCommonMainMetadata", libs.koin.compiler)
+    add("kspAndroid", libs.koin.compiler)
+    add("kspIosX64", libs.koin.compiler)
+    add("kspIosArm64", libs.koin.compiler)
+    add("kspIosSimulatorArm64", libs.koin.compiler)
 }
 
 tasks.withType<KotlinCompilationTask<*>>().configureEach {
     if (name != "kspCommonMainKotlinMetadata") {
+        dependsOn("kspCommonMainKotlinMetadata")
+    }
+}
+
+// Fix KSP task dependencies to prevent implicit dependency warnings
+tasks.configureEach {
+    if (name.startsWith("ksp") && name != "kspCommonMainKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
     }
 }
