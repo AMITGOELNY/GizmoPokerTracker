@@ -29,4 +29,8 @@ class LoginRepositoryImpl(
             }
         }
     }
+
+    override suspend fun logout(): ApiResponse<Unit, Exception> {
+        return remoteDataSource.logout()
+    }
 }

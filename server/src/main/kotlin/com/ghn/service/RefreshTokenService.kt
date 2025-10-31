@@ -5,4 +5,5 @@ import com.ghn.repository.ApiCallResult
 
 interface RefreshTokenService {
     fun refresh(refreshToken: String): ApiCallResult<TokenResponse>
+    fun logout(userId: Int): ApiCallResult<Unit>
 }
