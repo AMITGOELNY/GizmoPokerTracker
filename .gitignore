@@ -26,6 +26,7 @@ composeApp/GPUCache/
 CLAUDE.md
 Agents.md
 DEPLOYMENT.md
+Plan-Refresh.md
 
 .kotlin/
 kotlin-js-store/
