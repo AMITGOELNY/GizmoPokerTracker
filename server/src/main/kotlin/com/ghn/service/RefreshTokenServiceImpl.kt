@@ -13,10 +13,11 @@ class RefreshTokenServiceImpl(
         return when (val result = refreshTokenRepository.validateAndGetUser(refreshToken)) {
             is ApiCallResult.Success -> {
                 val userDTO = result.data
+                val userId = userDTO.id ?: return ApiCallResult.Failure("User ID not found")
 
                 // Generate new tokens
                 val newAccessToken = JwtConfig.makeToken(userDTO)
-                val newRefreshToken = refreshTokenRepository.generateRefreshToken(userDTO.id)
+                val newRefreshToken = refreshTokenRepository.generateRefreshToken(userId)
 
                 // Revoke old refresh token (rotation)
                 refreshTokenRepository.revokeToken(refreshToken)
