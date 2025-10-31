@@ -11,6 +11,8 @@ interface LoginRemoteDataSource {
     suspend fun login(username: String, password: String): ApiResponse<TokenResponse, Exception>
 
     suspend fun create(username: String, password: String): ApiResponse<TokenResponse, Exception>
+
+    suspend fun logout(): ApiResponse<Unit, Exception>
 }
 
 @Single([LoginRemoteDataSource::class])
@@ -41,6 +43,20 @@ internal class LoginRemoteDataSourceImpl(
         }
         return when (result) {
             is ApiResponse.Success -> login(username, password)
+            is ApiResponse.Error -> result
+        }
+    }
+
+    override suspend fun logout(): ApiResponse<Unit, Exception> {
+        val result: ApiResponse<String, Exception> = apiClient.http.safeRequest {
+            post("logout").body<String>()
+        }
+
+        // Clear tokens locally regardless of server response
+        apiClient.clearTokens()
+
+        return when (result) {
+            is ApiResponse.Success -> ApiResponse.Success(Unit)
             is ApiResponse.Error -> result
         }
     }

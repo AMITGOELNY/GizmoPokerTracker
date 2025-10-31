@@ -6,6 +6,9 @@ import com.ghn.repository.ApiCallResult
 import com.ghn.service.RefreshTokenService
 import com.ghn.service.UserService
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
@@ -54,5 +57,25 @@ internal fun Routing.auth() {
         val user = call.receive<User>()
         val result = userService.create(user)
         call.respond(HttpStatusCode.OK)
+    }
+
+    authenticate {
+        post("/logout") {
+            val principal = call.principal<JWTPrincipal>()
+            val userId = principal?.payload?.getClaim("id")?.asInt()
+
+            if (userId == null) {
+                call.respond(HttpStatusCode.Unauthorized, "Invalid token")
+                return@post
+            }
+
+            when (refreshTokenService.logout(userId)) {
+                is ApiCallResult.Success ->
+                    call.respond(HttpStatusCode.OK, "Logged out successfully")
+
+                else ->
+                    call.respond(HttpStatusCode.InternalServerError, "Logout failed")
+            }
+        }
     }
 }

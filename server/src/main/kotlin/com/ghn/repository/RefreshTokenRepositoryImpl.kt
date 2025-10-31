@@ -39,20 +39,40 @@ class RefreshTokenRepositoryImpl(
         val tokenHash = hashToken(token)
         val now = kotlin.time.Clock.System.now()
 
-        val result = db
-            .select(USER.asterisk())
+        // First check if token exists (even if expired) for theft detection
+        val tokenRecord = db
+            .select(REFRESH_TOKEN.USER_ID, REFRESH_TOKEN.EXPIRES_AT)
             .from(REFRESH_TOKEN)
-            .join(USER).on(REFRESH_TOKEN.USER_ID.eq(USER.ID))
             .where(REFRESH_TOKEN.TOKEN_HASH.eq(tokenHash))
-            .and(REFRESH_TOKEN.EXPIRES_AT.gt(now))
             .fetchOne()
 
-        return if (result != null) {
-            val userDTO = result.into(UserDTO::class.java)
-            ApiCallResult.Success(userDTO)
-        } else {
-            ApiCallResult.NotFound
+        if (tokenRecord != null) {
+            val userId = tokenRecord.get(REFRESH_TOKEN.USER_ID) ?: return ApiCallResult.NotFound
+            val expiresAt = tokenRecord.get(REFRESH_TOKEN.EXPIRES_AT) ?: return ApiCallResult.NotFound
+
+            // If token is expired, this might be a reuse attempt (token theft)
+            // Revoke ALL tokens for this user as a security measure
+            if (expiresAt <= now) {
+                revokeAllUserTokens(userId)
+                return ApiCallResult.NotFound
+            }
+
+            // Token is valid, get user info
+            val user = db
+                .select(USER.asterisk())
+                .from(USER)
+                .where(USER.ID.eq(userId))
+                .fetchOne()
+
+            return if (user != null) {
+                val userDTO = user.into(UserDTO::class.java)
+                ApiCallResult.Success(userDTO)
+            } else {
+                ApiCallResult.NotFound
+            }
         }
+
+        return ApiCallResult.NotFound
     }
 
     override fun revokeToken(token: String): ApiCallResult<Unit> {

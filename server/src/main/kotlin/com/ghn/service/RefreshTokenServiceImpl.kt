@@ -33,4 +33,8 @@ class RefreshTokenServiceImpl(
             is ApiCallResult.Failure -> result
         }
     }
+
+    override fun logout(userId: Int): ApiCallResult<Unit> {
+        return refreshTokenRepository.revokeAllUserTokens(userId)
+    }
 }
