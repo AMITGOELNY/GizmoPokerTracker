@@ -30,7 +30,8 @@ import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Single
 import io.ktor.client.plugins.logging.Logger as KtorLogger
 
-private const val BASE_URL = "138.197.84.104"
+// private const val BASE_URL = "138.197.84.104"
+private const val BASE_URL = "gizmo-gizmoservice-5hu6qr-a1aff5-95-217-220-208.traefik.me"
 // private const val BASE_URL = "10.0.2.2:8080"
 
 @Single([GizmoApiClient::class])
