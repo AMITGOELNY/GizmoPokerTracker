@@ -34,6 +34,11 @@ class UserRepositoryImpl(
     }
 
     override fun create(user: User): ApiCallResult<Unit> {
+        val existingUser = db.fetchOne(USER, USER.USERNAME.eq(user.username))
+        if (existingUser != null) {
+            return ApiCallResult.AlreadyExists
+        }
+
         val newRecord = db.newRecord(USER)
         newRecord.from(user.toUserDTO())
         newRecord.store()
@@ -47,4 +52,5 @@ sealed interface ApiCallResult<out T> {
     data object BadPassword : ApiCallResult<Nothing>
     data object Unauthorized : ApiCallResult<Nothing>
     data object NotFound : ApiCallResult<Nothing>
+    data object AlreadyExists : ApiCallResult<Nothing>
 }

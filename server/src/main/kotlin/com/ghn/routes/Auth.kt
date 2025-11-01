@@ -35,6 +35,9 @@ internal fun Routing.auth() {
                 call.respond(HttpStatusCode.InternalServerError, "An error occurred")
 
             is ApiCallResult.Success -> call.respond(HttpStatusCode.OK, result.data)
+
+            ApiCallResult.AlreadyExists ->
+                call.respond(HttpStatusCode.InternalServerError, "Unexpected error")
         }
     }
 
@@ -50,13 +53,29 @@ internal fun Routing.auth() {
                 call.respond(HttpStatusCode.InternalServerError, "An error occurred")
 
             is ApiCallResult.Success -> call.respond(HttpStatusCode.OK, result.data)
+
+            ApiCallResult.AlreadyExists ->
+                call.respond(HttpStatusCode.InternalServerError, "Unexpected error")
         }
     }
 
     post("/register") {
         val user = call.receive<User>()
-        val result = userService.create(user)
-        call.respond(HttpStatusCode.OK)
+        when (val result = userService.create(user)) {
+            ApiCallResult.AlreadyExists ->
+                call.respond(HttpStatusCode.Conflict, "Username already exists")
+
+            is ApiCallResult.Failure ->
+                call.respond(HttpStatusCode.InternalServerError, "Registration failed")
+
+            is ApiCallResult.Success ->
+                call.respond(HttpStatusCode.Created, "User registered successfully")
+
+            ApiCallResult.BadPassword,
+            ApiCallResult.NotFound,
+            ApiCallResult.Unauthorized ->
+                call.respond(HttpStatusCode.InternalServerError, "Unexpected error")
+        }
     }
 
     authenticate {

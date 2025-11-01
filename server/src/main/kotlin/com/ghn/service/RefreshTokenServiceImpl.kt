@@ -31,6 +31,8 @@ class RefreshTokenServiceImpl(
             ApiCallResult.Unauthorized -> ApiCallResult.Unauthorized
 
             is ApiCallResult.Failure -> result
+
+            ApiCallResult.AlreadyExists -> ApiCallResult.Failure("Unexpected error")
         }
     }
 
