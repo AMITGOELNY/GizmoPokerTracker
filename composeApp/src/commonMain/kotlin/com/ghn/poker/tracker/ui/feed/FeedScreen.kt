@@ -53,6 +53,9 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -72,6 +75,7 @@ import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.crossfade
+import coil3.svg.SvgDecoder
 import coil3.util.DebugLogger
 import com.ghn.gizmodb.common.models.NewsCategory
 import com.ghn.poker.tracker.domain.model.FeedItem
@@ -188,10 +192,11 @@ fun FeedScreen(
                                 feed = targetState.data,
                                 tabIndex = state.value.tabIndex,
                                 selectedFeed = state.value.selectedFeed,
-                                onFeedItemClick = onFeedItemClick
-                            ) {
-                                viewModel.dispatch(FeedActions.OnTabItemClick(it))
-                            }
+                                isRefreshing = state.value.isRefreshing,
+                                onFeedItemClick = onFeedItemClick,
+                                onTabItemClick = { viewModel.dispatch(FeedActions.OnTabItemClick(it)) },
+                                onRefresh = { viewModel.dispatch(FeedActions.Refresh) }
+                            )
 
                         LoadableDataState.Loading ->
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -557,267 +562,103 @@ private fun SectionEmptyState(sectionName: String) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun NewsItemList(
     feed: FeedsContainer,
     tabIndex: Int,
     selectedFeed: List<FeedItem>,
+    isRefreshing: Boolean,
     onFeedItemClick: (String) -> Unit,
-    onTabItemClick: (Int) -> Unit
+    onTabItemClick: (Int) -> Unit,
+    onRefresh: () -> Unit
 ) {
     val tabs = listOf(Res.string.articles, Res.string.strategy)
 
     val context = LocalPlatformContext.current
     val imageLoader = remember(context) {
         ImageLoader.Builder(context)
+            .components {
+                add(SvgDecoder.Factory())
+            }
             .crossfade(true)
             .logger(DebugLogger())
             .build()
     }
 
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(Dimens.grid_2),
-        modifier = Modifier.padding(horizontal = 20.dp),
-        contentPadding = PaddingValues(bottom = Dimens.grid_2)
+    val pullToRefreshState = rememberPullToRefreshState()
+
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        state = pullToRefreshState,
+        modifier = Modifier.fillMaxSize(),
+        indicator = {
+            PullToRefreshDefaults.Indicator(
+                state = pullToRefreshState,
+                isRefreshing = isRefreshing,
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .align(Alignment.TopCenter),
+                containerColor = MaterialTheme.colorScheme.primary,
+                color = Color.White
+            )
+        }
     ) {
-        item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .background(
-                            Brush.radialGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
-                                )
-                            )
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.TrendingUp,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
-                Text(
-                    text = stringResource(Res.string.trending_news),
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = MaterialTheme.colorScheme.onBackground,
-                    maxLines = 1
-                )
-            }
-        }
-
-        item {
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                items(feed.featured) {
-                    Card(
-                        modifier = Modifier
-                            .height(260.dp)
-                            .aspectRatio(1.33f)
-                            .clickable { onFeedItemClick(it.link) },
-                        shape = RoundedCornerShape(20.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                    ) {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            AsyncImage(
-                                model = it.image,
-                                imageLoader = imageLoader,
-                                placeholder = painterResource(Res.drawable.ic_placeholder),
-                                error = painterResource(Res.drawable.ic_placeholder),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize()
-                            )
-
-                            // Gradient overlay
-                            Box(
-                                Modifier.fillMaxSize()
-                                    .background(
-                                        Brush.verticalGradient(
-                                            0f to Color.Transparent,
-                                            0.5f to Color(0xFF000000).copy(alpha = 0.3f),
-                                            1f to Color(0xFF000000).copy(alpha = 0.9f),
-                                        )
-                                    )
-                            )
-
-                            // Content
-                            Column(
-                                Modifier
-                                    .fillMaxSize()
-                                    .padding(Dimens.grid_2),
-                                verticalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                // Badge
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.9f))
-                                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                                ) {
-                                    Text(
-                                        text = stringResource(Res.string.featured),
-                                        style = MaterialTheme.typography.labelSmall.copy(
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.White
-                                        )
-                                    )
-                                }
-
-                                // Title and metadata
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    Text(
-                                        text = it.title,
-                                        style = MaterialTheme.typography.titleMedium.copy(
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.White
-                                        ),
-                                        maxLines = 3,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                    Row(
-                                        Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = it.site,
-                                            style = MaterialTheme.typography.bodySmall.copy(
-                                                fontWeight = FontWeight.SemiBold,
-                                                color = MaterialTheme.colorScheme.primary
-                                            ),
-                                        )
-                                        Text(
-                                            text = it.dateFormatted,
-                                            style = MaterialTheme.typography.bodySmall.copy(
-                                                color = Color.White.copy(alpha = 0.8f)
-                                            ),
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        stickyHeader {
-            TabRow(
-                selectedTabIndex = tabIndex,
-                containerColor = Color(0xFF131629),
-                modifier = Modifier.fillMaxWidth().padding(vertical = Dimens.grid_1),
-                indicator = { tabPositions ->
-                    Box(
-                        modifier = Modifier
-                            .tabIndicatorOffset(tabPositions[tabIndex])
-                            .height(3.dp)
-                            .padding(horizontal = 24.dp)
-                            .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
-                            .background(
-                                Brush.horizontalGradient(
-                                    colors = listOf(
-                                        MaterialTheme.colorScheme.primary,
-                                        Color(0xFF7B8BFF)
-                                    )
-                                )
-                            )
-                    )
-                },
-                divider = {},
-            ) {
-                tabs.forEachIndexed { index, title ->
-                    Tab(
-                        text = {
-                            Text(
-                                text = stringResource(title),
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    fontWeight = if (tabIndex == index) FontWeight.Bold else FontWeight.Normal
-                                ),
-                                color = if (tabIndex == index) {
-                                    MaterialTheme.colorScheme.onBackground
-                                } else {
-                                    MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
-                                }
-                            )
-                        },
-                        selected = tabIndex == index,
-                        onClick = { onTabItemClick(index) },
-                        modifier = Modifier.clip(RoundedCornerShape(12.dp))
-                    )
-                }
-            }
-        }
-
-        if (selectedFeed.isEmpty()) {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(Dimens.grid_2),
+            modifier = Modifier.padding(horizontal = 20.dp),
+            contentPadding = PaddingValues(bottom = Dimens.grid_2)
+        ) {
             item {
-                SectionEmptyState(
-                    sectionName = stringResource(if (tabIndex == 0) Res.string.articles else Res.string.strategy)
-                )
-            }
-        } else {
-            items(selectedFeed, key = { it.link }) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onFeedItemClick(it.link) }
-                        .animateItem(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF1F2438).copy(alpha = 0.6f)
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .size(32.dp)
+                            .clip(CircleShape)
                             .background(
-                                Brush.horizontalGradient(
+                                Brush.radialGradient(
                                     colors = listOf(
-                                        Color(0xFF5265FF).copy(alpha = 0.05f),
-                                        Color.Transparent
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
                                     )
                                 )
-                            )
-                            .border(
-                                width = 1.dp,
-                                brush = Brush.horizontalGradient(
-                                    colors = listOf(
-                                        Color(0xFF5265FF).copy(alpha = 0.3f),
-                                        Color(0xFF5265FF).copy(alpha = 0.1f)
-                                    )
-                                ),
-                                shape = RoundedCornerShape(16.dp)
-                            )
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(Dimens.grid_1_5)
+                        Icon(
+                            imageVector = Icons.Default.TrendingUp,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    Text(
+                        text = stringResource(Res.string.trending_news),
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        maxLines = 1
+                    )
+                }
+            }
+
+            item {
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    items(feed.featured) {
+                        Card(
+                            modifier = Modifier
+                                .height(260.dp)
+                                .aspectRatio(1.33f)
+                                .clickable { onFeedItemClick(it.link) },
+                            shape = RoundedCornerShape(20.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                         ) {
-                            // Image
-                            Card(
-                                modifier = Modifier.size(120.dp),
-                                shape = RoundedCornerShape(
-                                    topStart = 16.dp,
-                                    bottomStart = 16.dp,
-                                    topEnd = 12.dp,
-                                    bottomEnd = 12.dp
-                                ),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                            ) {
+                            Box(modifier = Modifier.fillMaxSize()) {
                                 AsyncImage(
                                     model = it.image,
                                     imageLoader = imageLoader,
@@ -827,52 +668,241 @@ fun NewsItemList(
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier.fillMaxSize()
                                 )
-                            }
 
-                            // Content
-                            Column(
-                                modifier = Modifier
-                                    .height(120.dp)
-                                    .weight(1f)
-                                    .padding(end = Dimens.grid_2)
-                                    .padding(vertical = Dimens.grid_1_5),
-                                verticalArrangement = Arrangement.SpaceBetween,
-                            ) {
-                                Text(
-                                    it.title,
-                                    style = MaterialTheme.typography.titleSmall.copy(
-                                        fontWeight = FontWeight.SemiBold
-                                    ),
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    maxLines = 3,
-                                    overflow = TextOverflow.Ellipsis
+                                // Gradient overlay
+                                Box(
+                                    Modifier.fillMaxSize()
+                                        .background(
+                                            Brush.verticalGradient(
+                                                0f to Color.Transparent,
+                                                0.5f to Color(0xFF000000).copy(alpha = 0.3f),
+                                                1f to Color(0xFF000000).copy(alpha = 0.9f),
+                                            )
+                                        )
                                 )
 
-                                Row(
-                                    Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+                                // Content
+                                Column(
+                                    Modifier
+                                        .fillMaxSize()
+                                        .padding(Dimens.grid_2),
+                                    verticalArrangement = Arrangement.SpaceBetween
                                 ) {
+                                    // Badge
                                     Box(
                                         modifier = Modifier
-                                            .clip(RoundedCornerShape(6.dp))
-                                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
-                                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.9f))
+                                            .padding(horizontal = 12.dp, vertical = 6.dp)
                                     ) {
                                         Text(
-                                            it.site,
+                                            text = stringResource(Res.string.featured),
                                             style = MaterialTheme.typography.labelSmall.copy(
-                                                fontWeight = FontWeight.Bold
-                                            ),
-                                            color = MaterialTheme.colorScheme.primary
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.White
+                                            )
                                         )
                                     }
 
-                                    Text(
-                                        it.dateFormatted,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f)
+                                    // Title and metadata
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Text(
+                                            text = it.title,
+                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.White
+                                            ),
+                                            maxLines = 3,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        Row(
+                                            Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                text = it.site,
+                                                style = MaterialTheme.typography.bodySmall.copy(
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    color = MaterialTheme.colorScheme.primary
+                                                ),
+                                            )
+                                            Text(
+                                                text = it.dateFormatted,
+                                                style = MaterialTheme.typography.bodySmall.copy(
+                                                    color = Color.White.copy(alpha = 0.8f)
+                                                ),
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            stickyHeader {
+                TabRow(
+                    selectedTabIndex = tabIndex,
+                    containerColor = Color(0xFF131629),
+                    modifier = Modifier.fillMaxWidth().padding(vertical = Dimens.grid_1),
+                    indicator = { tabPositions ->
+                        Box(
+                            modifier = Modifier
+                                .tabIndicatorOffset(tabPositions[tabIndex])
+                                .height(3.dp)
+                                .padding(horizontal = 24.dp)
+                                .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+                                .background(
+                                    Brush.horizontalGradient(
+                                        colors = listOf(
+                                            MaterialTheme.colorScheme.primary,
+                                            Color(0xFF7B8BFF)
+                                        )
                                     )
+                                )
+                        )
+                    },
+                    divider = {},
+                ) {
+                    tabs.forEachIndexed { index, title ->
+                        Tab(
+                            text = {
+                                Text(
+                                    text = stringResource(title),
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = if (tabIndex == index) FontWeight.Bold else FontWeight.Normal
+                                    ),
+                                    color = if (tabIndex == index) {
+                                        MaterialTheme.colorScheme.onBackground
+                                    } else {
+                                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                                    }
+                                )
+                            },
+                            selected = tabIndex == index,
+                            onClick = { onTabItemClick(index) },
+                            modifier = Modifier.clip(RoundedCornerShape(12.dp))
+                        )
+                    }
+                }
+            }
+
+            if (selectedFeed.isEmpty()) {
+                item {
+                    SectionEmptyState(
+                        sectionName = stringResource(if (tabIndex == 0) Res.string.articles else Res.string.strategy)
+                    )
+                }
+            } else {
+                items(selectedFeed, key = { it.link }) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onFeedItemClick(it.link) }
+                            .animateItem(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF1F2438).copy(alpha = 0.6f)
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    Brush.horizontalGradient(
+                                        colors = listOf(
+                                            Color(0xFF5265FF).copy(alpha = 0.05f),
+                                            Color.Transparent
+                                        )
+                                    )
+                                )
+                                .border(
+                                    width = 1.dp,
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(
+                                            Color(0xFF5265FF).copy(alpha = 0.3f),
+                                            Color(0xFF5265FF).copy(alpha = 0.1f)
+                                        )
+                                    ),
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(Dimens.grid_1_5)
+                            ) {
+                                // Image
+                                Card(
+                                    modifier = Modifier.size(120.dp),
+                                    shape = RoundedCornerShape(
+                                        topStart = 16.dp,
+                                        bottomStart = 16.dp,
+                                        topEnd = 12.dp,
+                                        bottomEnd = 12.dp
+                                    ),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                                ) {
+                                    AsyncImage(
+                                        model = it.image,
+                                        imageLoader = imageLoader,
+                                        placeholder = painterResource(Res.drawable.ic_placeholder),
+                                        error = painterResource(Res.drawable.ic_placeholder),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                }
+
+                                // Content
+                                Column(
+                                    modifier = Modifier
+                                        .height(120.dp)
+                                        .weight(1f)
+                                        .padding(end = Dimens.grid_2)
+                                        .padding(vertical = Dimens.grid_1_5),
+                                    verticalArrangement = Arrangement.SpaceBetween,
+                                ) {
+                                    Text(
+                                        it.title,
+                                        style = MaterialTheme.typography.titleSmall.copy(
+                                            fontWeight = FontWeight.SemiBold
+                                        ),
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        maxLines = 3,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+
+                                    Row(
+                                        Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(6.dp))
+                                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                                        ) {
+                                            Text(
+                                                it.site,
+                                                style = MaterialTheme.typography.labelSmall.copy(
+                                                    fontWeight = FontWeight.Bold
+                                                ),
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+
+                                        Text(
+                                            it.dateFormatted,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f)
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -962,7 +992,9 @@ private fun NewsItemListPreview(@PreviewParameter(FeedsContainerProvider::class)
             feed = feed,
             tabIndex = 0,
             selectedFeed = feed.articles,
+            isRefreshing = false,
             onFeedItemClick = {},
-            onTabItemClick = { _ -> }
+            onTabItemClick = { _ -> },
+            onRefresh = {}
         )
     }

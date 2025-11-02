@@ -108,6 +108,7 @@ kotlin {
                 implementation(libs.coil.core)
                 implementation(libs.coil.compose)
                 implementation(libs.coil.network)
+                implementation(libs.coil.svg)
                 implementation(libs.collections.immutable)
                 implementation(libs.datetime)
                 implementation(libs.kermit)
