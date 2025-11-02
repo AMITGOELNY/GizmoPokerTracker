@@ -36,6 +36,7 @@ class FeedViewModel(
                         FeedActions.Init -> getFeed()
                         is FeedActions.OnTabItemClick ->
                             _state.update { it.copy(tabIndex = action.index) }
+                        FeedActions.Refresh -> refresh()
                     }
                 }
         }
@@ -67,6 +68,33 @@ class FeedViewModel(
         }
     }
 
+    private suspend fun refresh() {
+        _state.update { it.copy(isRefreshing = true) }
+        when (val result = feedUseCase.getFeed()) {
+            is ApiResponse.Error -> {
+                Logger.e { "Rss refresh failed $result" }
+            }
+
+            is ApiResponse.Success -> _state.update { state ->
+                Logger.d { "Rss refresh success ${result.body}" }
+                val group = result.body.groupBy { it.category }
+                val articles = group.getOrElse(NewsCategory.NEWS) { emptyList() }
+                val strategy = group.getOrElse(NewsCategory.STRATEGY) { emptyList() }
+                state.copy(
+                    feed = LoadableDataState.Loaded(
+                        FeedsContainer(
+                            featured = articles.take(7),
+                            items = articles,
+                            articles = articles.drop(7),
+                            strategy = strategy
+                        )
+                    )
+                )
+            }
+        }
+        _state.update { it.copy(isRefreshing = false) }
+    }
+
     fun dispatch(action: FeedActions) {
         viewStateTrigger.tryEmit(action)
     }
@@ -74,7 +102,8 @@ class FeedViewModel(
 
 data class FeedState(
     val tabIndex: Int = 0,
-    val feed: LoadableDataState<FeedsContainer> = LoadableDataState.Loading
+    val feed: LoadableDataState<FeedsContainer> = LoadableDataState.Loading,
+    val isRefreshing: Boolean = false
 ) {
     val selectedFeed: List<FeedItem>
         get() {
@@ -93,4 +122,5 @@ data class FeedsContainer(
 sealed interface FeedActions {
     data object Init : FeedActions
     data class OnTabItemClick(val index: Int) : FeedActions
+    data object Refresh : FeedActions
 }
