@@ -46,8 +46,8 @@
     <string name="feed_refresh">Refresh</string>
     <string name="feed_error_title">Something Went Wrong</string>
     <string name="feed_error_message">We encountered an error while loading the news feed. Please check your connection and try again.</string>
-    <string name="feed_section_empty_title">No %s Yet</string>
-    <string name="feed_section_empty_message">Check back later for new %s content</string>
+    <string name="feed_section_empty_title">No %1$s Yet</string>
+    <string name="feed_section_empty_message">Check back later for new %1$s content</string>
 
     <!-- Login Screen -->
     <string name="welcome_back">Welcome Back</string>

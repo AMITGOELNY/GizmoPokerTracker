@@ -1,0 +1,62 @@
+version: '3'
+
+services:
+  ktor-service:
+    image: ${POKER_IMAGE:-ghcr.io/amitgoelny/gizmopokertracker:latest}
+    pull_policy: ${PULL_POLICY:-always}
+    restart: ${RESTART_POLICY:-always}
+    networks:
+      - dokploy-network
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-sqlite:/app/data/gizmopoker.db}
+      - SECRET_JWT=${SECRET_JWT}
+    volumes:
+      - ${POKER_DATA_DIR:-./poker-data}:/app/data
+    labels:
+      - "traefik.enable=${TRAEFIK_ENABLE:-true}"
+      - "traefik.http.services.ktor-service.loadbalancer.server.port=${POKER_PORT:-8080}"
+
+      # HTTP Router (redirect to HTTPS)
+      - "traefik.http.routers.ktor-service-http.rule=Host(`${POKER_DOMAIN:-gizmopoker.xyz}`) || Host(`www.${POKER_DOMAIN:-gizmopoker.xyz}`)"
+      - "traefik.http.routers.ktor-service-http.entrypoints=web"
+      - "traefik.http.routers.ktor-service-http.middlewares=redirect-to-https@docker"
+
+      # HTTPS Router
+      - "traefik.http.routers.ktor-service.rule=(Host(`${POKER_DOMAIN:-gizmopoker.xyz}`) || Host(`www.${POKER_DOMAIN:-gizmopoker.xyz}`)) && PathPrefix(`/poker-api`)"
+      - "traefik.http.routers.ktor-service.entrypoints=websecure"
+      - "traefik.http.routers.ktor-service.tls=${TLS_ENABLE:-true}"
+      - "traefik.http.routers.ktor-service.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.ktor-service.middlewares=poker-strip@docker"
+
+      # Middleware: Strip /poker-api prefix
+      - "traefik.http.middlewares.poker-strip.stripprefix.prefixes=/poker-api"
+
+      # Middleware: HTTP to HTTPS redirect
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+
+  swim-service:
+    image: ${SWIM_IMAGE:-ghcr.io/amitgoelny/swimmasterapp-backend:latest}
+    pull_policy: ${PULL_POLICY:-always}
+    restart: ${RESTART_POLICY:-always}
+    networks:
+      - dokploy-network
+    environment:
+      - PORT=${SWIM_PORT:-8080}
+      - JWT_SECRET=${SWIM_JWT_SECRET}
+      - JWT_ISSUER=${SWIM_JWT_ISSUER:-http://swim-master-api}
+      - JWT_AUDIENCE=${SWIM_JWT_AUDIENCE:-swim-master-users}
+      - JWT_REALM=${SWIM_JWT_REALM:-SwimMasterApp}
+    volumes:
+      - ${SWIM_DATA_DIR:-./swim-data}:/app/data
+    labels:
+      - "traefik.enable=${TRAEFIK_ENABLE:-true}"
+      - "traefik.http.services.swim-service.loadbalancer.server.port=${SWIM_PORT:-8080}"
+      - "traefik.http.routers.swim-service.rule=PathPrefix(`/swim-api`)"
+      - "traefik.http.routers.swim-service.entrypoints=web"
+      - "traefik.http.middlewares.swim-strip.stripprefix.prefixes=/swim-api"
+      - "traefik.http.routers.swim-service.middlewares=swim-strip@docker"
+
+networks:
+  dokploy-network:
+    external: true
