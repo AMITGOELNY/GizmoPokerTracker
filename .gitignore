@@ -17,7 +17,6 @@ captures
 **/xcshareddata/WorkspaceSettings.xcsettings
 **/xcshareddata/IDEWorkspaceChecks.plist
 gizmopoker.db
-docker-compose.yml
 composeApp/kcef-bundle/
 composeApp/cache/
 composeApp/DawnCache/
@@ -26,12 +25,16 @@ composeApp/GPUCache/
 CLAUDE.md
 Agents.md
 DEPLOYMENT.md
-Plan-Refresh.md
-Plan--Koin-Ann.md
 
 .kotlin/
 kotlin-js-store/
 build/js/
+
 # Database persistence directory
 poker-data/
+swim-data/
 *.db
+
+# Environment variables and local overrides
+.env
+docker-compose.override.yml
