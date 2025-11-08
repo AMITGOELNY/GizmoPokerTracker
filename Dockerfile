@@ -13,7 +13,7 @@ COPY ./server/build/install/server-shadow/lib /app/lib
 VOLUME ["/app/data"]
 
 # Set default database URL to use the persistent volume
-ENV DATABASE_URL="sqlite:/app/data/gizmopoker.db"
+ENV DATABASE_URL="jdbc:sqlite:/app/data/gizmopoker.db"
 
 ENTRYPOINT ["./bin/server"]
 
