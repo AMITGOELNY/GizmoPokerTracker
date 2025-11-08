@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   ktor-service:
     image: ${POKER_IMAGE:-ghcr.io/amitgoelny/gizmopokertracker:latest}
@@ -8,7 +6,7 @@ services:
     networks:
       - dokploy-network
     environment:
-      - DATABASE_URL=${DATABASE_URL:-sqlite:/app/data/gizmopoker.db}
+      - DATABASE_URL=${DATABASE_URL:-jdbc:sqlite:/app/data/gizmopoker.db}
       - SECRET_JWT=${SECRET_JWT}
     volumes:
       - ${POKER_DATA_DIR:-./poker-data}:/app/data
@@ -16,17 +14,32 @@ services:
       - "traefik.enable=${TRAEFIK_ENABLE:-true}"
       - "traefik.http.services.ktor-service.loadbalancer.server.port=${POKER_PORT:-8080}"
 
-      # HTTP Router (redirect to HTTPS)
-      - "traefik.http.routers.ktor-service-http.rule=Host(`${POKER_DOMAIN:-gizmopoker.xyz}`) || Host(`www.${POKER_DOMAIN:-gizmopoker.xyz}`)"
+      # HTTP Router - non-www (redirect to HTTPS)
+      - "traefik.http.routers.ktor-service-http.rule=Host(`${POKER_DOMAIN:-gizmopoker.xyz}`)"
       - "traefik.http.routers.ktor-service-http.entrypoints=web"
       - "traefik.http.routers.ktor-service-http.middlewares=redirect-to-https@docker"
 
-      # HTTPS Router
-      - "traefik.http.routers.ktor-service.rule=(Host(`${POKER_DOMAIN:-gizmopoker.xyz}`) || Host(`www.${POKER_DOMAIN:-gizmopoker.xyz}`)) && PathPrefix(`/poker-api`)"
+      # HTTP Router - www (redirect to HTTPS)
+      - "traefik.http.routers.ktor-service-http-www.rule=Host(`www.${POKER_DOMAIN:-gizmopoker.xyz}`)"
+      - "traefik.http.routers.ktor-service-http-www.entrypoints=web"
+      - "traefik.http.routers.ktor-service-http-www.middlewares=redirect-to-https@docker"
+
+      # HTTPS Router - Main (non-www)
+      - "traefik.http.routers.ktor-service.rule=Host(`${POKER_DOMAIN:-gizmopoker.xyz}`) && PathPrefix(`/poker-api`)"
       - "traefik.http.routers.ktor-service.entrypoints=websecure"
       - "traefik.http.routers.ktor-service.tls=${TLS_ENABLE:-true}"
       - "traefik.http.routers.ktor-service.tls.certresolver=letsencrypt"
       - "traefik.http.routers.ktor-service.middlewares=poker-strip@docker"
+      - "traefik.http.routers.ktor-service.priority=100"
+
+      # HTTPS Router - WWW (works same as non-www)
+      - "traefik.http.routers.ktor-service-www.rule=Host(`www.${POKER_DOMAIN:-gizmopoker.xyz}`) && PathPrefix(`/poker-api`)"
+      - "traefik.http.routers.ktor-service-www.entrypoints=websecure"
+      - "traefik.http.routers.ktor-service-www.tls=${TLS_ENABLE:-true}"
+      - "traefik.http.routers.ktor-service-www.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.ktor-service-www.middlewares=poker-strip@docker"
+      - "traefik.http.routers.ktor-service-www.service=ktor-service"
+      - "traefik.http.routers.ktor-service-www.priority=99"
 
       # Middleware: Strip /poker-api prefix
       - "traefik.http.middlewares.poker-strip.stripprefix.prefixes=/poker-api"
@@ -34,6 +47,11 @@ services:
       # Middleware: HTTP to HTTPS redirect
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+
+      # Middleware: WWW to non-WWW redirect (simple version)
+      - "traefik.http.middlewares.www-to-non-www.redirectregex.regex=^https?://www\\.(.*)"
+      - "traefik.http.middlewares.www-to-non-www.redirectregex.replacement=https://$${1}"
+      - "traefik.http.middlewares.www-to-non-www.redirectregex.permanent=true"
 
   swim-service:
     image: ${SWIM_IMAGE:-ghcr.io/amitgoelny/swimmasterapp-backend:latest}
@@ -56,6 +74,28 @@ services:
       - "traefik.http.routers.swim-service.entrypoints=web"
       - "traefik.http.middlewares.swim-strip.stripprefix.prefixes=/swim-api"
       - "traefik.http.routers.swim-service.middlewares=swim-strip@docker"
+
+  homerun-service:
+    image: ${HOMERUN_IMAGE:-ghcr.io/amitgoelny/homerun-hitter-server:latest}
+    pull_policy: ${PULL_POLICY:-always}
+    restart: ${RESTART_POLICY:-always}
+    networks:
+      - dokploy-network
+    environment:
+      - DATABASE_URL=${HOMERUN_DATABASE_URL:-jdbc:sqlite:/app/data/homerunhitter.db}
+      - JWT_SECRET=${HOMERUN_JWT_SECRET}
+      - JWT_ISSUER=${HOMERUN_JWT_ISSUER:-homerun-hitter}
+      - JWT_AUDIENCE=${HOMERUN_JWT_AUDIENCE:-homerun-hitter-audience}
+      - JWT_REALM=${HOMERUN_JWT_REALM:-Homerun Hitter API}
+    volumes:
+      - ${HOMERUN_DATA_DIR:-./homerun-data}:/app/data
+    labels:
+      - "traefik.enable=${TRAEFIK_ENABLE:-true}"
+      - "traefik.http.services.homerun-service.loadbalancer.server.port=${HOMERUN_PORT:-8080}"
+      - "traefik.http.routers.homerun-service.rule=PathPrefix(`/homerun-api`)"
+      - "traefik.http.routers.homerun-service.entrypoints=web"
+      - "traefik.http.middlewares.homerun-strip.stripprefix.prefixes=/homerun-api"
+      - "traefik.http.routers.homerun-service.middlewares=homerun-strip@docker"
 
 networks:
   dokploy-network:

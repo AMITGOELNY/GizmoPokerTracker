@@ -60,7 +60,8 @@ fun Application.module() {
     val secret = environment.config.property("ktor.SECRET_JWT").getString()
 //    environment.developmentMode
     JwtConfig.initialize(secret)
-    val dbUrl = "jdbc:${environment.config.property("ktor.databaseUrl").getString()}"
+    val rawDbUrl = environment.config.property("ktor.databaseUrl").getString()
+    val dbUrl = if (rawDbUrl.startsWith("jdbc:")) rawDbUrl else "jdbc:$rawDbUrl"
     runMigrations(dbUrl)
 
     install(Koin) {
