@@ -9,7 +9,7 @@ services:
       - DATABASE_URL=${DATABASE_URL:-jdbc:sqlite:/app/data/gizmopoker.db}
       - SECRET_JWT=${SECRET_JWT}
     volumes:
-      - ${POKER_DATA_DIR:-./poker-data}:/app/data
+      - ${POKER_DATA_DIR:-../files/poker-data}:/app/data
     labels:
       - "traefik.enable=${TRAEFIK_ENABLE:-true}"
       - "traefik.http.services.ktor-service.loadbalancer.server.port=${POKER_PORT:-8080}"
@@ -66,7 +66,7 @@ services:
       - JWT_AUDIENCE=${SWIM_JWT_AUDIENCE:-swim-master-users}
       - JWT_REALM=${SWIM_JWT_REALM:-SwimMasterApp}
     volumes:
-      - ${SWIM_DATA_DIR:-./swim-data}:/app/data
+      - ${SWIM_DATA_DIR:-../files/swim-data}:/app/data
     labels:
       - "traefik.enable=${TRAEFIK_ENABLE:-true}"
       - "traefik.http.services.swim-service.loadbalancer.server.port=${SWIM_PORT:-8080}"
@@ -88,7 +88,7 @@ services:
       - JWT_AUDIENCE=${HOMERUN_JWT_AUDIENCE:-homerun-hitter-audience}
       - JWT_REALM=${HOMERUN_JWT_REALM:-Homerun Hitter API}
     volumes:
-      - ${HOMERUN_DATA_DIR:-./homerun-data}:/app/data
+      - ${HOMERUN_DATA_DIR:-../files/homerun-data}:/app/data
     labels:
       - "traefik.enable=${TRAEFIK_ENABLE:-true}"
       - "traefik.http.services.homerun-service.loadbalancer.server.port=${HOMERUN_PORT:-8080}"
