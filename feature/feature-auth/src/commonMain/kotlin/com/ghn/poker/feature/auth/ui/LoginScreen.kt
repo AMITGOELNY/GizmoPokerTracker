@@ -31,7 +31,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -61,6 +60,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.ghn.poker.core.ui.components.PrimaryButton
+import com.ghn.poker.core.ui.preview.SurfacePreview
 import com.ghn.poker.core.ui.theme.AntiqueBrass
 import com.ghn.poker.core.ui.theme.ChampagneGold
 import com.ghn.poker.core.ui.theme.GizmoGradients
@@ -93,13 +93,27 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import gizmopoker.core.core_resources.generated.resources.Res as CoreRes
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(viewModel: LoginViewModel = koinInject(), onBackClick: () -> Unit) {
     val state = viewModel.state.collectAsState()
+
+    LoginScreenContent(
+        loading = state.value.authenticating,
+        onBackClick = onBackClick,
+        onDispatch = viewModel::dispatch
+    )
+}
+
+@Composable
+internal fun LoginScreenContent(
+    loading: Boolean,
+    onBackClick: () -> Unit,
+    onDispatch: (LoginActions) -> Unit,
+) {
     var isVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -208,10 +222,10 @@ fun LoginScreen(viewModel: LoginViewModel = koinInject(), onBackClick: () -> Uni
                     )
                 ) {
                     FormBody(
-                        loading = state.value.authenticating,
-                        onUsernameChange = { viewModel.dispatch(LoginActions.OnUsernameChange(it)) },
-                        onPasswordChange = { viewModel.dispatch(LoginActions.OnPasswordChange(it)) },
-                        onSubmit = { viewModel.dispatch(LoginActions.OnSubmit) }
+                        loading = loading,
+                        onUsernameChange = { onDispatch(LoginActions.OnUsernameChange(it)) },
+                        onPasswordChange = { onDispatch(LoginActions.OnPasswordChange(it)) },
+                        onSubmit = { onDispatch(LoginActions.OnSubmit) }
                     )
                 }
 
@@ -489,4 +503,24 @@ internal fun DramaticPokerBackground(isVisible: Boolean) {
 @Composable
 internal fun AnimatedBackgroundOrbs(isVisible: Boolean) {
     LoginAmbientBackground(isVisible = isVisible)
+}
+
+@Preview
+@Composable
+private fun LoginScreenContentPreview() = SurfacePreview {
+    LoginScreenContent(
+        loading = false,
+        onBackClick = {},
+        onDispatch = {}
+    )
+}
+
+@Preview
+@Composable
+private fun LoginScreenContentLoadingPreview() = SurfacePreview {
+    LoginScreenContent(
+        loading = true,
+        onBackClick = {},
+        onDispatch = {}
+    )
 }

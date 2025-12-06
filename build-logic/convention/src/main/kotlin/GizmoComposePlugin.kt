@@ -39,6 +39,12 @@ class GizmoComposePlugin : Plugin<Project> {
                     }
                 }
 
+                sourceSets.named("androidMain") {
+                    dependencies {
+                        implementation(compose.dependencies.uiTooling)
+                    }
+                }
+
                 sourceSets.named("desktopMain") {
                     dependencies {
                         implementation(compose.dependencies.desktop.currentOs)
