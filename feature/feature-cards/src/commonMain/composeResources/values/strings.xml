@@ -4,4 +4,7 @@
     <string name="hero">HERO</string>
     <string name="villain">VILLAIN</string>
     <string name="vs">VS</string>
+    <string name="plus">+</string>
+    <string name="confirm">Confirm</string>
+    <string name="percent">%</string>
 </resources>
