@@ -1,6 +1,6 @@
 <h1>GizmoPoker</h1>
 
-![Kotlin](https://img.shields.io/badge/Kotlin-2.0.0-orange)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.2.21-orange)
 [![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-blue)](https://kotlinlang.org/docs/reference/multiplatform.html)
 
 ![Platform](https://img.shields.io/badge/Android-3aab58)
@@ -19,18 +19,18 @@ A Kotlin Multiplatform poker session tracker with support for Android, iOS, Desk
 ## Tech Stack
 
 ### Frontend
-- **Kotlin Multiplatform** 2.2.20
-- **Compose Multiplatform** 1.9.4
-- **Ktor Client** 3.3.1 for API calls
-- **Coil 3** for image loading
+- **Kotlin Multiplatform** 2.2.21
+- **Compose Multiplatform** 1.10.0
+- **Ktor Client** 3.3.3 for API calls
+- **Coil** 3.3.0 for image loading
 - **Koin** 4.1.1 for dependency injection
-- **SQLDelight** 2.1.0 for local database
+- **SQLDelight** 2.2.1 for local database
 - **kotlinx-datetime** for date/time handling
 
 ### Backend (Server)
-- **Ktor Server** 3.3.1
-- **jOOQ** 3.20.8 for type-safe SQL
-- **Flyway** for database migrations
+- **Ktor Server** 3.3.3
+- **jOOQ** 3.20.9 for type-safe SQL
+- **Flyway** 11.18.0 for database migrations
 - **SQLite** as the database
 - **JWT** for authentication
 

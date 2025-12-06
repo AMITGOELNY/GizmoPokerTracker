@@ -23,7 +23,6 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
@@ -70,7 +69,6 @@ import kotlin.time.Clock
 import kotlin.time.Instant
 import gizmopoker.core.core_resources.generated.resources.Res as CoreRes
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SessionEntryScreen(
     onBackClick: () -> Unit,
@@ -181,7 +179,6 @@ fun SessionEntryScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private inline fun <T : Enum<T>> ExpandedDropDown(
     items: List<T>,
@@ -262,7 +259,6 @@ private fun TextEntryField(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 private fun SimpleDateRangePickerInDatePickerDialog(
     onDismiss: () -> Unit,
     onDateSelected: (kotlin.time.Instant) -> Unit

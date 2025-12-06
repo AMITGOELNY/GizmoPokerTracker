@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -452,7 +453,7 @@ private fun AnimatedCardFan(
                 color = Color.Black.copy(alpha = 0.3f),
                 topLeft = Offset(4f, 6f),
                 size = size,
-                cornerRadius = androidx.compose.ui.geometry.CornerRadius(cornerRadius)
+                cornerRadius = CornerRadius(cornerRadius)
             )
 
             // Card background with gradient
@@ -847,7 +848,7 @@ private fun EnhancedCinematicButton(
                         )
                     )
                 },
-                cornerRadius = androidx.compose.ui.geometry.CornerRadius(28.dp.toPx())
+                cornerRadius = CornerRadius(28.dp.toPx())
             )
         }
 

@@ -7,12 +7,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TrendingDown
@@ -33,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ghn.gizmodb.common.models.Venue
+import com.ghn.poker.core.ui.preview.SurfacePreview
 import com.ghn.poker.core.ui.theme.ChampagneGold
 import com.ghn.poker.core.ui.theme.Dimens
 import com.ghn.poker.core.ui.theme.Emerald
@@ -48,10 +47,17 @@ import com.ghn.poker.feature.tracker.domain.model.SessionData
 import gizmopoker.feature.feature_tracker.generated.resources.Res
 import gizmopoker.feature.feature_tracker.generated.resources.magic_city_casino
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
 
 @Composable
 internal fun SessionListItem(session: SessionData) {
-    val profitValue = (session.endAmount?.toDoubleOrNull() ?: 0.0) - (session.startAmount?.toDoubleOrNull() ?: 0.0)
+    val profitValue =
+        (session.endAmount?.toDoubleOrNull() ?: 0.0) - (
+            session.startAmount?.toDoubleOrNull()
+                ?: 0.0
+            )
     val isProfit = profitValue >= 0
     val accentColor = if (isProfit) Emerald else Ruby
 
@@ -92,15 +98,15 @@ internal fun SessionListItem(session: SessionData) {
                 )
                 .padding(Dimens.grid_2)
         ) {
-            Row(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Left side - Venue and Date
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.weight(1f)
+                // Top row - Venue and Profit
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Venue
                     Row(
@@ -151,33 +157,6 @@ internal fun SessionListItem(session: SessionData) {
                         }
                     }
 
-                    // Date
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        modifier = Modifier.padding(start = 46.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AccessTime,
-                            contentDescription = null,
-                            tint = Silver.copy(alpha = 0.7f),
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Text(
-                            text = session.formattedDate,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Silver
-                        )
-                    }
-                }
-
-                Spacer(Modifier.width(Dimens.grid_1))
-
-                // Right side - Profit/Loss
-                Column(
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
                     // Profit/Loss indicator with icon
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -213,6 +192,33 @@ internal fun SessionListItem(session: SessionData) {
                             color = accentColor
                         )
                     }
+                }
+
+                // Bottom row - Date and Buy-in/Cash-out (aligned)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 46.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Date
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AccessTime,
+                            contentDescription = null,
+                            tint = Silver.copy(alpha = 0.7f),
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Text(
+                            text = session.formattedDate,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Silver
+                        )
+                    }
 
                     // Buy-in and Cash-out
                     Text(
@@ -224,4 +230,30 @@ internal fun SessionListItem(session: SessionData) {
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun SessionListItemPreview() = SurfacePreview {
+    SessionListItem(
+        session = SessionData(
+            date = Clock.System.now().minus(2.days),
+            startAmount = "500",
+            endAmount = "1250",
+            venue = Venue.MAGIC_CITY
+        )
+    )
+}
+
+@Preview
+@Composable
+private fun SessionListItemLossPreview() = SurfacePreview {
+    SessionListItem(
+        session = SessionData(
+            date = Clock.System.now().minus(5.days),
+            startAmount = "1000",
+            endAmount = "350",
+            venue = Venue.HARD_ROCK_FL
+        )
+    )
 }

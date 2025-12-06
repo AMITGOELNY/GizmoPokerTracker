@@ -42,7 +42,6 @@ import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -72,9 +71,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.ghn.gizmodb.common.models.Venue
 import com.ghn.poker.core.ui.components.GizmoIconButton
 import com.ghn.poker.core.ui.components.GizmoLoadingIndicator
 import com.ghn.poker.core.ui.components.GizmoPrimaryButton
+import com.ghn.poker.core.ui.preview.SurfacePreview
 import com.ghn.poker.core.ui.theme.ChampagneGold
 import com.ghn.poker.core.ui.theme.Dimens
 import com.ghn.poker.core.ui.theme.Emerald
@@ -109,19 +110,37 @@ import gizmopoker.feature.feature_tracker.generated.resources.unable_load_sessio
 import gizmopoker.feature.feature_tracker.generated.resources.win_rate
 import gizmopoker.feature.feature_tracker.generated.resources.working_on_charts
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
 import gizmopoker.core.core_resources.generated.resources.Res as CoreRes
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackerLandingPage(
     viewModel: SessionListViewModel = koinInject<SessionListViewModel>(),
     onCreateSessionClick: () -> Unit,
     onSignOutClick: () -> Unit,
 ) {
+    val state = viewModel.state.collectAsState().value
+
+    TrackerLandingPageContent(
+        sessionsState = state.sessions,
+        onCreateSessionClick = onCreateSessionClick,
+        onSignOutClick = onSignOutClick,
+        onRetry = { viewModel.onDispatch(SessionListAction.Retry) }
+    )
+}
+
+@Composable
+internal fun TrackerLandingPageContent(
+    sessionsState: LoadableDataState<List<SessionData>>,
+    onCreateSessionClick: () -> Unit,
+    onSignOutClick: () -> Unit,
+    onRetry: () -> Unit,
+) {
     var tabIndex by remember { mutableIntStateOf(0) }
     val tabs = listOf(Res.string.recent_sessions, Res.string.charts)
-    val state = viewModel.state.collectAsState().value
 
     Box(
         modifier = Modifier
@@ -180,12 +199,12 @@ fun TrackerLandingPage(
             ) {
                 // Stats Summary Card
                 AnimatedVisibility(
-                    visible = state.sessions is LoadableDataState.Loaded,
+                    visible = sessionsState is LoadableDataState.Loaded,
                     enter = slideInVertically(tween(400)) + fadeIn(tween(400)),
                     exit = slideOutVertically(tween(300)) + fadeOut(tween(300))
                 ) {
-                    if (state.sessions is LoadableDataState.Loaded) {
-                        StatsSummaryCard(state.sessions.data)
+                    if (sessionsState is LoadableDataState.Loaded) {
+                        StatsSummaryCard(sessionsState.data)
                     }
                 }
 
@@ -231,9 +250,9 @@ fun TrackerLandingPage(
 
                 Box(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
                     when (tabIndex) {
-                        0 -> SessionList(
-                            viewModel = viewModel,
-                            onRetry = { viewModel.onDispatch(SessionListAction.Retry) }
+                        0 -> SessionListContent(
+                            sessionsState = sessionsState,
+                            onRetry = onRetry
                         )
                         1 -> ComingSoonView()
                     }
@@ -498,9 +517,16 @@ private fun ComingSoonView() {
 @Composable
 fun SessionList(viewModel: SessionListViewModel, onRetry: () -> Unit) {
     val state = viewModel.state.collectAsState().value
+    SessionListContent(sessionsState = state.sessions, onRetry = onRetry)
+}
 
+@Composable
+private fun SessionListContent(
+    sessionsState: LoadableDataState<List<SessionData>>,
+    onRetry: () -> Unit
+) {
     AnimatedContent(
-        targetState = state.sessions,
+        targetState = sessionsState,
         transitionSpec = { fadeIn(tween(300)) togetherWith fadeOut(tween(300)) },
         label = "Session List"
     ) { targetState ->
@@ -665,4 +691,68 @@ private fun ErrorSessionsState(onRetry: () -> Unit) {
             )
         }
     }
+}
+
+@Preview
+@Composable
+private fun TrackerLandingPageContentPreview() = SurfacePreview {
+    val sampleSessions = listOf(
+        SessionData(
+            date = Clock.System.now().minus(1.days),
+            startAmount = "500",
+            endAmount = "1250",
+            venue = Venue.MAGIC_CITY
+        ),
+        SessionData(
+            date = Clock.System.now().minus(3.days),
+            startAmount = "1000",
+            endAmount = "650",
+            venue = Venue.HARD_ROCK_FL
+        ),
+        SessionData(
+            date = Clock.System.now().minus(7.days),
+            startAmount = "800",
+            endAmount = "1400",
+            venue = Venue.MAGIC_CITY
+        )
+    )
+    TrackerLandingPageContent(
+        sessionsState = LoadableDataState.Loaded(sampleSessions),
+        onCreateSessionClick = {},
+        onSignOutClick = {},
+        onRetry = {}
+    )
+}
+
+@Preview
+@Composable
+private fun TrackerLandingPageContentLoadingPreview() = SurfacePreview {
+    TrackerLandingPageContent(
+        sessionsState = LoadableDataState.Loading,
+        onCreateSessionClick = {},
+        onSignOutClick = {},
+        onRetry = {}
+    )
+}
+
+@Preview
+@Composable
+private fun TrackerLandingPageContentEmptyPreview() = SurfacePreview {
+    TrackerLandingPageContent(
+        sessionsState = LoadableDataState.Empty,
+        onCreateSessionClick = {},
+        onSignOutClick = {},
+        onRetry = {}
+    )
+}
+
+@Preview
+@Composable
+private fun TrackerLandingPageContentErrorPreview() = SurfacePreview {
+    TrackerLandingPageContent(
+        sessionsState = LoadableDataState.Error,
+        onCreateSessionClick = {},
+        onSignOutClick = {},
+        onRetry = {}
+    )
 }
