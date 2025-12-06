@@ -11,6 +11,8 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":core:core-network"))
             implementation(project(":core:core-preferences"))
+            implementation(project(":core:core-ui"))
+            implementation(project(":common"))
         }
     }
 }

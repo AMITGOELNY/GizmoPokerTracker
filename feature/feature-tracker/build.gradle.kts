@@ -9,8 +9,10 @@ android {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":core:core-common"))
             implementation(project(":core:core-network"))
             implementation(project(":core:core-database"))
+            implementation(project(":common"))
         }
     }
 }

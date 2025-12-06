@@ -14,7 +14,7 @@ import platform.Foundation.currentLocale
 
 private const val ISO_8601_FORMAT = "yyyy-MM-dd"
 
-internal actual fun LocalDateTime.format(format: String): String? {
+actual fun LocalDateTime.format(format: String): String? {
     val date = NSCalendar
         .currentCalendar
         .dateFromComponents(toNSDateComponents())
@@ -25,7 +25,7 @@ internal actual fun LocalDateTime.format(format: String): String? {
     }
 }
 
-internal actual fun LocalDate.format(format: String): String? {
+actual fun LocalDate.format(format: String): String? {
     val dateFormatter = NSDateFormatter().apply {
         dateFormat = ISO_8601_FORMAT
     }
