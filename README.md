@@ -64,6 +64,8 @@ A Kotlin Multiplatform poker session tracker with support for Android, iOS, Desk
 
 ## Module Architecture
 
+![Architecture Diagram](assets/architecture_diagram.png)
+
 The project uses a **multi-module architecture** with convention plugins for consistent build configuration:
 
 - **Convention Plugins**: `gizmo.kmp.library`, `gizmo.compose`, `gizmo.feature`, `gizmo.koin.ksp`
