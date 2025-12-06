@@ -24,7 +24,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "GizmoPoker"
+            baseName = "GizmoCore"
             isStatic = true
 
             // Export all feature modules for iOS umbrella framework
