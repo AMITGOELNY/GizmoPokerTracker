@@ -1,9 +1,9 @@
 package com.ghn.poker.tracker.ui.shared
 
-import gizmopoker.composeapp.generated.resources.Res
-import gizmopoker.composeapp.generated.resources.ic_baseline_assignment
-import gizmopoker.composeapp.generated.resources.ic_home
-import gizmopoker.composeapp.generated.resources.ic_person
+import gizmopoker.core.core_ui.generated.resources.Res
+import gizmopoker.core.core_ui.generated.resources.ic_baseline_assignment
+import gizmopoker.core.core_ui.generated.resources.ic_home
+import gizmopoker.core.core_ui.generated.resources.ic_person
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.DrawableResource
 

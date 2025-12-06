@@ -28,6 +28,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.ghn.poker.core.ui.theme.GizmoTheme
 import com.ghn.poker.feature.auth.domain.usecase.impl.AppState
 import com.ghn.poker.feature.auth.domain.usecase.impl.Store
 import com.ghn.poker.feature.auth.navigation.CreateAccount
@@ -44,7 +45,6 @@ import com.ghn.poker.feature.tracker.navigation.SessionInsert
 import com.ghn.poker.feature.tracker.navigation.TrackerHome
 import com.ghn.poker.feature.tracker.navigation.trackerNavGraph
 import com.ghn.poker.tracker.ui.shared.BottomNavItem
-import com.ghn.poker.tracker.ui.theme.GizmoTheme
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 

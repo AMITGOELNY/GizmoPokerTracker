@@ -8,24 +8,13 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.mokkery)
-    alias(libs.plugins.sqldelight)
     alias(libs.plugins.serialization)
 }
 
 kotlin {
     applyDefaultHierarchyTemplate()
 
-    androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = JavaVersion.VERSION_21.majorVersion
-            }
-        }
-
-//        compilerOptions {
-//            jvmTarget.set(JvmTarget.JVM_21)
-//        }
-    }
+    androidTarget()
 
     jvm("desktop")
 
@@ -105,9 +94,9 @@ kotlin {
                 implementation(project(":common"))
                 // Core modules
                 implementation(project(":core:core-common"))
+                implementation(project(":core:core-database"))
                 implementation(project(":core:core-di"))
                 implementation(project(":core:core-network"))
-                // Note: core-database excluded - composeApp still has SQLDelight
                 implementation(project(":core:core-preferences"))
                 implementation(project(":core:core-ui"))
                 implementation(project(":core:core-resources"))
@@ -234,7 +223,6 @@ android {
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/composeResources")
 
     defaultConfig {
         applicationId = "com.ghn.poker.tracker"
@@ -264,7 +252,7 @@ android {
         debugImplementation(libs.compose.ui.tooling)
     }
 
-    sourceSets["main"].res.srcDirs("src/androidMain/res", "src/commonMain/composeResources")
+    sourceSets["main"].res.srcDirs("src/androidMain/res")
 }
 
 compose.desktop {
@@ -277,17 +265,6 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
-}
-
-sqldelight {
-    databases {
-        create("GizmoPokerDb") {
-            packageName.set("com.ghn.poker.tracker")
-            schemaOutputDirectory.set(file("src/commonMain/sqldelight/databases"))
-            verifyMigrations.set(true)
-        }
-    }
-    linkSqlite.set(true)
 }
 
 kover {
