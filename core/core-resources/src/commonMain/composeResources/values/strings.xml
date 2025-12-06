@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">GiZMO POKER</string>
+    <string name="confirm">Confirm</string>
+    <string name="plus">+</string>
+    <string name="percent">%</string>
+    <string name="try_again">Try Again</string>
+    <string name="connection_issue">Connection Issue</string>
+</resources>

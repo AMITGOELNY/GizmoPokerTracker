@@ -70,14 +70,14 @@ import coil3.request.crossfade
 import coil3.svg.SvgDecoder
 import coil3.util.DebugLogger
 import com.ghn.gizmodb.common.models.NewsCategory
+import com.ghn.poker.core.ui.components.GizmoLoadingIndicator
+import com.ghn.poker.core.ui.components.GizmoPrimaryButton
 import com.ghn.poker.tracker.domain.model.FeedItem
 import com.ghn.poker.tracker.presentation.feed.FeedActions
 import com.ghn.poker.tracker.presentation.feed.FeedViewModel
 import com.ghn.poker.tracker.presentation.feed.FeedsContainer
 import com.ghn.poker.tracker.presentation.session.LoadableDataState
 import com.ghn.poker.tracker.ui.preview.SurfacePreview
-import com.ghn.poker.tracker.ui.shared.GizmoLoadingIndicator
-import com.ghn.poker.tracker.ui.shared.GizmoPrimaryButton
 import com.ghn.poker.tracker.ui.theme.ChampagneGold
 import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.GizmoGradients
