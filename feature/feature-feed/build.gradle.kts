@@ -19,6 +19,7 @@ kotlin {
             implementation(project(":core:core-ui"))
             implementation(project(":core:core-resources"))
             implementation(project(":common"))
+            api(libs.webview.multiplatform)
         }
     }
 }

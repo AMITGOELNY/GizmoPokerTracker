@@ -5,7 +5,6 @@ import com.ghn.gizmodb.common.models.GameType
 import com.ghn.gizmodb.common.models.SessionDTO
 import com.ghn.gizmodb.common.models.Venue
 import com.ghn.poker.core.common.util.randomUUID
-import com.ghn.poker.core.database.SessionDao
 import com.ghn.poker.core.network.ApiResponse
 import com.ghn.poker.feature.tracker.data.sources.remote.SessionRemoteDataSource
 import com.ghn.poker.feature.tracker.domain.model.Session
@@ -15,7 +14,6 @@ import org.koin.core.annotation.Single
 
 @Single([SessionRepository::class])
 class SessionRepositoryImpl(
-    private val dao: SessionDao,
     private val remoteDataSource: SessionRemoteDataSource
 ) : SessionRepository {
     override suspend fun insertSession(
@@ -23,14 +21,8 @@ class SessionRepositoryImpl(
         startAmount: Double?,
         endAmount: Double?
     ) {
-        dao.insertSession(
-            session.Session(
-                id = randomUUID(),
-                date = date.toString(),
-                startAmount = startAmount?.toString(),
-                endAmount = endAmount?.toString()
-            )
-        )
+        // TODO: Re-enable local database storage when core-database is integrated
+        Logger.w { "insertSession called but local database is not yet integrated" }
     }
 
     override suspend fun createSession(

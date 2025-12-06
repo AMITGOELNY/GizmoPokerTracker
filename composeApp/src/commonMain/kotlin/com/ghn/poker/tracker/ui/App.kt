@@ -5,25 +5,15 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -33,38 +23,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import com.ghn.poker.tracker.domain.usecase.impl.AppState
-import com.ghn.poker.tracker.domain.usecase.impl.Store
-import com.ghn.poker.tracker.ui.cards.CardsScreen
-import com.ghn.poker.tracker.ui.feed.FeedScreen
-import com.ghn.poker.tracker.ui.login.GetStartedScreen
-import com.ghn.poker.tracker.ui.login.LoginScreen
-import com.ghn.poker.tracker.ui.login.SignUpScreen
-import com.ghn.poker.tracker.ui.login.SplashScreen
+import com.ghn.poker.feature.auth.domain.usecase.impl.AppState
+import com.ghn.poker.feature.auth.domain.usecase.impl.Store
+import com.ghn.poker.feature.auth.navigation.CreateAccount
+import com.ghn.poker.feature.auth.navigation.Login
+import com.ghn.poker.feature.auth.navigation.SplashScreen
+import com.ghn.poker.feature.auth.navigation.Welcome
+import com.ghn.poker.feature.auth.navigation.authNavGraph
+import com.ghn.poker.feature.cards.navigation.CardsHome
+import com.ghn.poker.feature.cards.navigation.cardsNavGraph
+import com.ghn.poker.feature.feed.navigation.FeedHome
+import com.ghn.poker.feature.feed.navigation.WebView
+import com.ghn.poker.feature.feed.navigation.feedNavGraph
+import com.ghn.poker.feature.tracker.navigation.SessionInsert
+import com.ghn.poker.feature.tracker.navigation.TrackerHome
+import com.ghn.poker.feature.tracker.navigation.trackerNavGraph
 import com.ghn.poker.tracker.ui.shared.BottomNavItem
-import com.ghn.poker.tracker.ui.shared.CreateAccount
-import com.ghn.poker.tracker.ui.shared.Login
-import com.ghn.poker.tracker.ui.shared.SessionInsert
-import com.ghn.poker.tracker.ui.shared.SplashScreen
-import com.ghn.poker.tracker.ui.shared.WebView
-import com.ghn.poker.tracker.ui.shared.Welcome
 import com.ghn.poker.tracker.ui.theme.GizmoTheme
-import com.ghn.poker.tracker.ui.tracker.SessionEntryScreen
-import com.ghn.poker.tracker.ui.tracker.TrackerLandingPage
-import com.multiplatform.webview.web.LoadingState
-import com.multiplatform.webview.web.WebView
-import com.multiplatform.webview.web.rememberWebViewState
-import gizmopoker.composeapp.generated.resources.Res
-import gizmopoker.composeapp.generated.resources.news_feed
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
@@ -100,41 +81,44 @@ fun App(
                     Modifier.padding(bottom = padding.calculateBottomPadding())
                 }
             ) {
-                composable<SplashScreen> {
-                    bottomBarState.value = false
-                    SplashScreen(onSplashScreenFinished = viewModel::checkForToken)
-                }
+                // Auth feature navigation
+                authNavGraph(
+                    onSplashScreenFinished = viewModel::checkForToken,
+                    onNavigateToLogin = { navController.navigate(Login) },
+                    onNavigateToCreateAccount = { navController.navigate(CreateAccount) },
+                    onBackClick = navController::popBackStack
+                )
 
-                composable<Welcome> {
-                    bottomBarState.value = false
-                    GetStartedScreen(
-                        onSignInClick = { navController.navigate(Login) },
-                        onCreateAccountClick = { navController.navigate(CreateAccount) }
-                    )
-                }
+                // Tracker feature navigation (Home tab)
+                trackerNavGraph(
+                    onCreateSessionClick = { navController.navigate(SessionInsert) },
+                    onSignOutClick = { viewModel.signout() },
+                    onBackClick = navController::popBackStack,
+                    onShowBottomBar = { bottomBarState.value = it }
+                )
 
-                composable<Login> {
-                    bottomBarState.value = false
-                    LoginScreen(onBackClick = navController::popBackStack)
-                }
+                // Feed feature navigation (News tab)
+                feedNavGraph(
+                    onNavigateToWebView = { url -> navController.navigate(WebView(url)) },
+                    onBackClick = navController::popBackStack,
+                    onShowBottomBar = { bottomBarState.value = it }
+                )
 
-                composable<CreateAccount> {
-                    bottomBarState.value = false
-                    SignUpScreen(onBackClick = navController::popBackStack)
-                }
+                // Cards feature navigation (Profile tab)
+                cardsNavGraph()
 
+                // Bottom nav item routes that map to feature routes
                 composable<BottomNavItem.Home>(
                     enterTransition = { fadeIn() },
                     exitTransition = { fadeOut() }
                 ) {
                     bottomBarState.value = true
-                    TrackerLandingPage(
-                        onCreateSessionClick = {
-                            bottomBarState.value = false
-                            navController.navigate(SessionInsert)
-                        },
-                        onSignOutClick = { viewModel.signout() }
-                    )
+                    // Navigate to tracker home internally
+                    LaunchedEffect(Unit) {
+                        navController.navigate(TrackerHome) {
+                            popUpTo(BottomNavItem.Home) { inclusive = true }
+                        }
+                    }
                 }
 
                 composable<BottomNavItem.News>(
@@ -142,26 +126,20 @@ fun App(
                     exitTransition = { fadeOut() }
                 ) {
                     bottomBarState.value = true
-                    FeedScreen {
-                        navController.navigate(WebView(it))
+                    LaunchedEffect(Unit) {
+                        navController.navigate(FeedHome) {
+                            popUpTo(BottomNavItem.News) { inclusive = true }
+                        }
                     }
                 }
 
-                composable<WebView> { backStackEntry ->
-//                        bottomBarState.value = false
-                    val webView: WebView = backStackEntry.toRoute()
-                    WebViewCompose(
-                        url = webView.url,
-                        onBackClick = navController::popBackStack
-                    )
-                }
-
-                composable<SessionInsert> {
-                    SessionEntryScreen(onBackClick = navController::popBackStack)
-                }
-
                 composable<BottomNavItem.Profile> {
-                    CardsScreen()
+                    bottomBarState.value = true
+                    LaunchedEffect(Unit) {
+                        navController.navigate(CardsHome) {
+                            popUpTo(BottomNavItem.Profile) { inclusive = true }
+                        }
+                    }
                 }
             }
         }
@@ -178,55 +156,13 @@ private fun AppStateListener(
             when (state) {
                 AppState.Init -> Unit
                 AppState.LoggedIn -> navController.navigate(
-                    route = BottomNavItem.Home,
-//                                options = NavOptions(popUpTo = PopUpTo("", inclusive = true))
+                    route = TrackerHome,
                 )
 
                 AppState.LoggedOut -> navController.navigate(
                     route = Welcome,
-//                                options = NavOptions(popUpTo = PopUpTo("", inclusive = true))
                 )
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun WebViewCompose(url: String, onBackClick: () -> Unit) {
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    navigationIconContentColor = MaterialTheme.colorScheme.primary
-                ),
-                modifier = Modifier.fillMaxWidth(),
-                title = {
-                    Text(
-                        text = stringResource(Res.string.news_feed),
-                        style = MaterialTheme.typography.titleLarge.copy(color = Color(0xffea940b))
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, null)
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding)) {
-            val state = rememberWebViewState(url)
-            val loadingState = state.loadingState
-            if (loadingState is LoadingState.Loading) {
-                LinearProgressIndicator(
-                    progress = { loadingState.progress },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            WebView(state, modifier = Modifier.fillMaxWidth().weight(1f))
         }
     }
 }
@@ -241,17 +177,20 @@ fun BottomNavigationBar(navController: NavHostController, bottomBarState: Mutabl
         enter = slideInVertically(initialOffsetY = { it }),
         exit = slideOutVertically(targetOffsetY = { it }),
         content = {
-            NavigationBar(
-//                backgroundColor = MaterialTheme.colors.whiteColor,
-//                modifier = Modifier.height(56.dp + Dimens.grid_1) // Default nav bar height + padding
-            ) {
+            NavigationBar {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
-                    ?: BottomNavItem.Home::class.qualifiedName.orEmpty()
+                    ?: TrackerHome::class.qualifiedName.orEmpty()
 
-                items.forEach { item ->
+                items.forEachIndexed { index, item ->
+                    val featureRoute = when (index) {
+                        0 -> TrackerHome::class.qualifiedName
+                        1 -> FeedHome::class.qualifiedName
+                        2 -> CardsHome::class.qualifiedName
+                        else -> null
+                    }
                     val selected by remember(currentRoute) {
-                        derivedStateOf { currentRoute == item::class.qualifiedName }
+                        derivedStateOf { currentRoute == featureRoute }
                     }
                     NavigationBarItem(
                         icon = { Icon(painterResource(item.icon()), contentDescription = null) },
@@ -264,10 +203,16 @@ fun BottomNavigationBar(navController: NavHostController, bottomBarState: Mutabl
                         alwaysShowLabel = true,
                         selected = selected,
                         onClick = {
-                            navController.navigate(item) {
+                            val destination = when (index) {
+                                0 -> TrackerHome
+                                1 -> FeedHome
+                                2 -> CardsHome
+                                else -> return@NavigationBarItem
+                            }
+                            navController.navigate(destination) {
                                 launchSingleTop = true
-                                popUpTo(BottomNavItem.Home) {
-                                    inclusive = true
+                                popUpTo(TrackerHome) {
+                                    inclusive = false
                                 }
                             }
                         },
