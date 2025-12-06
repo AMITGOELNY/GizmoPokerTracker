@@ -15,7 +15,6 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.ghn.poker.tracker.di.initKoin
 import com.ghn.poker.tracker.ui.App
-import com.ghn.poker.tracker.ui.login.SplashScreen
 import dev.datlag.kcef.KCEF
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -79,12 +78,4 @@ fun main() = application {
 @Composable
 fun AppDesktopPreview() {
     App()
-}
-
-private const val ApplicationName = "Gizmo Poker"
-
-@Preview
-@Composable
-fun UsePreviewAnnotation() {
-    SplashScreen {}
 }

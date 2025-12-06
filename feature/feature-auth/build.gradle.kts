@@ -1,5 +1,6 @@
 plugins {
     id("gizmo.feature")
+    alias(libs.plugins.mokkery)
 }
 
 android {
@@ -19,6 +20,10 @@ kotlin {
             implementation(project(":core:core-ui"))
             implementation(project(":core:core-resources"))
             implementation(project(":common"))
+        }
+        commonTest.dependencies {
+            implementation(libs.mokkery.core)
+            implementation(libs.mokkery.coroutines)
         }
     }
 }

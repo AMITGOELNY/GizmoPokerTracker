@@ -7,6 +7,11 @@ android {
     namespace = "com.ghn.poker.core.ui"
 }
 
+compose.resources {
+    publicResClass = true
+    generateResClass = always
+}
+
 kotlin {
     sourceSets {
         commonMain.dependencies {
