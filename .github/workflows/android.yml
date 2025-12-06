@@ -6,6 +6,8 @@ on:
     paths:
       - 'common/**'
       - 'composeApp/**'
+      - 'core/**'
+      - 'feature/**'
       - 'gradle/**'
       - 'build.gradle.kts'
       - 'settings.gradle.kts'
@@ -14,6 +16,8 @@ on:
     paths:
       - 'common/**'
       - 'composeApp/**'
+      - 'core/**'
+      - 'feature/**'
       - 'gradle/**'
       - 'build.gradle.kts'
       - 'settings.gradle.kts'
@@ -52,3 +56,35 @@ jobs:
 
       - name: Run composeApp debug unit tests
         run: ./gradlew :composeApp:testDebugUnitTest
+
+  test-feature-modules:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [feature-auth, feature-tracker, feature-feed, feature-cards]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 21
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Cache KMP tooling
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.konan
+          key: ${{ runner.os }}-v1-${{ hashFiles('*.versions.toml') }}
+
+      - name: Run ${{ matrix.module }} debug unit tests
+        run: ./gradlew :feature:${{ matrix.module }}:testDebugUnitTest
