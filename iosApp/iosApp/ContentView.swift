@@ -1,6 +1,6 @@
 import UIKit
 import SwiftUI
-import ComposeApp
+import GizmoPoker
 
 let gradient = LinearGradient(
     colors: [

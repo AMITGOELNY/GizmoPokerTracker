@@ -35,8 +35,19 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "ComposeApp"
+            baseName = "GizmoPoker"
             isStatic = true
+
+            // Export all feature modules for iOS umbrella framework
+            export(project(":core:core-common"))
+            export(project(":core:core-ui"))
+            export(project(":core:core-di"))
+            export(project(":core:core-network"))
+            export(project(":core:core-resources"))
+            export(project(":feature:feature-auth"))
+            export(project(":feature:feature-tracker"))
+            export(project(":feature:feature-feed"))
+            export(project(":feature:feature-cards"))
         }
 
         iosTarget.binaries.forEach { nativeBinary ->
@@ -158,6 +169,17 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.ios.sqldelight.driver)
             implementation(libs.ktor.client.ios)
+
+            // Export feature modules for iOS umbrella framework
+            api(project(":core:core-common"))
+            api(project(":core:core-ui"))
+            api(project(":core:core-di"))
+            api(project(":core:core-network"))
+            api(project(":core:core-resources"))
+            api(project(":feature:feature-auth"))
+            api(project(":feature:feature-tracker"))
+            api(project(":feature:feature-feed"))
+            api(project(":feature:feature-cards"))
         }
     }
 }
