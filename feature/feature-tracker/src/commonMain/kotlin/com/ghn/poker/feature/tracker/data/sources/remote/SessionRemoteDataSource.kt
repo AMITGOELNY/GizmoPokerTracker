@@ -1,0 +1,39 @@
+package com.ghn.poker.feature.tracker.data.sources.remote
+
+import com.ghn.gizmodb.common.models.SessionDTO
+import com.ghn.poker.core.network.ApiResponse
+import com.ghn.poker.core.network.GizmoApiClient
+import com.ghn.poker.core.network.safeRequest
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import org.koin.core.annotation.Single
+
+interface SessionRemoteDataSource {
+    suspend fun getSessions(): ApiResponse<List<SessionDTO>, Exception>
+    suspend fun createSession(session: SessionDTO): ApiResponse<Unit, Exception>
+}
+
+@Single([SessionRemoteDataSource::class])
+internal class SessionRemoteDataSourceImpl(
+    private val apiClient: GizmoApiClient
+) : SessionRemoteDataSource {
+    override suspend fun getSessions(): ApiResponse<List<SessionDTO>, Exception> {
+        return apiClient.executeWithAutoRefresh {
+            apiClient.http.safeRequest {
+                get("sessions").body<List<SessionDTO>>()
+            }
+        }
+    }
+
+    override suspend fun createSession(
+        session: SessionDTO,
+    ): ApiResponse<Unit, Exception> {
+        return apiClient.executeWithAutoRefresh {
+            apiClient.http.safeRequest<Unit, Exception> {
+                post("sessions") { setBody(session) }.body<String>()
+            }
+        }
+    }
+}
