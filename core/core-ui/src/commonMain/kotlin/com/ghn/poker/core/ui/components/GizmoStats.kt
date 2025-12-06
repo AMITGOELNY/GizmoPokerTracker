@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Casino
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -123,14 +123,14 @@ private fun GizmoStatItemColorsPreview() {
                     horizontalArrangement = Arrangement.spacedBy(32.dp)
                 ) {
                     GizmoStatItem(
-                        icon = Icons.Default.TrendingUp,
+                        icon = Icons.AutoMirrored.Filled.TrendingUp,
                         label = "Profit",
                         value = "+$1,250",
                         valueColor = Emerald,
                         iconColor = Emerald
                     )
                     GizmoStatItem(
-                        icon = Icons.Default.TrendingUp,
+                        icon = Icons.AutoMirrored.Filled.TrendingUp,
                         label = "Loss",
                         value = "-$450",
                         valueColor = Ruby,
@@ -174,7 +174,7 @@ private fun GizmoStatItemInCardPreview() {
                         )
                         GizmoDividerVertical()
                         GizmoStatItem(
-                            icon = Icons.Default.TrendingUp,
+                            icon = Icons.AutoMirrored.Filled.TrendingUp,
                             label = "Profit",
                             value = "+$1.2K",
                             valueColor = Emerald,
