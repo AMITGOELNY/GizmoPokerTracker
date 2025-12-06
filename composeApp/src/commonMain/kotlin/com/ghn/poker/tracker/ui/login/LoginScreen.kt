@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
@@ -53,19 +54,41 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ghn.poker.tracker.presentation.login.LoginActions
 import com.ghn.poker.tracker.presentation.login.LoginViewModel
 import com.ghn.poker.tracker.ui.shared.PrimaryButton
-import com.ghn.poker.tracker.ui.theme.title200
-import gizmopoker.composeapp.generated.resources.*
+import com.ghn.poker.tracker.ui.theme.AntiqueBrass
+import com.ghn.poker.tracker.ui.theme.ChampagneGold
+import com.ghn.poker.tracker.ui.theme.GizmoGradients
+import com.ghn.poker.tracker.ui.theme.GizmoShapes
+import com.ghn.poker.tracker.ui.theme.Graphite
+import com.ghn.poker.tracker.ui.theme.Onyx
+import com.ghn.poker.tracker.ui.theme.PaleGold
+import com.ghn.poker.tracker.ui.theme.Pewter
+import com.ghn.poker.tracker.ui.theme.Platinum
+import com.ghn.poker.tracker.ui.theme.Ruby
+import com.ghn.poker.tracker.ui.theme.Silver
+import com.ghn.poker.tracker.ui.theme.Slate
+import com.ghn.poker.tracker.ui.theme.heroDisplay
+import com.ghn.poker.tracker.ui.theme.inputText
+import com.ghn.poker.tracker.ui.theme.logoStyle
+import gizmopoker.composeapp.generated.resources.Res
+import gizmopoker.composeapp.generated.resources.app_name
+import gizmopoker.composeapp.generated.resources.hide_password
+import gizmopoker.composeapp.generated.resources.ic_lock
+import gizmopoker.composeapp.generated.resources.ic_message
+import gizmopoker.composeapp.generated.resources.password
+import gizmopoker.composeapp.generated.resources.show_password
+import gizmopoker.composeapp.generated.resources.sign_in
+import gizmopoker.composeapp.generated.resources.sign_in_to_continue
+import gizmopoker.composeapp.generated.resources.username
+import gizmopoker.composeapp.generated.resources.welcome_back
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -83,9 +106,9 @@ internal fun LoginScreen(viewModel: LoginViewModel = koinInject(), onBackClick: 
         isVisible = true
     }
 
-    Box(modifier = Modifier.fillMaxSize().background(Color(0xFF0A0E1A))) {
-        // Dramatic animated background
-        DramaticPokerBackground(isVisible = isVisible)
+    Box(modifier = Modifier.fillMaxSize().background(GizmoGradients.backgroundSurface)) {
+        // Ambient background orbs
+        LoginAmbientBackground(isVisible = isVisible)
 
         Scaffold(
             containerColor = Color.Transparent,
@@ -96,49 +119,35 @@ internal fun LoginScreen(viewModel: LoginViewModel = koinInject(), onBackClick: 
                         .statusBarsPadding()
                         .padding(horizontal = 16.dp, vertical = 12.dp)
                 ) {
-                    // Glassmorphic back button
+                    // Refined back button
                     Surface(
                         onClick = onBackClick,
                         modifier = Modifier.align(Alignment.CenterStart),
-                        shape = RoundedCornerShape(16.dp),
-                        color = Color.White.copy(alpha = 0.1f),
-                        shadowElevation = 8.dp
+                        shape = CircleShape,
+                        color = Slate.copy(alpha = 0.5f),
+                        shadowElevation = 4.dp
                     ) {
                         Box(
                             modifier = Modifier
                                 .size(48.dp)
-                                .background(
-                                    Brush.linearGradient(
-                                        colors = listOf(
-                                            Color.White.copy(alpha = 0.15f),
-                                            Color.White.copy(alpha = 0.05f)
-                                        )
-                                    )
-                                ),
+                                .border(1.dp, Onyx, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 Icons.AutoMirrored.Rounded.ArrowBack,
                                 contentDescription = null,
-                                tint = Color(0xFFFFD700),
-                                modifier = Modifier.size(24.dp)
+                                tint = ChampagneGold,
+                                modifier = Modifier.size(22.dp)
                             )
                         }
                     }
 
-                    // Golden logo
+                    // Logo
                     Text(
                         text = stringResource(Res.string.app_name),
-                        style = MaterialTheme.typography.title200.copy(
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            letterSpacing = 1.5.sp,
+                        style = MaterialTheme.typography.logoStyle.copy(
                             brush = Brush.linearGradient(
-                                colors = listOf(
-                                    Color(0xFFFFD700),
-                                    Color(0xFFFFE55C),
-                                    Color(0xFFD4AF37)
-                                )
+                                colors = listOf(ChampagneGold, PaleGold, AntiqueBrass)
                             )
                         ),
                         modifier = Modifier.align(Alignment.Center)
@@ -150,18 +159,18 @@ internal fun LoginScreen(viewModel: LoginViewModel = koinInject(), onBackClick: 
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = padding.calculateTopPadding())
-                    .padding(horizontal = 20.dp)
+                    .padding(horizontal = 24.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Spacer(Modifier.height(32.dp))
+                Spacer(Modifier.height(40.dp))
 
-                // Hero title with dramatic animation
+                // Hero title with animation
                 AnimatedVisibility(
                     visible = isVisible,
-                    enter = fadeIn(tween(1000)) + slideInVertically(
-                        initialOffsetY = { -60 },
-                        animationSpec = tween(1000, easing = FastOutSlowInEasing)
+                    enter = fadeIn(tween(800)) + slideInVertically(
+                        initialOffsetY = { -40 },
+                        animationSpec = tween(800, easing = FastOutSlowInEasing)
                     )
                 ) {
                     Column(
@@ -170,16 +179,9 @@ internal fun LoginScreen(viewModel: LoginViewModel = koinInject(), onBackClick: 
                     ) {
                         Text(
                             text = stringResource(Res.string.welcome_back),
-                            style = MaterialTheme.typography.title200.copy(
-                                fontSize = 48.sp,
-                                fontWeight = FontWeight.Black,
-                                letterSpacing = (-1).sp,
+                            style = MaterialTheme.typography.heroDisplay.copy(
                                 brush = Brush.linearGradient(
-                                    colors = listOf(
-                                        Color(0xFFFFD700),
-                                        Color(0xFFFFE55C),
-                                        Color(0xFFD4AF37)
-                                    )
+                                    colors = listOf(ChampagneGold, PaleGold, ChampagneGold)
                                 )
                             )
                         )
@@ -188,24 +190,20 @@ internal fun LoginScreen(viewModel: LoginViewModel = koinInject(), onBackClick: 
 
                         Text(
                             text = stringResource(Res.string.sign_in_to_continue),
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium,
-                                letterSpacing = 0.3.sp
-                            ),
-                            color = Color(0xFFB0B0B0)
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Silver
                         )
                     }
                 }
 
                 Spacer(Modifier.height(48.dp))
 
-                // Dramatic form with animation
+                // Form with animation
                 AnimatedVisibility(
                     visible = isVisible,
-                    enter = fadeIn(tween(1200, delayMillis = 300)) + slideInVertically(
+                    enter = fadeIn(tween(1000, delayMillis = 200)) + slideInVertically(
                         initialOffsetY = { 40 },
-                        animationSpec = tween(1200, easing = FastOutSlowInEasing)
+                        animationSpec = tween(1000, easing = FastOutSlowInEasing)
                     )
                 ) {
                     FormBody(
@@ -231,85 +229,95 @@ internal fun FormBody(
 ) {
     var usernameValue by remember { mutableStateOf(TextFieldValue("")) }
     var passwordValue by remember { mutableStateOf(TextFieldValue("")) }
-
     var passwordVisible by remember { mutableStateOf(false) }
-    // Animated card container
+
+    // Card container with refined styling
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        color = Color(0xFF1A1D24).copy(alpha = 0.6f),
+        shape = RoundedCornerShape(20.dp),
+        color = Color.Transparent,
         shadowElevation = 8.dp,
-        tonalElevation = 4.dp
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 32.dp)
-        ) {
-            // Username field
-            EnhancedTextField(
-                textFieldValue = usernameValue,
-                onValueChange = {
-                    usernameValue = it
-                    onUsernameChange(it.text)
-                },
-                leadingIconId = Res.drawable.ic_message,
-                placeHolder = stringResource(Res.string.username),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next,
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Graphite.copy(alpha = 0.8f), Slate.copy(alpha = 0.5f))
+                    ),
+                    shape = RoundedCornerShape(20.dp)
                 )
-            )
-
-            Spacer(Modifier.height(20.dp))
-
-            // Password field
-            EnhancedTextField(
-                textFieldValue = passwordValue,
-                onValueChange = {
-                    passwordValue = it
-                    onPasswordChange(it.text)
-                },
-                leadingIconId = Res.drawable.ic_lock,
-                placeHolder = stringResource(Res.string.password),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Go,
-                ),
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    IconButton(
-                        onClick = { passwordVisible = !passwordVisible },
-                        modifier = Modifier.size(48.dp)
-                    ) {
-                        Icon(
-                            imageVector = if (passwordVisible) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff,
-                            contentDescription = if (passwordVisible) stringResource(Res.string.hide_password) else stringResource(Res.string.show_password),
-                            tint = Color(0xFFAFA21D),
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-            )
-
-            Spacer(Modifier.height(32.dp))
-
-            // Enhanced submit button
-            val buttonScale by animateFloatAsState(
-                targetValue = if (loading) 0.95f else 1f,
-                animationSpec = tween(300)
-            )
-
-            PrimaryButton(
-                buttonText = stringResource(Res.string.sign_in),
+                .border(1.dp, Onyx.copy(alpha = 0.5f), RoundedCornerShape(20.dp))
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .scale(buttonScale),
-                onClick = onSubmit,
-                isEnabled = !loading,
-                showLoading = loading
-            )
+                    .padding(horizontal = 24.dp, vertical = 32.dp)
+            ) {
+                // Username field
+                EnhancedTextField(
+                    textFieldValue = usernameValue,
+                    onValueChange = {
+                        usernameValue = it
+                        onUsernameChange(it.text)
+                    },
+                    leadingIconId = Res.drawable.ic_message,
+                    placeHolder = stringResource(Res.string.username),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next,
+                    )
+                )
+
+                Spacer(Modifier.height(20.dp))
+
+                // Password field
+                EnhancedTextField(
+                    textFieldValue = passwordValue,
+                    onValueChange = {
+                        passwordValue = it
+                        onPasswordChange(it.text)
+                    },
+                    leadingIconId = Res.drawable.ic_lock,
+                    placeHolder = stringResource(Res.string.password),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Go,
+                    ),
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(
+                            onClick = { passwordVisible = !passwordVisible },
+                            modifier = Modifier.size(48.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (passwordVisible) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff,
+                                contentDescription = if (passwordVisible) stringResource(Res.string.hide_password) else stringResource(Res.string.show_password),
+                                tint = ChampagneGold,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                )
+
+                Spacer(Modifier.height(32.dp))
+
+                // Submit button
+                val buttonScale by animateFloatAsState(
+                    targetValue = if (loading) 0.98f else 1f,
+                    animationSpec = tween(200),
+                    label = "button scale"
+                )
+
+                PrimaryButton(
+                    buttonText = stringResource(Res.string.sign_in),
+                    modifier = Modifier.fillMaxWidth().scale(buttonScale),
+                    onClick = onSubmit,
+                    isEnabled = !loading,
+                    showLoading = loading
+                )
+            }
         }
     }
 }
@@ -330,37 +338,41 @@ internal fun EnhancedTextField(
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
-    // Animated border color
     val borderColor by animateColorAsState(
         targetValue = when {
-            isFocused -> Color(0xFFAFA21D)
-            isError -> Color(0xFFE21221)
-            else -> Color(0xFF35383F)
+            isError -> Ruby
+            isFocused -> ChampagneGold
+            else -> Onyx
         },
-        animationSpec = tween(300)
+        animationSpec = tween(200),
+        label = "border color"
     )
 
-    // Animated elevation
     val elevation by animateDpAsState(
         targetValue = if (isFocused) 4.dp else 0.dp,
-        animationSpec = tween(300)
+        animationSpec = tween(200),
+        label = "elevation"
     )
 
-    // Animated icon color
     val iconColor by animateColorAsState(
-        targetValue = if (isFocused) Color(0xFFAFA21D) else Color(0xFF9E9E9E),
-        animationSpec = tween(300)
+        targetValue = when {
+            isError -> Ruby
+            isFocused -> ChampagneGold
+            else -> Pewter
+        },
+        animationSpec = tween(200),
+        label = "icon color"
     )
 
-    // Animated icon scale
     val iconScale by animateFloatAsState(
         targetValue = if (isFocused) 1.1f else 1f,
-        animationSpec = tween(300)
+        animationSpec = tween(200),
+        label = "icon scale"
     )
 
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = GizmoShapes.inputField,
         shadowElevation = elevation,
         color = Color.Transparent
     ) {
@@ -369,20 +381,12 @@ internal fun EnhancedTextField(
             placeholder = {
                 Text(
                     text = placeHolder,
-                    style = MaterialTheme.typography.title200.copy(
-                        letterSpacing = 0.2.sp,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 15.sp,
-                    ),
-                    color = Color(0xFF9E9E9E).copy(alpha = 0.7f),
+                    style = MaterialTheme.typography.inputText,
+                    color = Pewter.copy(alpha = 0.7f),
                 )
             },
             onValueChange = onValueChange,
-            textStyle = MaterialTheme.typography.title200.copy(
-                letterSpacing = 0.2.sp,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp
-            ),
+            textStyle = MaterialTheme.typography.inputText.copy(color = Platinum),
             readOnly = readOnly,
             keyboardOptions = keyboardOptions,
             leadingIcon = {
@@ -390,160 +394,98 @@ internal fun EnhancedTextField(
                     painter = painterResource(leadingIconId),
                     contentDescription = null,
                     tint = iconColor,
-                    modifier = Modifier
-                        .size(22.dp)
-                        .scale(iconScale)
+                    modifier = Modifier.size(20.dp).scale(iconScale)
                 )
             },
             trailingIcon = trailingIcon,
             visualTransformation = visualTransformation,
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
+            shape = GizmoShapes.inputField,
             singleLine = true,
             isError = isError,
             interactionSource = interactionSource,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = borderColor,
                 unfocusedBorderColor = borderColor,
-                focusedContainerColor = Color(0xFF1A1D24).copy(alpha = 0.8f),
-                unfocusedContainerColor = Color(0xFF1A1D24).copy(alpha = 0.4f),
-                focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                errorBorderColor = Color(0xFFE21221),
-                errorLeadingIconColor = Color(0xFFE21221),
-                cursorColor = Color(0xFFAFA21D)
+                focusedContainerColor = Slate.copy(alpha = 0.6f),
+                unfocusedContainerColor = Slate.copy(alpha = 0.3f),
+                errorContainerColor = Slate.copy(alpha = 0.3f),
+                focusedTextColor = Platinum,
+                unfocusedTextColor = Platinum,
+                errorBorderColor = Ruby,
+                errorLeadingIconColor = Ruby,
+                cursorColor = ChampagneGold
             ),
         )
     }
 }
 
 @Composable
-internal fun DramaticPokerBackground(isVisible: Boolean) {
+internal fun LoginAmbientBackground(isVisible: Boolean) {
     val alpha by animateFloatAsState(
         targetValue = if (isVisible) 1f else 0f,
-        animationSpec = tween(1500)
+        animationSpec = tween(1200),
+        label = "background alpha"
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Large golden gradient orb - top left
+        // Top-left gold glow
         Box(
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .offset(x = (-150).dp, y = (-150).dp)
-                .size(450.dp)
-                .alpha(alpha * 0.4f)
-                .blur(100.dp)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFFFFD700).copy(alpha = 0.5f),
-                            Color(0xFFFFE55C).copy(alpha = 0.3f),
-                            Color.Transparent
-                        )
-                    ),
-                    shape = CircleShape
-                )
-        )
-
-        // Emerald green orb - poker felt inspired
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .offset(x = (-100).dp, y = 100.dp)
+                .offset(x = (-120).dp, y = (-100).dp)
                 .size(400.dp)
-                .alpha(alpha * 0.3f)
-                .blur(110.dp)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFF00A86B).copy(alpha = 0.4f),
-                            Color(0xFF2E8B57).copy(alpha = 0.2f),
-                            Color.Transparent
-                        )
-                    ),
-                    shape = CircleShape
-                )
-        )
-
-        // Large bottom-right golden orb
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .offset(x = 150.dp, y = 200.dp)
-                .size(500.dp)
-                .alpha(alpha * 0.35f)
-                .blur(120.dp)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFFFFD700).copy(alpha = 0.5f),
-                            Color(0xFFD4AF37).copy(alpha = 0.3f),
-                            Color.Transparent
-                        )
-                    ),
-                    shape = CircleShape
-                )
-        )
-
-        // Purple accent orb - top right
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .offset(x = 100.dp, y = (-50).dp)
-                .size(350.dp)
-                .alpha(alpha * 0.25f)
-                .blur(90.dp)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFF6B4FBB).copy(alpha = 0.4f),
-                            Color.Transparent
-                        )
-                    ),
-                    shape = CircleShape
-                )
-        )
-
-        // Center accent glow
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = 100.dp)
-                .size(300.dp)
-                .alpha(alpha * 0.2f)
+                .alpha(alpha * 0.12f)
                 .blur(80.dp)
                 .background(
                     brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFFFFD700).copy(alpha = 0.3f),
-                            Color.Transparent
-                        )
+                        colors = listOf(ChampagneGold, Color.Transparent)
                     ),
                     shape = CircleShape
                 )
         )
 
-        // Subtle overlay gradient
+        // Bottom-right gold glow
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .alpha(alpha * 0.3f)
+                .align(Alignment.BottomEnd)
+                .offset(x = 100.dp, y = 150.dp)
+                .size(380.dp)
+                .alpha(alpha * 0.10f)
+                .blur(90.dp)
                 .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFF0A0E1A).copy(alpha = 0.7f),
-                            Color.Transparent,
-                            Color(0xFF0A0E1A).copy(alpha = 0.9f)
-                        ),
-                        startY = 0f,
-                        endY = 2000f
-                    )
+                    brush = Brush.radialGradient(
+                        colors = listOf(ChampagneGold, Color.Transparent)
+                    ),
+                    shape = CircleShape
+                )
+        )
+
+        // Center accent
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = 80.dp)
+                .size(250.dp)
+                .alpha(alpha * 0.06f)
+                .blur(60.dp)
+                .background(
+                    brush = Brush.radialGradient(
+                        colors = listOf(PaleGold, Color.Transparent)
+                    ),
+                    shape = CircleShape
                 )
         )
     }
 }
 
+// Legacy support
+@Composable
+internal fun DramaticPokerBackground(isVisible: Boolean) {
+    LoginAmbientBackground(isVisible = isVisible)
+}
+
 @Composable
 internal fun AnimatedBackgroundOrbs(isVisible: Boolean) {
-    DramaticPokerBackground(isVisible = isVisible)
+    LoginAmbientBackground(isVisible = isVisible)
 }

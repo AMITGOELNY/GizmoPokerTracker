@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
@@ -35,7 +34,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ghn.gizmodb.common.models.Venue
 import com.ghn.poker.tracker.domain.usecase.SessionData
+import com.ghn.poker.tracker.ui.theme.ChampagneGold
 import com.ghn.poker.tracker.ui.theme.Dimens
+import com.ghn.poker.tracker.ui.theme.Emerald
+import com.ghn.poker.tracker.ui.theme.GizmoShapes
+import com.ghn.poker.tracker.ui.theme.Graphite
+import com.ghn.poker.tracker.ui.theme.Onyx
+import com.ghn.poker.tracker.ui.theme.Platinum
+import com.ghn.poker.tracker.ui.theme.Ruby
+import com.ghn.poker.tracker.ui.theme.Silver
+import com.ghn.poker.tracker.ui.theme.Slate
+import com.ghn.poker.tracker.ui.theme.moneyDisplay
 import gizmopoker.composeapp.generated.resources.Res
 import gizmopoker.composeapp.generated.resources.magic_city_casino
 import org.jetbrains.compose.resources.painterResource
@@ -44,51 +53,42 @@ import org.jetbrains.compose.resources.painterResource
 internal fun SessionListItem(session: SessionData) {
     val profitValue = (session.endAmount?.toDoubleOrNull() ?: 0.0) - (session.startAmount?.toDoubleOrNull() ?: 0.0)
     val isProfit = profitValue >= 0
+    val accentColor = if (isProfit) Emerald else Ruby
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = Dimens.grid_2),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1F2438).copy(alpha = 0.6f)
-        ),
+        modifier = Modifier.fillMaxWidth(),
+        shape = GizmoShapes.sessionCard,
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    Brush.horizontalGradient(
-                        colors = if (isProfit) {
-                            listOf(
-                                Color(0xFF4CAF50).copy(alpha = 0.08f),
-                                Color.Transparent
-                            )
-                        } else {
-                            listOf(
-                                Color(0xFFEF5350).copy(alpha = 0.08f),
-                                Color.Transparent
-                            )
-                        }
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Graphite.copy(alpha = 0.7f),
+                            Slate.copy(alpha = 0.5f)
+                        )
+                    )
+                )
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            accentColor.copy(alpha = 0.06f),
+                            Color.Transparent
+                        )
                     )
                 )
                 .border(
                     width = 1.dp,
                     brush = Brush.horizontalGradient(
-                        colors = if (isProfit) {
-                            listOf(
-                                Color(0xFF4CAF50).copy(alpha = 0.3f),
-                                Color(0xFF4CAF50).copy(alpha = 0.1f)
-                            )
-                        } else {
-                            listOf(
-                                Color(0xFFEF5350).copy(alpha = 0.3f),
-                                Color(0xFFEF5350).copy(alpha = 0.1f)
-                            )
-                        }
+                        colors = listOf(
+                            accentColor.copy(alpha = 0.25f),
+                            Onyx.copy(alpha = 0.4f)
+                        )
                     ),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = GizmoShapes.sessionCard
                 )
                 .padding(Dimens.grid_2)
         ) {
@@ -105,26 +105,31 @@ internal fun SessionListItem(session: SessionData) {
                     // Venue
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(32.dp)
+                                .size(36.dp)
                                 .clip(CircleShape)
                                 .background(
-                                    Brush.radialGradient(
+                                    brush = Brush.radialGradient(
                                         colors = listOf(
-                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
+                                            ChampagneGold.copy(alpha = 0.15f),
+                                            ChampagneGold.copy(alpha = 0.03f)
                                         )
                                     )
+                                )
+                                .border(
+                                    width = 1.dp,
+                                    color = ChampagneGold.copy(alpha = 0.2f),
+                                    shape = CircleShape
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Casino,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
+                                tint = ChampagneGold,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -141,7 +146,7 @@ internal fun SessionListItem(session: SessionData) {
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.SemiBold,
                                 ),
-                                color = MaterialTheme.colorScheme.onBackground
+                                color = Platinum
                             )
                         }
                     }
@@ -149,18 +154,19 @@ internal fun SessionListItem(session: SessionData) {
                     // Date
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.padding(start = 46.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.AccessTime,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                            tint = Silver.copy(alpha = 0.7f),
                             modifier = Modifier.size(14.dp)
                         )
                         Text(
                             text = session.formattedDate,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                            color = Silver
                         )
                     }
                 }
@@ -170,23 +176,22 @@ internal fun SessionListItem(session: SessionData) {
                 // Right side - Profit/Loss
                 Column(
                     horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     // Profit/Loss indicator with icon
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(24.dp)
+                                .size(28.dp)
                                 .clip(CircleShape)
-                                .background(
-                                    if (isProfit) {
-                                        Color(0xFF4CAF50).copy(alpha = 0.2f)
-                                    } else {
-                                        Color(0xFFEF5350).copy(alpha = 0.2f)
-                                    }
+                                .background(accentColor.copy(alpha = 0.15f))
+                                .border(
+                                    width = 1.dp,
+                                    color = accentColor.copy(alpha = 0.3f),
+                                    shape = CircleShape
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
@@ -197,17 +202,15 @@ internal fun SessionListItem(session: SessionData) {
                                     Icons.AutoMirrored.Default.TrendingDown
                                 },
                                 contentDescription = null,
-                                tint = if (isProfit) Color(0xFF4CAF50) else Color(0xFFEF5350),
-                                modifier = Modifier.size(14.dp)
+                                tint = accentColor,
+                                modifier = Modifier.size(16.dp)
                             )
                         }
 
                         Text(
                             text = session.netProfit,
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = if (isProfit) Color(0xFF4CAF50) else Color(0xFFEF5350)
+                            style = MaterialTheme.typography.moneyDisplay,
+                            color = accentColor
                         )
                     }
 
@@ -215,7 +218,7 @@ internal fun SessionListItem(session: SessionData) {
                     Text(
                         text = "${session.startAmount} → ${session.endAmount}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                        color = Silver.copy(alpha = 0.7f)
                     )
                 }
             }
