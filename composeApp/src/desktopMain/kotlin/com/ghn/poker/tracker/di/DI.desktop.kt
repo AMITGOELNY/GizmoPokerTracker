@@ -11,14 +11,19 @@ import io.ktor.client.engine.okhttp.OkHttp
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import java.io.File
 import java.util.prefs.Preferences
 
 private const val DB_NAME = "GizmoPokerDb.db"
 
 internal actual val platformModule: Module = module {
     single<SqlDriver> {
-        JdbcSqliteDriver("jdbc:sqlite:$DB_NAME").also {
-            GizmoPokerDb.Schema.create(it)
+        val dbFile = File(DB_NAME)
+        val dbExists = dbFile.exists()
+        JdbcSqliteDriver("jdbc:sqlite:$DB_NAME").also { driver ->
+            if (!dbExists) {
+                GizmoPokerDb.Schema.create(driver)
+            }
         }
     }
 
