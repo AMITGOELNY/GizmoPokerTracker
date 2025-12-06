@@ -28,6 +28,12 @@ include(":core:core-network")
 include(":core:core-database")
 include(":core:core-ui")
 
+// Feature modules
+include(":feature:feature-auth")
+include(":feature:feature-tracker")
+include(":feature:feature-feed")
+include(":feature:feature-cards")
+
 // Existing modules
 include(":composeApp")
 include(":server")
