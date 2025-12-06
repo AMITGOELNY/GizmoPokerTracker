@@ -20,6 +20,14 @@ dependencyResolutionManagement {
     }
 }
 
+// Core modules
+include(":core:core-common")
+include(":core:core-di")
+include(":core:core-preferences")
+include(":core:core-network")
+include(":core:core-database")
+
+// Existing modules
 include(":composeApp")
 include(":server")
 include(":server:jooq-generator")

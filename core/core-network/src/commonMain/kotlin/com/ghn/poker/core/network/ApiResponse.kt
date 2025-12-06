@@ -1,0 +1,56 @@
+package com.ghn.poker.core.network
+
+import co.touchlab.kermit.Logger
+import io.ktor.client.HttpClient
+import io.ktor.client.call.NoTransformationFoundException
+import io.ktor.client.call.body
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.ResponseException
+import io.ktor.client.plugins.ServerResponseException
+import kotlinx.io.IOException
+import kotlinx.serialization.SerializationException
+
+sealed class ApiResponse<out T, out E> {
+    /** Represents successful network responses (2xx). */
+    data class Success<T>(val body: T) : ApiResponse<T, Nothing>()
+
+    sealed class Error<E> : ApiResponse<Nothing, E>() {
+        /** Represents server (50x) and client (40x) errors. */
+        data class HttpError<E>(val code: Int, val errorBody: E?) : Error<E>()
+
+        /** Represent IOExceptions and connectivity issues. */
+        data object NetworkError : Error<Nothing>()
+
+        /** Represent SerializationExceptions. */
+        data object SerializationError : Error<Nothing>()
+    }
+}
+
+suspend inline fun <reified T, reified E> HttpClient.safeRequest(
+    block: HttpClient.() -> T,
+): ApiResponse<T, E> =
+    try {
+        val response = block()
+        ApiResponse.Success(response)
+    } catch (e: ClientRequestException) {
+        ApiResponse.Error.HttpError(e.response.status.value, e.errorBody())
+    } catch (e: ServerResponseException) {
+        ApiResponse.Error.HttpError(e.response.status.value, e.errorBody())
+    } catch (e: IOException) {
+        ApiResponse.Error.NetworkError
+    } catch (e: SerializationException) {
+        ApiResponse.Error.SerializationError
+    } catch (e: NoTransformationFoundException) {
+        Logger.e("ApiResponse", e)
+        ApiResponse.Error.SerializationError
+    }
+
+suspend inline fun <reified E> ResponseException.errorBody(): E? =
+    try {
+        val error: E? = response.body()
+        error
+    } catch (e: NoTransformationFoundException) {
+        null
+    } catch (e: SerializationException) {
+        null
+    }
