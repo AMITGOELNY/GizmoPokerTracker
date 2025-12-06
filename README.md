@@ -37,16 +37,39 @@ A Kotlin Multiplatform poker session tracker with support for Android, iOS, Desk
 ## Project Structure
 
 ```
-├── composeApp/          # Multiplatform UI application
+├── build-logic/         # Gradle convention plugins
+│   └── convention/      # Shared build configuration
+├── core/                # Core shared modules
+│   ├── core-common/     # Utilities, extensions, base classes
+│   ├── core-network/    # API client, network utilities
+│   ├── core-database/   # SQLDelight database layer
+│   ├── core-preferences/# Settings and preferences
+│   ├── core-di/         # Koin DI setup
+│   ├── core-ui/         # Theme, design system, shared components
+│   └── core-resources/  # Shared resources (images, strings)
+├── feature/             # Feature modules
+│   ├── feature-auth/    # Login, signup, authentication
+│   ├── feature-tracker/ # Session tracking
+│   ├── feature-feed/    # News feed
+│   └── feature-cards/   # Equity calculator, card games
+├── composeApp/          # Main application (umbrella module)
 │   ├── androidMain/     # Android-specific code
 │   ├── desktopMain/     # Desktop-specific code
-│   ├── iosMain/         # iOS-specific code
-│   └── commonMain/      # Shared code across all platforms
+│   └── iosMain/         # iOS framework (GizmoCore)
 ├── server/              # Ktor backend server
-├── common/              # Shared models and utilities
+├── common/              # Shared DTOs and models
 ├── evaluator/           # Poker hand evaluation logic
 └── iosApp/              # iOS app wrapper
 ```
+
+## Module Architecture
+
+The project uses a **multi-module architecture** with convention plugins for consistent build configuration:
+
+- **Convention Plugins**: `gizmo.kmp.library`, `gizmo.compose`, `gizmo.feature`, `gizmo.koin.ksp`
+- **Core Modules**: Shared infrastructure used by all feature modules
+- **Feature Modules**: Self-contained features with their own domain, data, and presentation layers
+- **App Module**: Aggregates all modules and provides platform-specific entry points
 
 ## Features
 
