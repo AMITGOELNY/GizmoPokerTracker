@@ -91,6 +91,7 @@ kotlin {
 
             dependencies {
                 implementation(project(":common"))
+                implementation(project(":core:core-ui"))
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material3)

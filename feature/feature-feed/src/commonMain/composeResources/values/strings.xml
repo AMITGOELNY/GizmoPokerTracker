@@ -1,0 +1,13 @@
+<resources>
+    <string name="news_feed">GiZMO News feed</string>
+    <string name="articles">Articles</string>
+    <string name="strategy">Strategy</string>
+    <string name="featured">Featured</string>
+    <string name="feed_empty_title">No News Available</string>
+    <string name="feed_empty_message">We couldn\'t find any news articles at the moment. Please try again later.</string>
+    <string name="feed_refresh">Refresh</string>
+    <string name="feed_error_title">Something Went Wrong</string>
+    <string name="feed_error_message">We encountered an error while loading the news feed. Please check your connection and try again.</string>
+    <string name="feed_section_empty_title">No %1$s Yet</string>
+    <string name="feed_section_empty_message">Check back later for new %1$s content</string>
+</resources>

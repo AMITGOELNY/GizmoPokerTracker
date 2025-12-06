@@ -1,0 +1,7 @@
+<resources>
+    <string name="pick_a_suit">Pick a Suit</string>
+    <string name="calculate">Calculate</string>
+    <string name="hero">HERO</string>
+    <string name="villain">VILLAIN</string>
+    <string name="vs">VS</string>
+</resources>

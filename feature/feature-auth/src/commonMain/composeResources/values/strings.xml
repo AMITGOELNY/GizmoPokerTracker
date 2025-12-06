@@ -1,0 +1,19 @@
+<resources>
+    <!-- Get Started Screen -->
+    <string name="welcome_to">Welcome to</string>
+    <string name="select_option_to_start">Select an option below to get started</string>
+    <string name="create_account">Create Account</string>
+    <string name="sign_in">Sign In</string>
+
+    <!-- Login Screen -->
+    <string name="welcome_back">Welcome Back</string>
+    <string name="sign_in_to_continue">Sign in to continue</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="hide_password">Hide password</string>
+    <string name="show_password">Show password</string>
+
+    <!-- Sign Up Screen -->
+    <string name="create_your_account_title">Create Your Account</string>
+    <string name="join_gizmopoker">Sign up to get started</string>
+</resources>

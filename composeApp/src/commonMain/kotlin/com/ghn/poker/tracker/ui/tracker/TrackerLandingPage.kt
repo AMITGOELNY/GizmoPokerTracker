@@ -72,14 +72,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.ghn.poker.core.ui.components.GizmoIconButton
+import com.ghn.poker.core.ui.components.GizmoLoadingIndicator
+import com.ghn.poker.core.ui.components.GizmoPrimaryButton
 import com.ghn.poker.tracker.domain.usecase.SessionData
 import com.ghn.poker.tracker.presentation.session.LoadableDataState
 import com.ghn.poker.tracker.presentation.session.SessionListAction
 import com.ghn.poker.tracker.presentation.session.SessionListViewModel
 import com.ghn.poker.tracker.ui.preview.SurfacePreview
-import com.ghn.poker.tracker.ui.shared.GizmoIconButton
-import com.ghn.poker.tracker.ui.shared.GizmoLoadingIndicator
-import com.ghn.poker.tracker.ui.shared.GizmoPrimaryButton
 import com.ghn.poker.tracker.ui.theme.ChampagneGold
 import com.ghn.poker.tracker.ui.theme.Dimens
 import com.ghn.poker.tracker.ui.theme.Emerald

@@ -1,0 +1,20 @@
+<resources>
+    <string name="recent_sessions">Recent Sessions</string>
+    <string name="trending_news">Trending News</string>
+    <string name="charts">Charts</string>
+    <string name="create_session">Create Session</string>
+    <string name="create_session_date">Date</string>
+    <string name="create_session_enter_amount">BuyIn Amount</string>
+    <string name="create_session_end_amount">End Amount</string>
+    <string name="create_session_game_type">Game</string>
+    <string name="create_session_location_type">Location</string>
+    <string name="create_session_save">Save Session</string>
+    <string name="no_sessions_yet">No Sessions Yet</string>
+    <string name="start_poker_journey">Start your poker journey by\nrecording your first session</string>
+    <string name="unable_load_sessions">Unable to load your sessions.\nPlease check your connection and try again.</string>
+    <string name="charts_coming_soon">Charts Coming Soon</string>
+    <string name="working_on_charts">We\'re working on beautiful charts\nto visualize your poker journey</string>
+    <string name="total_pl">Total P/L</string>
+    <string name="sessions">Sessions</string>
+    <string name="win_rate">Win Rate</string>
+</resources>
