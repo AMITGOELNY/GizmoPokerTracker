@@ -26,6 +26,7 @@ include(":core:core-di")
 include(":core:core-preferences")
 include(":core:core-network")
 include(":core:core-database")
+include(":core:core-ui")
 
 // Existing modules
 include(":composeApp")
