@@ -2,12 +2,8 @@ package com.ghn.poker.tracker.ui.tracker
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -33,7 +29,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.EventNote
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
@@ -44,11 +39,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.EventNote
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.ShowChart
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -56,7 +46,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -73,6 +62,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
@@ -82,17 +72,30 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.ghn.gizmodb.common.models.Venue
 import com.ghn.poker.tracker.domain.usecase.SessionData
 import com.ghn.poker.tracker.presentation.session.LoadableDataState
 import com.ghn.poker.tracker.presentation.session.SessionListAction
 import com.ghn.poker.tracker.presentation.session.SessionListViewModel
 import com.ghn.poker.tracker.ui.preview.SurfacePreview
-import com.ghn.poker.tracker.ui.shared.LoadingAnimation
+import com.ghn.poker.tracker.ui.shared.GizmoIconButton
+import com.ghn.poker.tracker.ui.shared.GizmoLoadingIndicator
+import com.ghn.poker.tracker.ui.shared.GizmoPrimaryButton
+import com.ghn.poker.tracker.ui.theme.ChampagneGold
 import com.ghn.poker.tracker.ui.theme.Dimens
+import com.ghn.poker.tracker.ui.theme.Emerald
+import com.ghn.poker.tracker.ui.theme.GizmoGradients
+import com.ghn.poker.tracker.ui.theme.GizmoShapes
+import com.ghn.poker.tracker.ui.theme.Graphite
+import com.ghn.poker.tracker.ui.theme.Obsidian
+import com.ghn.poker.tracker.ui.theme.Onyx
+import com.ghn.poker.tracker.ui.theme.PaleGold
+import com.ghn.poker.tracker.ui.theme.Platinum
+import com.ghn.poker.tracker.ui.theme.Ruby
+import com.ghn.poker.tracker.ui.theme.Silver
+import com.ghn.poker.tracker.ui.theme.Slate
+import com.ghn.poker.tracker.ui.theme.logoStyle
+import com.ghn.poker.tracker.ui.theme.statsValue
 import gizmopoker.composeapp.generated.resources.Res
-import gizmopoker.composeapp.generated.resources.app_name
 import gizmopoker.composeapp.generated.resources.charts
 import gizmopoker.composeapp.generated.resources.charts_coming_soon
 import gizmopoker.composeapp.generated.resources.connection_issue
@@ -109,7 +112,6 @@ import gizmopoker.composeapp.generated.resources.working_on_charts
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
-import kotlin.time.Clock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -125,18 +127,10 @@ fun TrackerLandingPage(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF0A0E1A),
-                        Color(0xFF131629),
-                        Color(0xFF1A1F35)
-                    )
-                )
-            )
+            .background(GizmoGradients.backgroundSurface)
     ) {
-        // Animated background elements
-        AnimatedBackgroundElements()
+        // Ambient background elements
+        AmbientBackgroundElements()
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -145,7 +139,6 @@ fun TrackerLandingPage(
                 CenterAlignedTopAppBar(
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Color.Transparent,
-                        navigationIconContentColor = MaterialTheme.colorScheme.primary
                     ),
                     modifier = Modifier.fillMaxWidth(),
                     title = {
@@ -156,37 +149,26 @@ fun TrackerLandingPage(
                             Icon(
                                 imageVector = Icons.Default.Casino,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(24.dp)
+                                tint = ChampagneGold,
+                                modifier = Modifier.size(26.dp)
                             )
-                            Spacer(Modifier.width(8.dp))
+                            Spacer(Modifier.width(10.dp))
                             Text(
-                                text = stringResource(Res.string.app_name),
-                                style = MaterialTheme.typography.titleLarge.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    brush = Brush.horizontalGradient(
-                                        colors = listOf(
-                                            Color(0xFF6B7BFF),
-                                            Color(0xFF4F5FFF)
-                                        )
-                                    )
-                                )
+                                text = "GIZMO",
+                                style = MaterialTheme.typography.logoStyle,
+                                color = Platinum
                             )
                         }
                     },
                     actions = {
-                        IconButton(
+                        GizmoIconButton(
+                            icon = Icons.AutoMirrored.Default.ExitToApp,
                             onClick = onSignOutClick,
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .background(Color(0xFF1F2438).copy(alpha = 0.5f))
-                        ) {
-                            Icon(
-                                Icons.AutoMirrored.Default.ExitToApp,
-                                contentDescription = "Sign out",
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
+                            contentDescription = "Sign out",
+                            tint = Silver,
+                            backgroundColor = Slate.copy(alpha = 0.5f)
+                        )
+                        Spacer(Modifier.width(Dimens.grid_1))
                     }
                 )
             }
@@ -197,18 +179,18 @@ fun TrackerLandingPage(
                     .padding(top = padding.calculateTopPadding()),
                 verticalArrangement = Arrangement.spacedBy(Dimens.grid_2)
             ) {
-                // Stats Summary Card (only show when data is loaded)
+                // Stats Summary Card
                 AnimatedVisibility(
                     visible = state.sessions is LoadableDataState.Loaded,
-                    enter = slideInVertically() + fadeIn(),
-                    exit = slideOutVertically() + fadeOut()
+                    enter = slideInVertically(tween(400)) + fadeIn(tween(400)),
+                    exit = slideOutVertically(tween(300)) + fadeOut(tween(300))
                 ) {
                     if (state.sessions is LoadableDataState.Loaded) {
                         StatsSummaryCard(state.sessions.data)
                     }
                 }
 
-                // Modern Tab Row
+                // Tab Row
                 TabRow(
                     selectedTabIndex = tabIndex,
                     containerColor = Color.Transparent,
@@ -220,14 +202,11 @@ fun TrackerLandingPage(
                             modifier = Modifier
                                 .tabIndicatorOffset(tabPositions[tabIndex])
                                 .height(3.dp)
-                                .padding(horizontal = 24.dp)
-                                .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+                                .padding(horizontal = 28.dp)
+                                .clip(GizmoShapes.navIndicator)
                                 .background(
-                                    Brush.horizontalGradient(
-                                        colors = listOf(
-                                            MaterialTheme.colorScheme.primary,
-                                            Color(0xFF7B8BFF)
-                                        )
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(ChampagneGold, PaleGold)
                                     )
                                 )
                         )
@@ -242,16 +221,11 @@ fun TrackerLandingPage(
                                     style = MaterialTheme.typography.titleMedium.copy(
                                         fontWeight = if (tabIndex == index) FontWeight.Bold else FontWeight.Normal
                                     ),
-                                    color = if (tabIndex == index) {
-                                        MaterialTheme.colorScheme.onBackground
-                                    } else {
-                                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
-                                    }
+                                    color = if (tabIndex == index) Platinum else Silver.copy(alpha = 0.6f)
                                 )
                             },
                             selected = tabIndex == index,
                             onClick = { tabIndex = index },
-                            modifier = Modifier.clip(RoundedCornerShape(12.dp))
                         )
                     }
                 }
@@ -262,11 +236,10 @@ fun TrackerLandingPage(
                             viewModel = viewModel,
                             onRetry = { viewModel.onDispatch(SessionListAction.Retry) }
                         )
-
                         1 -> ComingSoonView()
                     }
 
-                    // Premium FAB
+                    // FAB
                     ExtendedFloatingActionButton(
                         onClick = onCreateSessionClick,
                         modifier = Modifier
@@ -275,10 +248,10 @@ fun TrackerLandingPage(
                         text = {
                             Text(
                                 text = stringResource(Res.string.create_session),
-                                style = MaterialTheme.typography.titleMedium.copy(
+                                style = MaterialTheme.typography.labelLarge.copy(
                                     fontWeight = FontWeight.SemiBold,
-                                    letterSpacing = 0.5.sp,
-                                )
+                                ),
+                                color = Obsidian
                             )
                         },
                         icon = {
@@ -286,20 +259,22 @@ fun TrackerLandingPage(
                                 modifier = Modifier
                                     .size(24.dp)
                                     .clip(CircleShape)
-                                    .background(Color.White.copy(alpha = 0.2f)),
+                                    .background(Obsidian.copy(alpha = 0.15f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     Icons.Filled.Add,
                                     null,
-                                    modifier = Modifier.size(18.dp)
+                                    modifier = Modifier.size(18.dp),
+                                    tint = Obsidian
                                 )
                             }
                         },
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = Color.White,
+                        containerColor = ChampagneGold,
+                        contentColor = Obsidian,
+                        shape = GizmoShapes.fab,
                         elevation = FloatingActionButtonDefaults.elevation(
-                            defaultElevation = 8.dp,
+                            defaultElevation = 6.dp,
                             pressedElevation = 12.dp
                         )
                     )
@@ -310,51 +285,37 @@ fun TrackerLandingPage(
 }
 
 @Composable
-private fun AnimatedBackgroundElements() {
-    val infiniteTransition = rememberInfiniteTransition(label = "background")
-    val rotation1 by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(40000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "rotation1"
-    )
-
+private fun AmbientBackgroundElements() {
     Box(modifier = Modifier.fillMaxSize()) {
-        // Subtle circular glow elements
+        // Top-left gold glow
         Box(
             modifier = Modifier
-                .size(300.dp)
-                .offset(x = (-100).dp, y = 100.dp)
-                .alpha(0.15f)
+                .size(280.dp)
+                .offset(x = (-80).dp, y = 60.dp)
+                .alpha(0.08f)
+                .blur(70.dp)
                 .drawBehind {
                     drawCircle(
                         brush = Brush.radialGradient(
-                            colors = listOf(
-                                Color(0xFF5265FF),
-                                Color.Transparent
-                            )
+                            colors = listOf(ChampagneGold, Color.Transparent)
                         ),
                         radius = size.width / 2
                     )
                 }
         )
 
+        // Bottom-right subtle glow
         Box(
             modifier = Modifier
-                .size(250.dp)
-                .align(Alignment.TopEnd)
-                .offset(x = 100.dp, y = (-50).dp)
-                .alpha(0.1f)
+                .size(220.dp)
+                .align(Alignment.BottomEnd)
+                .offset(x = 60.dp, y = 40.dp)
+                .alpha(0.06f)
+                .blur(50.dp)
                 .drawBehind {
                     drawCircle(
                         brush = Brush.radialGradient(
-                            colors = listOf(
-                                Color(0xFF7B4FFF),
-                                Color.Transparent
-                            )
+                            colors = listOf(Slate, Color.Transparent)
                         ),
                         radius = size.width / 2
                     )
@@ -383,34 +344,31 @@ private fun StatsSummaryCard(sessions: List<SessionData>) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = Dimens.grid_2),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1F2438).copy(alpha = 0.6f)
-        ),
+        shape = GizmoShapes.sessionCard,
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    Brush.horizontalGradient(
-                        colors = listOf(
-                            Color(0xFF5265FF).copy(alpha = 0.1f),
-                            Color(0xFF7B4FFF).copy(alpha = 0.05f)
-                        )
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Graphite.copy(alpha = 0.8f), Slate.copy(alpha = 0.5f))
+                    )
+                )
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(ChampagneGold.copy(alpha = 0.06f), Color.Transparent)
                     )
                 )
                 .border(
                     width = 1.dp,
                     brush = Brush.horizontalGradient(
-                        colors = listOf(
-                            Color(0xFF5265FF).copy(alpha = 0.3f),
-                            Color(0xFF7B4FFF).copy(alpha = 0.2f)
-                        )
+                        colors = listOf(ChampagneGold.copy(alpha = 0.25f), Onyx.copy(alpha = 0.3f))
                     ),
-                    shape = RoundedCornerShape(20.dp)
+                    shape = GizmoShapes.sessionCard
                 )
-                .padding(Dimens.grid_2)
+                .padding(vertical = Dimens.grid_2_5, horizontal = Dimens.grid_2)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -420,37 +378,27 @@ private fun StatsSummaryCard(sessions: List<SessionData>) {
                     icon = Icons.Default.AttachMoney,
                     label = stringResource(Res.string.total_pl),
                     value = if (totalProfit >= 0) "+$${totalProfit.toInt()}" else "-$${(-totalProfit).toInt()}",
-                    valueColor = if (totalProfit >= 0) Color(0xFF4CAF50) else Color(0xFFEF5350),
+                    valueColor = if (totalProfit >= 0) Emerald else Ruby,
                     modifier = Modifier.weight(1f)
                 )
 
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .height(60.dp)
-                        .background(Color.White.copy(alpha = 0.1f))
-                )
+                VerticalDivider()
 
                 StatItem(
                     icon = Icons.AutoMirrored.Filled.EventNote,
                     label = stringResource(Res.string.sessions),
                     value = totalSessions.toString(),
-                    valueColor = MaterialTheme.colorScheme.onBackground,
+                    valueColor = Platinum,
                     modifier = Modifier.weight(1f)
                 )
 
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .height(60.dp)
-                        .background(Color.White.copy(alpha = 0.1f))
-                )
+                VerticalDivider()
 
                 StatItem(
                     icon = if (winRate >= 50) Icons.AutoMirrored.Default.TrendingUp else Icons.AutoMirrored.Default.TrendingDown,
                     label = stringResource(Res.string.win_rate),
                     value = "$winRate%",
-                    valueColor = if (winRate >= 50) Color(0xFF4CAF50) else Color(0xFFEF5350),
+                    valueColor = if (winRate >= 50) Emerald else Ruby,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -469,27 +417,39 @@ private fun StatItem(
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(20.dp)
+            tint = ChampagneGold,
+            modifier = Modifier.size(22.dp)
         )
         Text(
             text = value,
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.Bold
-            ),
+            style = MaterialTheme.typography.statsValue,
             color = valueColor
         )
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+            color = Silver
         )
     }
+}
+
+@Composable
+private fun VerticalDivider() {
+    Box(
+        modifier = Modifier
+            .width(1.dp)
+            .height(56.dp)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(Color.Transparent, Onyx, Color.Transparent)
+                )
+            )
+    )
 }
 
 @Composable
@@ -504,36 +464,32 @@ private fun ComingSoonView() {
         ) {
             Box(
                 modifier = Modifier
-                    .size(120.dp)
+                    .size(100.dp)
                     .clip(CircleShape)
                     .background(
-                        Brush.radialGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                                Color.Transparent
-                            )
+                        brush = Brush.radialGradient(
+                            colors = listOf(ChampagneGold.copy(alpha = 0.12f), Color.Transparent)
                         )
-                    ),
+                    )
+                    .border(1.dp, Onyx, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ShowChart,
                     contentDescription = null,
-                    modifier = Modifier.size(60.dp),
-                    tint = MaterialTheme.colorScheme.primary
+                    modifier = Modifier.size(48.dp),
+                    tint = ChampagneGold.copy(alpha = 0.7f)
                 )
             }
             Text(
                 text = stringResource(Res.string.charts_coming_soon),
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                color = MaterialTheme.colorScheme.onBackground
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                color = Platinum
             )
             Text(
                 text = stringResource(Res.string.working_on_charts),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                color = Silver,
                 textAlign = TextAlign.Center
             )
         }
@@ -547,7 +503,7 @@ fun SessionList(viewModel: SessionListViewModel, onRetry: () -> Unit) {
     AnimatedContent(
         targetState = state.sessions,
         transitionSpec = { fadeIn(tween(300)) togetherWith fadeOut(tween(300)) },
-        label = "Animated Content"
+        label = "Session List"
     ) { targetState ->
         when (targetState) {
             LoadableDataState.Empty -> EmptySessionsState()
@@ -559,20 +515,18 @@ fun SessionList(viewModel: SessionListViewModel, onRetry: () -> Unit) {
                         start = Dimens.grid_2,
                         end = Dimens.grid_2,
                         top = Dimens.grid_2,
-                        // Extra padding for FAB
                         bottom = 100.dp
                     ),
-                    verticalArrangement = Arrangement.spacedBy(Dimens.grid_2)
+                    verticalArrangement = Arrangement.spacedBy(Dimens.grid_1_5)
                 ) {
                     items(targetState.data) { session ->
                         SessionListItem(session)
                     }
                 }
             }
-
             LoadableDataState.Loading ->
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    LoadingAnimation()
+                    GizmoLoadingIndicator()
                 }
         }
     }
@@ -589,36 +543,23 @@ private fun EmptySessionsState() {
             verticalArrangement = Arrangement.spacedBy(Dimens.grid_2),
             modifier = Modifier.padding(Dimens.grid_3)
         ) {
-            // Animated icon container
             Box(
                 modifier = Modifier
-                    .size(140.dp)
+                    .size(120.dp)
                     .clip(CircleShape)
                     .background(
-                        Brush.radialGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                                Color.Transparent
-                            )
+                        brush = Brush.radialGradient(
+                            colors = listOf(ChampagneGold.copy(alpha = 0.1f), Color.Transparent)
                         )
                     )
-                    .border(
-                        width = 2.dp,
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                            )
-                        ),
-                        shape = CircleShape
-                    ),
+                    .border(1.5.dp, ChampagneGold.copy(alpha = 0.2f), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Casino,
                     contentDescription = null,
-                    modifier = Modifier.size(70.dp),
-                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                    modifier = Modifier.size(56.dp),
+                    tint = ChampagneGold.copy(alpha = 0.6f)
                 )
             }
 
@@ -626,47 +567,36 @@ private fun EmptySessionsState() {
 
             Text(
                 text = stringResource(Res.string.no_sessions_yet),
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                color = MaterialTheme.colorScheme.onBackground
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                color = Platinum
             )
             Text(
                 text = stringResource(Res.string.start_poker_journey),
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                textAlign = TextAlign.Center,
-                lineHeight = 24.sp
+                color = Silver,
+                textAlign = TextAlign.Center
             )
 
             Spacer(Modifier.height(Dimens.grid_1))
 
-            // Decorative cards
+            // Card suit decorations
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.alpha(0.4f)
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.alpha(0.35f)
             ) {
-                listOf("♠", "♥", "♦", "♣").forEach { suit ->
+                listOf("\u2660", "\u2665", "\u2666", "\u2663").forEachIndexed { index, suit ->
                     Box(
                         modifier = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFF1F2438))
-                            .border(
-                                1.dp,
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                                RoundedCornerShape(8.dp)
-                            ),
+                            .size(36.dp)
+                            .clip(MaterialTheme.shapes.small)
+                            .background(Graphite)
+                            .border(1.dp, Onyx, MaterialTheme.shapes.small),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = suit,
-                            fontSize = 20.sp,
-                            color = if (suit == "♥" || suit == "♦") {
-                                Color(0xFFEF5350)
-                            } else {
-                                MaterialTheme.colorScheme.onBackground
-                            }
+                            style = MaterialTheme.typography.titleMedium,
+                            color = if (index == 1 || index == 2) Ruby else Platinum
                         )
                     }
                 }
@@ -686,38 +616,30 @@ private fun ErrorSessionsState(onRetry: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(Dimens.grid_2),
             modifier = Modifier.padding(Dimens.grid_3)
         ) {
-            // Error icon with pulsing animation
             val scale by animateFloatAsState(
                 targetValue = 1f,
-                animationSpec = tween(1000),
+                animationSpec = tween(800, easing = FastOutSlowInEasing),
                 label = "error_scale"
             )
 
             Box(
                 modifier = Modifier
-                    .size(140.dp)
+                    .size(120.dp)
                     .scale(scale)
                     .clip(CircleShape)
                     .background(
-                        Brush.radialGradient(
-                            colors = listOf(
-                                Color(0xFFEF5350).copy(alpha = 0.15f),
-                                Color.Transparent
-                            )
+                        brush = Brush.radialGradient(
+                            colors = listOf(Ruby.copy(alpha = 0.1f), Color.Transparent)
                         )
                     )
-                    .border(
-                        width = 2.dp,
-                        color = Color(0xFFEF5350).copy(alpha = 0.3f),
-                        shape = CircleShape
-                    ),
+                    .border(1.5.dp, Ruby.copy(alpha = 0.25f), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Error,
                     contentDescription = null,
-                    modifier = Modifier.size(70.dp),
-                    tint = Color(0xFFEF5350)
+                    modifier = Modifier.size(56.dp),
+                    tint = Ruby.copy(alpha = 0.7f)
                 )
             }
 
@@ -725,49 +647,23 @@ private fun ErrorSessionsState(onRetry: () -> Unit) {
 
             Text(
                 text = stringResource(Res.string.connection_issue),
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                color = MaterialTheme.colorScheme.onBackground
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                color = Platinum
             )
             Text(
                 text = stringResource(Res.string.unable_load_sessions),
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                textAlign = TextAlign.Center,
-                lineHeight = 24.sp
+                color = Silver,
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(Dimens.grid_2))
 
-            Button(
+            GizmoPrimaryButton(
+                text = stringResource(Res.string.try_again),
                 onClick = onRetry,
-                modifier = Modifier
-                    .fillMaxWidth(0.6f)
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
-                shape = RoundedCornerShape(25.dp),
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 4.dp,
-                    pressedElevation = 8.dp
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Refresh,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(end = Dimens.grid_1)
-                        .size(20.dp)
-                )
-                Text(
-                    stringResource(Res.string.try_again),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.SemiBold
-                    )
-                )
-            }
+                modifier = Modifier.fillMaxWidth(0.6f)
+            )
         }
     }
 }
@@ -783,52 +679,4 @@ private fun EmptySessionsStatePreview() = SurfacePreview {
 @Composable
 private fun ErrorSessionsStatePreview() = SurfacePreview {
     ErrorSessionsState(onRetry = {})
-}
-
-@Preview
-@Composable
-private fun SessionListLoadingPreview() = SurfacePreview {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        LoadingAnimation()
-    }
-}
-
-@Preview
-@Composable
-private fun SessionListLoadedPreview() = SurfacePreview {
-    val sampleSessions = listOf(
-        SessionData(
-            date = Clock.System.now(),
-            startAmount = "500",
-            endAmount = "1200",
-            venue = Venue.HARD_ROCK_FL
-        ),
-        SessionData(
-            date = Clock.System.now(),
-            startAmount = "1000",
-            endAmount = "800",
-            venue = Venue.MAGIC_CITY
-        ),
-        SessionData(
-            date = Clock.System.now(),
-            startAmount = "300",
-            endAmount = "650",
-            venue = Venue.HIALEAH_PARK
-        )
-    )
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(
-            start = Dimens.grid_2,
-            end = Dimens.grid_2,
-            top = Dimens.grid_2,
-            bottom = 100.dp
-        ),
-        verticalArrangement = Arrangement.spacedBy(Dimens.grid_2)
-    ) {
-        items(sampleSessions) { session ->
-            SessionListItem(session)
-        }
-    }
 }

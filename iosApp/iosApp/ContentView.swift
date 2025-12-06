@@ -28,13 +28,13 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             ComposeView()
-                    .ignoresSafeArea(.keyboard) // Compose has own keyboard handler
+                .ignoresSafeArea(.keyboard) // Compose has own keyboard handler
             VStack {
                 gradient.ignoresSafeArea(edges: .top).frame(height: 0)
                 Spacer()
             }
         }
-                .preferredColorScheme(.dark)
+        .preferredColorScheme(.dark)
     }
 }
 
