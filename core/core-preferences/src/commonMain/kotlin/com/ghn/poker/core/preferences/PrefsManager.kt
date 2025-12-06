@@ -2,13 +2,17 @@ package com.ghn.poker.core.preferences
 
 import com.russhwolf.settings.ObservableSettings
 import kotlinx.coroutines.flow.StateFlow
+import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 import kotlin.reflect.KClass
 
+const val ENCRYPTED_SETTINGS_NAME = "ENCRYPTED_SETTINGS"
+const val DEFAULT_SETTINGS_NAME = "DEFAULT_SETTINGS"
+
 @Single([PreferenceManager::class])
 class PrefsManager(
-    private val encryptedPrefs: ObservableSettings,
-    private val defaultPrefs: ObservableSettings
+    @Named(ENCRYPTED_SETTINGS_NAME) private val encryptedPrefs: ObservableSettings,
+    @Named(DEFAULT_SETTINGS_NAME) private val defaultPrefs: ObservableSettings
 ) : PreferenceManager {
 
     private fun getSettings(key: PreferenceKey) = encryptedPrefs

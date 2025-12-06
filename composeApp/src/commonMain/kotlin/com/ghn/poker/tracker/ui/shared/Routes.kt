@@ -8,24 +8,6 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.DrawableResource
 
 @Serializable
-data object Welcome
-
-@Serializable
-data object Login
-
-@Serializable
-data object CreateAccount
-
-@Serializable
-data object SessionInsert
-
-@Serializable
-data object SplashScreen
-
-@Serializable
-data class WebView(val url: String)
-
-@Serializable
 sealed class BottomNavItem(
     val route: String,
     val title: String

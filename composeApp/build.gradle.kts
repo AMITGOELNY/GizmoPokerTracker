@@ -43,6 +43,7 @@ kotlin {
             export(project(":core:core-ui"))
             export(project(":core:core-di"))
             export(project(":core:core-network"))
+            export(project(":core:core-preferences"))
             export(project(":core:core-resources"))
             export(project(":feature:feature-auth"))
             export(project(":feature:feature-tracker"))
@@ -102,7 +103,19 @@ kotlin {
 
             dependencies {
                 implementation(project(":common"))
+                // Core modules
+                implementation(project(":core:core-common"))
+                implementation(project(":core:core-di"))
+                implementation(project(":core:core-network"))
+                // Note: core-database excluded - composeApp still has SQLDelight
+                implementation(project(":core:core-preferences"))
                 implementation(project(":core:core-ui"))
+                implementation(project(":core:core-resources"))
+                // Feature modules
+                implementation(project(":feature:feature-auth"))
+                implementation(project(":feature:feature-tracker"))
+                implementation(project(":feature:feature-feed"))
+                implementation(project(":feature:feature-cards"))
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material3)
@@ -175,6 +188,7 @@ kotlin {
             api(project(":core:core-ui"))
             api(project(":core:core-di"))
             api(project(":core:core-network"))
+            api(project(":core:core-preferences"))
             api(project(":core:core-resources"))
             api(project(":feature:feature-auth"))
             api(project(":feature:feature-tracker"))

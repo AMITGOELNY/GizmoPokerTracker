@@ -3,6 +3,8 @@ package com.ghn.poker.tracker.di
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.ghn.poker.core.preferences.DEFAULT_SETTINGS_NAME
+import com.ghn.poker.core.preferences.ENCRYPTED_SETTINGS_NAME
 import com.ghn.poker.tracker.data.database.DataBaseDriver
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.SharedPreferencesSettings

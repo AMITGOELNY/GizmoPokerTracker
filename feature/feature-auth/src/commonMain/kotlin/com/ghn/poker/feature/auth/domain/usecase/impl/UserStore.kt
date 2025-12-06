@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class UserStore(
+class UserStore(
     private val preferenceManager: PreferenceManager,
     private val loginRepository: LoginRepository
 ) : ViewModel(), Store<AppState> {
