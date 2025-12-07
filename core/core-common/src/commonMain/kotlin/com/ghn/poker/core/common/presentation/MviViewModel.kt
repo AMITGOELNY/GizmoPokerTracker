@@ -2,6 +2,7 @@ package com.ghn.poker.core.common.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,9 +33,12 @@ abstract class MviViewModel<State, Action, Effect> : ViewModel() {
     val effects = _effects.receiveAsFlow()
         .shareIn(viewModelScope, SharingStarted.Eagerly)
 
+    private val tag: String by lazy { this::class.simpleName ?: "MviViewModel" }
+
     init {
         viewModelScope.launch {
             actions.collect { action ->
+                Logger.d(tag) { "Action: $action" }
                 handleAction(action)
             }
         }
@@ -73,6 +77,16 @@ abstract class MviViewModel<State, Action, Effect> : ViewModel() {
     protected fun emitEffect(effect: Effect) {
         viewModelScope.launch {
             _effects.send(effect)
+        }
+    }
+
+    /**
+     * Launch a coroutine in the viewModelScope.
+     * Use this for long-running operations that shouldn't block action handling.
+     */
+    protected fun launchInViewModel(block: suspend () -> Unit) {
+        viewModelScope.launch {
+            block()
         }
     }
 }

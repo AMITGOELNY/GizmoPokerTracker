@@ -20,24 +20,27 @@ class MainViewModel(
         }
     }
 
-    private suspend fun checkForToken() {
+    private fun checkForToken() {
         if (currentState.appState is AppState.Init) {
-            preferenceManager.tokenFlow
-                .onEach { Logger.d { "flow updated with $it" } }
-                .collect { token ->
-                    val appState = if (token.isNullOrBlank()) {
-                        AppState.LoggedOut
-                    } else {
-                        AppState.LoggedIn
+            launchInViewModel {
+                preferenceManager.tokenFlow
+                    .onEach { Logger.d { "flow updated with $it" } }
+                    .collect { token ->
+                        val appState = if (token.isNullOrBlank()) {
+                            AppState.LoggedOut
+                        } else {
+                            AppState.LoggedIn
+                        }
+                        updateState { copy(appState = appState) }
                     }
-                    updateState { copy(appState = appState) }
-                }
+            }
         }
     }
 
     private suspend fun signOut() {
         loginRepository.logout()
         preferenceManager.clearPrefs()
+        updateState { copy(appState = AppState.LoggedOut) }
         Logger.d { "User signed out successfully" }
     }
 }
