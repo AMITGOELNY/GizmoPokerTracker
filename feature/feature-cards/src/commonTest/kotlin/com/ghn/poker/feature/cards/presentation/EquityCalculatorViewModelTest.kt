@@ -51,7 +51,7 @@ class EquityCalculatorViewModelTest : BaseViewModelTest() {
 
         viewModel.state.value.selectedSuit shouldBe CardSuit.HEARTS
 
-        viewModel.dispatch(EquityCalculatorActions.UpdateSuit(CardSuit.SPADES))
+        viewModel.onDispatch(EquityCalculatorAction.UpdateSuit(CardSuit.SPADES))
         advanceUntilIdle()
 
         viewModel.state.value.selectedSuit shouldBe CardSuit.SPADES
@@ -62,8 +62,8 @@ class EquityCalculatorViewModelTest : BaseViewModelTest() {
         val viewModel = EquityCalculatorViewModel(calculatorUseCase)
         advanceUntilIdle()
 
-        viewModel.dispatch(
-            EquityCalculatorActions.BottomSheetUpdate(
+        viewModel.onDispatch(
+            EquityCalculatorAction.BottomSheetUpdate(
                 showBottomSheet = true,
                 cardRowType = CardRowType.HERO,
                 index = 0
@@ -83,8 +83,8 @@ class EquityCalculatorViewModelTest : BaseViewModelTest() {
         val viewModel = EquityCalculatorViewModel(calculatorUseCase)
         advanceUntilIdle()
 
-        viewModel.dispatch(
-            EquityCalculatorActions.BottomSheetUpdate(
+        viewModel.onDispatch(
+            EquityCalculatorAction.BottomSheetUpdate(
                 showBottomSheet = true,
                 cardRowType = CardRowType.HERO,
                 index = 0
@@ -92,7 +92,7 @@ class EquityCalculatorViewModelTest : BaseViewModelTest() {
         )
         advanceUntilIdle()
 
-        viewModel.dispatch(EquityCalculatorActions.BottomSheetClose)
+        viewModel.onDispatch(EquityCalculatorAction.BottomSheetClose)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -105,8 +105,8 @@ class EquityCalculatorViewModelTest : BaseViewModelTest() {
         val viewModel = EquityCalculatorViewModel(calculatorUseCase)
         advanceUntilIdle()
 
-        viewModel.dispatch(
-            EquityCalculatorActions.BottomSheetUpdate(
+        viewModel.onDispatch(
+            EquityCalculatorAction.BottomSheetUpdate(
                 showBottomSheet = true,
                 cardRowType = CardRowType.HERO,
                 index = 0
@@ -115,7 +115,7 @@ class EquityCalculatorViewModelTest : BaseViewModelTest() {
         advanceUntilIdle()
 
         val card = Card(suit = CardSuit.HEARTS, name = "A", value = 14) // Ace of Hearts
-        viewModel.dispatch(EquityCalculatorActions.OnCardSelected(card))
+        viewModel.onDispatch(EquityCalculatorAction.OnCardSelected(card))
         advanceUntilIdle()
 
         viewModel.state.value.selectorInfo?.selectedCard shouldBe card
@@ -126,8 +126,8 @@ class EquityCalculatorViewModelTest : BaseViewModelTest() {
         val viewModel = EquityCalculatorViewModel(calculatorUseCase)
         advanceUntilIdle()
 
-        viewModel.dispatch(
-            EquityCalculatorActions.BottomSheetUpdate(
+        viewModel.onDispatch(
+            EquityCalculatorAction.BottomSheetUpdate(
                 showBottomSheet = true,
                 cardRowType = CardRowType.HERO,
                 index = 0
@@ -136,10 +136,10 @@ class EquityCalculatorViewModelTest : BaseViewModelTest() {
         advanceUntilIdle()
 
         val card = Card(suit = CardSuit.HEARTS, name = "A", value = 14) // Ace of Hearts
-        viewModel.dispatch(EquityCalculatorActions.OnCardSelected(card))
+        viewModel.onDispatch(EquityCalculatorAction.OnCardSelected(card))
         advanceUntilIdle()
 
-        viewModel.dispatch(EquityCalculatorActions.OnConfirmSelected)
+        viewModel.onDispatch(EquityCalculatorAction.OnConfirmSelected)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -173,7 +173,7 @@ class EquityCalculatorViewModelTest : BaseViewModelTest() {
         setupCard(viewModel, CardRowType.VILLAIN, 0, Card(CardSuit.SPADES, "Q", 12))
         setupCard(viewModel, CardRowType.VILLAIN, 1, Card(CardSuit.SPADES, "J", 11))
 
-        viewModel.dispatch(EquityCalculatorActions.CalculateEquity)
+        viewModel.onDispatch(EquityCalculatorAction.CalculateEquity)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -212,14 +212,14 @@ class EquityCalculatorViewModelTest : BaseViewModelTest() {
         val viewModel = EquityCalculatorViewModel(calculatorUseCase)
         advanceUntilIdle()
 
-        viewModel.dispatch(EquityCalculatorActions.UpdateSuit(CardSuit.HEARTS))
+        viewModel.onDispatch(EquityCalculatorAction.UpdateSuit(CardSuit.HEARTS))
         advanceUntilIdle()
 
         val heartsCards = viewModel.state.value.sheetDisplayCards
         heartsCards.size shouldBe 13
         heartsCards.all { it.card.suit == CardSuit.HEARTS }.shouldBeTrue()
 
-        viewModel.dispatch(EquityCalculatorActions.UpdateSuit(CardSuit.SPADES))
+        viewModel.onDispatch(EquityCalculatorAction.UpdateSuit(CardSuit.SPADES))
         advanceUntilIdle()
 
         val spadesCards = viewModel.state.value.sheetDisplayCards
@@ -233,8 +233,8 @@ class EquityCalculatorViewModelTest : BaseViewModelTest() {
         index: Int,
         card: Card
     ) {
-        viewModel.dispatch(
-            EquityCalculatorActions.BottomSheetUpdate(
+        viewModel.onDispatch(
+            EquityCalculatorAction.BottomSheetUpdate(
                 showBottomSheet = true,
                 cardRowType = rowType,
                 index = index
@@ -242,10 +242,10 @@ class EquityCalculatorViewModelTest : BaseViewModelTest() {
         )
         advanceUntilIdle()
 
-        viewModel.dispatch(EquityCalculatorActions.OnCardSelected(card))
+        viewModel.onDispatch(EquityCalculatorAction.OnCardSelected(card))
         advanceUntilIdle()
 
-        viewModel.dispatch(EquityCalculatorActions.OnConfirmSelected)
+        viewModel.onDispatch(EquityCalculatorAction.OnConfirmSelected)
         advanceUntilIdle()
     }
 }

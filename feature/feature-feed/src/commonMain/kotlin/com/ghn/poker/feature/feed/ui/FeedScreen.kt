@@ -85,7 +85,7 @@ import com.ghn.poker.core.ui.theme.Slate
 import com.ghn.poker.core.ui.theme.cardTitle
 import com.ghn.poker.core.ui.theme.logoStyle
 import com.ghn.poker.feature.feed.domain.model.FeedItem
-import com.ghn.poker.feature.feed.presentation.FeedActions
+import com.ghn.poker.feature.feed.presentation.FeedAction
 import com.ghn.poker.feature.feed.presentation.FeedViewModel
 import com.ghn.poker.feature.feed.presentation.FeedsContainer
 import com.ghn.poker.feature.feed.presentation.LoadableDataState
@@ -163,10 +163,10 @@ fun FeedScreen(
                 ) {
                     when (targetState) {
                         LoadableDataState.Empty ->
-                            EmptyState(onRetry = { viewModel.dispatch(FeedActions.Init) })
+                            EmptyState(onRetry = { viewModel.onDispatch(FeedAction.Init) })
 
                         LoadableDataState.Error ->
-                            ErrorState(onRetry = { viewModel.dispatch(FeedActions.Init) })
+                            ErrorState(onRetry = { viewModel.onDispatch(FeedAction.Init) })
 
                         is LoadableDataState.Loaded ->
                             NewsItemList(
@@ -175,8 +175,8 @@ fun FeedScreen(
                                 selectedFeed = state.value.selectedFeed,
                                 isRefreshing = state.value.isRefreshing,
                                 onFeedItemClick = onFeedItemClick,
-                                onTabItemClick = { viewModel.dispatch(FeedActions.OnTabItemClick(it)) },
-                                onRefresh = { viewModel.dispatch(FeedActions.Refresh) }
+                                onTabItemClick = { viewModel.onDispatch(FeedAction.OnTabItemClick(it)) },
+                                onRefresh = { viewModel.onDispatch(FeedAction.Refresh) }
                             )
 
                         LoadableDataState.Loading ->

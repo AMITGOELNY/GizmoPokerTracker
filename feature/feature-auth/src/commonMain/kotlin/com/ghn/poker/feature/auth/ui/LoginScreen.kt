@@ -76,7 +76,7 @@ import com.ghn.poker.core.ui.theme.Slate
 import com.ghn.poker.core.ui.theme.heroDisplay
 import com.ghn.poker.core.ui.theme.inputText
 import com.ghn.poker.core.ui.theme.logoStyle
-import com.ghn.poker.feature.auth.presentation.LoginActions
+import com.ghn.poker.feature.auth.presentation.LoginAction
 import com.ghn.poker.feature.auth.presentation.LoginViewModel
 import gizmopoker.core.core_resources.generated.resources.app_name
 import gizmopoker.feature.feature_auth.generated.resources.Res
@@ -104,7 +104,7 @@ fun LoginScreen(viewModel: LoginViewModel = koinInject(), onBackClick: () -> Uni
     LoginScreenContent(
         loading = state.value.authenticating,
         onBackClick = onBackClick,
-        onDispatch = viewModel::dispatch
+        onDispatch = viewModel::onDispatch
     )
 }
 
@@ -112,7 +112,7 @@ fun LoginScreen(viewModel: LoginViewModel = koinInject(), onBackClick: () -> Uni
 internal fun LoginScreenContent(
     loading: Boolean,
     onBackClick: () -> Unit,
-    onDispatch: (LoginActions) -> Unit,
+    onDispatch: (LoginAction) -> Unit,
 ) {
     var isVisible by remember { mutableStateOf(false) }
 
@@ -223,9 +223,9 @@ internal fun LoginScreenContent(
                 ) {
                     FormBody(
                         loading = loading,
-                        onUsernameChange = { onDispatch(LoginActions.OnUsernameChange(it)) },
-                        onPasswordChange = { onDispatch(LoginActions.OnPasswordChange(it)) },
-                        onSubmit = { onDispatch(LoginActions.OnSubmit) }
+                        onUsernameChange = { onDispatch(LoginAction.OnUsernameChange(it)) },
+                        onPasswordChange = { onDispatch(LoginAction.OnPasswordChange(it)) },
+                        onSubmit = { onDispatch(LoginAction.OnSubmit) }
                     )
                 }
 

@@ -1,24 +1,12 @@
 package com.ghn.poker.feature.tracker.presentation
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import co.touchlab.kermit.Logger
 import com.ghn.gizmodb.common.models.GameType
 import com.ghn.gizmodb.common.models.Venue
+import com.ghn.poker.core.common.presentation.MviViewModel
 import com.ghn.poker.core.common.util.DAY_AND_MONTH_FORMAT
 import com.ghn.poker.core.common.util.format
 import com.ghn.poker.core.network.ApiResponse
 import com.ghn.poker.feature.tracker.domain.usecase.SessionUseCase
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.android.annotation.KoinViewModel
@@ -27,70 +15,37 @@ import kotlin.time.Clock
 @KoinViewModel
 class SessionEntryViewModel(
     private val useCase: SessionUseCase
-) : ViewModel() {
-    private val _state = MutableStateFlow(SessionEntryState())
-    val state = _state.asStateFlow()
+) : MviViewModel<SessionEntryState, SessionEntryAction, SessionEntryEffect>() {
 
-    private val viewStateTrigger = MutableSharedFlow<SessionEntryAction>(replay = 1)
+    override val initialState = SessionEntryState()
 
-    private val _effects = Channel<SessionEntryEffect>()
-    val effects = _effects.receiveAsFlow().shareIn(viewModelScope, SharingStarted.Eagerly)
-
-    init {
-        viewModelScope.launch {
-            viewStateTrigger.emit(SessionEntryAction.Init)
-
-            viewStateTrigger
-                .onEach { Logger.d("SessionEntryViewModel") { "Triggered new action : $it" } }
-                .collect { action ->
-                    when (action) {
-                        is SessionEntryAction.UpdateDate -> updateDate(action.date)
-                        is SessionEntryAction.UpdateStartAmount -> updateStartAmount(action)
-                        is SessionEntryAction.UpdateEndAmount -> updateEndAmount(action)
-                        is SessionEntryAction.UpdateLocation -> TODO()
-                        is SessionEntryAction.SaveSession -> saveSession()
-                        is SessionEntryAction.UpdateGameType ->
-                            _state.update { it.copy(gameType = action.gameType) }
-
-                        is SessionEntryAction.UpdateVenue ->
-                            _state.update { it.copy(venue = action.venue) }
-
-                        SessionEntryAction.Init -> Unit
-                    }
-                }
+    override suspend fun handleAction(action: SessionEntryAction) {
+        when (action) {
+            SessionEntryAction.Init -> Unit
+            is SessionEntryAction.UpdateDate -> updateState { copy(date = action.date) }
+            is SessionEntryAction.UpdateStartAmount -> updateState { copy(startAmount = action.startAmount) }
+            is SessionEntryAction.UpdateEndAmount -> updateState { copy(endAmount = action.endAmount) }
+            is SessionEntryAction.UpdateLocation -> TODO()
+            is SessionEntryAction.UpdateGameType -> updateState { copy(gameType = action.gameType) }
+            is SessionEntryAction.UpdateVenue -> updateState { copy(venue = action.venue) }
+            SessionEntryAction.SaveSession -> saveSession()
         }
-    }
-
-    private fun updateDate(date: kotlin.time.Instant) {
-        _state.update { it.copy(date = date) }
     }
 
     private suspend fun saveSession() {
-        _state.update { it.copy(isCreatingSession = true) }
+        updateState { copy(isCreatingSession = true) }
         val result = useCase.createSession(
-            date = state.value.date,
-            startAmount = state.value.startAmount,
-            endAmount = state.value.endAmount,
-            gameType = state.value.gameType,
-            venue = state.value.venue,
+            date = currentState.date,
+            startAmount = currentState.startAmount,
+            endAmount = currentState.endAmount,
+            gameType = currentState.gameType,
+            venue = currentState.venue,
         )
-        _state.update { it.copy(isCreatingSession = false) }
+        updateState { copy(isCreatingSession = false) }
         when (result) {
             is ApiResponse.Error -> Unit
-            is ApiResponse.Success -> _effects.send(SessionEntryEffect.OnSessionCreated)
+            is ApiResponse.Success -> emitEffect(SessionEntryEffect.OnSessionCreated)
         }
-    }
-
-    private fun updateStartAmount(action: SessionEntryAction.UpdateStartAmount) {
-        _state.update { it.copy(startAmount = action.startAmount) }
-    }
-
-    private fun updateEndAmount(action: SessionEntryAction.UpdateEndAmount) {
-        _state.update { it.copy(endAmount = action.endAmount) }
-    }
-
-    fun dispatch(action: SessionEntryAction) {
-        viewStateTrigger.tryEmit(action)
     }
 }
 

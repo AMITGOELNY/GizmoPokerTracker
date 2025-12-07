@@ -14,6 +14,7 @@ kotlin {
             api(libs.coroutines.core)
             api(libs.datetime)
             api(libs.kermit)
+            api(libs.lifecycle.viewmodel.compose)
             implementation(libs.kotlinx.serialization.json)
         }
     }

@@ -1,60 +1,47 @@
 package com.ghn.poker.feature.cards.presentation
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.ghn.gizmodb.common.models.Card
 import com.ghn.gizmodb.common.models.Deck
+import com.ghn.poker.core.common.presentation.MviViewModel
 import com.ghn.poker.core.network.ApiResponse
 import com.ghn.poker.feature.cards.domain.usecase.FiveCardSimulatedEvaluationUseCase
 import com.ghn.poker.feature.cards.presentation.model.CardState
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class CardScreenHoldEmViewModel(
     private val fiveCardSimulatedEvaluationUseCase: FiveCardSimulatedEvaluationUseCase
-) : ViewModel() {
+) : MviViewModel<CardScreenHoldEmState, CardScreenHoldEmAction, CardScreenHoldEmEffect>() {
+
     private val deck: List<CardState> = Deck.cards.map { CardState(it, false) }
 
-    private val _state = MutableStateFlow(CardScreenHoldEmViewState())
-    val state = _state.asStateFlow()
-
-    private val viewStateTrigger = MutableSharedFlow<CardScreenHoldEmActions>(replay = 1)
+    override val initialState = CardScreenHoldEmState()
 
     init {
-        viewModelScope.launch {
-            viewStateTrigger.emit(CardScreenHoldEmActions.Init)
+        onDispatch(CardScreenHoldEmAction.Init)
+    }
 
-            viewStateTrigger
-                .onEach { Logger.d("CardScreenHoldEmViewModel") { "Initializing" } }
-                .collect { action ->
-                    when (action) {
-                        CardScreenHoldEmActions.Init -> distributeCards()
-                        CardScreenHoldEmActions.NewGame -> {
-                            delay(500)
-                            distributeCards()
-                        }
-                    }
-                }
+    override suspend fun handleAction(action: CardScreenHoldEmAction) {
+        when (action) {
+            CardScreenHoldEmAction.Init -> distributeCards()
+            CardScreenHoldEmAction.NewGame -> {
+                delay(500)
+                distributeCards()
+            }
         }
     }
 
     private suspend fun distributeCards() {
         val shuffled = deck.shuffled()
-        val playerCards = (0 until (state.value.players)).map { playerIndex ->
+        val playerCards = (0 until (currentState.players)).map { playerIndex ->
             (0 until (2)).map { playerCardNumber ->
-                shuffled[playerIndex + (state.value.players * playerCardNumber)].card
+                shuffled[playerIndex + (currentState.players * playerCardNumber)].card
             }
         }
 
-        _state.update { it.copy(playerCard = playerCards) }
+        updateState { copy(playerCard = playerCards) }
 
         delay(2000)
         val startIndex = (playerCards.count() * 2) // dealt index
@@ -88,15 +75,11 @@ class CardScreenHoldEmViewModel(
             null
         }
 
-        _state.update { it.copy(boardCards = boardCards, winnerInfo = winnerInfo) }
-    }
-
-    fun dispatch(action: CardScreenHoldEmActions) {
-        viewStateTrigger.tryEmit(action)
+        updateState { copy(boardCards = boardCards, winnerInfo = winnerInfo) }
     }
 }
 
-data class CardScreenHoldEmViewState(
+data class CardScreenHoldEmState(
     val item: String = "",
     val players: Int = 6,
     val playerCard: List<List<Card>> = emptyList(),
@@ -104,7 +87,9 @@ data class CardScreenHoldEmViewState(
     val winnerInfo: WinnerInfo? = null,
 )
 
-sealed interface CardScreenHoldEmActions {
-    data object Init : CardScreenHoldEmActions
-    data object NewGame : CardScreenHoldEmActions
+sealed interface CardScreenHoldEmAction {
+    data object Init : CardScreenHoldEmAction
+    data object NewGame : CardScreenHoldEmAction
 }
+
+sealed interface CardScreenHoldEmEffect

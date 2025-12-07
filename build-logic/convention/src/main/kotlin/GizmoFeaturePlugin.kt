@@ -30,6 +30,9 @@ class GizmoFeaturePlugin : Plugin<Project> {
 
                 sourceSets.named("commonMain") {
                     dependencies {
+                        // Core common (MviViewModel, utilities)
+                        api(project(":core:core-common"))
+
                         // Navigation
                         implementation(libs.findLibrary("navigation-compose").get())
 

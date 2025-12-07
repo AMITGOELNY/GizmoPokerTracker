@@ -1,60 +1,47 @@
 package com.ghn.poker.feature.cards.presentation
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.ghn.gizmodb.common.models.Card
 import com.ghn.gizmodb.common.models.Deck
+import com.ghn.poker.core.common.presentation.MviViewModel
 import com.ghn.poker.core.network.ApiResponse
 import com.ghn.poker.feature.cards.domain.usecase.FiveCardSimulatedEvaluationUseCase
 import com.ghn.poker.feature.cards.presentation.model.CardState
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class CardScreenViewModel(
     private val fiveCardSimulatedEvaluationUseCase: FiveCardSimulatedEvaluationUseCase
-) : ViewModel() {
+) : MviViewModel<CardScreenState, CardScreenAction, CardScreenEffect>() {
+
     private val deck: List<CardState> = Deck.cards.map { CardState(it, false) }
 
-    private val _state = MutableStateFlow(CardScreenViewState())
-    val state = _state.asStateFlow()
-
-    private val viewStateTrigger = MutableSharedFlow<CardScreenActions>(replay = 1)
+    override val initialState = CardScreenState()
 
     init {
-        viewModelScope.launch {
-            viewStateTrigger.emit(CardScreenActions.Init)
+        onDispatch(CardScreenAction.Init)
+    }
 
-            viewStateTrigger
-                .onEach { Logger.d("CardScreenViewModel") { "Initializing" } }
-                .collect { action ->
-                    when (action) {
-                        CardScreenActions.Init -> distributeCards()
-                        CardScreenActions.NewGame -> {
-                            delay(500)
-                            distributeCards()
-                        }
-                    }
-                }
+    override suspend fun handleAction(action: CardScreenAction) {
+        when (action) {
+            CardScreenAction.Init -> distributeCards()
+            CardScreenAction.NewGame -> {
+                delay(500)
+                distributeCards()
+            }
         }
     }
 
     private suspend fun distributeCards() {
         val shuffled = deck.shuffled()
-        val playerCards = (0 until (state.value.players)).map { playerIndex ->
+        val playerCards = (0 until (currentState.players)).map { playerIndex ->
             (0 until (5)).map { playerCardNumber ->
-                shuffled[playerIndex + (state.value.players * playerCardNumber)].card
+                shuffled[playerIndex + (currentState.players * playerCardNumber)].card
             }
         }
 
-        _state.update { it.copy(playerCard = playerCards) }
+        updateState { copy(playerCard = playerCards) }
 
         var winnerInfo = WinnerInfo(-1, "")
 
@@ -75,15 +62,11 @@ class CardScreenViewModel(
         }
         Logger.d { "Player${winnerInfo.winnerIndex + 1} has the high rank: ${winnerInfo.winningHand}" }
 
-        _state.update { it.copy(winnerInfo = winnerInfo) }
-    }
-
-    fun dispatch(action: CardScreenActions) {
-        viewStateTrigger.tryEmit(action)
+        updateState { copy(winnerInfo = winnerInfo) }
     }
 }
 
-data class CardScreenViewState(
+data class CardScreenState(
     val item: String = "",
     val players: Int = 9,
     val playerCard: List<List<Card>> = emptyList(),
@@ -96,10 +79,12 @@ data class WinnerInfo(
     val winningHandValue: Short = Short.MAX_VALUE
 )
 
-sealed interface CardScreenActions {
-    data object Init : CardScreenActions
-    data object NewGame : CardScreenActions
+sealed interface CardScreenAction {
+    data object Init : CardScreenAction
+    data object NewGame : CardScreenAction
 }
+
+sealed interface CardScreenEffect
 
 val Short.getHandRankName: String
     get() = when {
