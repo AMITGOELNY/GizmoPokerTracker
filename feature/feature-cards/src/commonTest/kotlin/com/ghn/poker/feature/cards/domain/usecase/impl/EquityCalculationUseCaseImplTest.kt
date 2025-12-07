@@ -48,4 +48,52 @@ class EquityCalculationUseCaseImplTest {
             )
         }
     }
+
+    @Test
+    fun getResults_returns_error_when_repository_fails() = runTest {
+        val evaluatorRepository = mock<HandEvaluatorRepository>()
+        val useCase = EquityCalculationUseCaseImpl(evaluatorRepository)
+        val heroCards = listOf(Card(CardSuit.SPADES, "A", 14), Card(CardSuit.HEARTS, "K", 13))
+        val boardCards = emptyList<Card>()
+        val villainCards = listOf(Card(CardSuit.CLUBS, "Q", 12), Card(CardSuit.DIAMONDS, "J", 11))
+        val simulationCount = 1_000
+
+        everySuspend {
+            evaluatorRepository.evaluate(
+                heroCards = heroCards,
+                boardCardsFiltered = boardCards,
+                villainCards = villainCards,
+                simulationCount = simulationCount
+            )
+        } returns ApiResponse.Error.NetworkError
+
+        val result = useCase.getResults(heroCards, boardCards, villainCards, simulationCount)
+
+        result shouldBe ApiResponse.Error.NetworkError
+    }
+
+    @Test
+    fun getResults_uses_default_simulation_count() = runTest {
+        val evaluatorRepository = mock<HandEvaluatorRepository>()
+        val useCase = EquityCalculationUseCaseImpl(evaluatorRepository)
+        val heroCards = listOf(Card(CardSuit.SPADES, "A", 14), Card(CardSuit.HEARTS, "K", 13))
+        val boardCards = emptyList<Card>()
+        val villainCards = listOf(Card(CardSuit.CLUBS, "Q", 12), Card(CardSuit.DIAMONDS, "J", 11))
+        val expected = ApiResponse.Success(
+            EvaluatorResponse(heroResult = 55, villainResult = 40, tiedResult = 5)
+        )
+
+        everySuspend {
+            evaluatorRepository.evaluate(
+                heroCards = heroCards,
+                boardCardsFiltered = boardCards,
+                villainCards = villainCards,
+                simulationCount = 20000
+            )
+        } returns expected
+
+        val result = useCase.getResults(heroCards, boardCards, villainCards)
+
+        result shouldBe expected
+    }
 }

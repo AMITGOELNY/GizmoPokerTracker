@@ -28,6 +28,7 @@ include(":core:core-network")
 include(":core:core-database")
 include(":core:core-ui")
 include(":core:core-resources")
+include(":core:core-testing")
 
 // Feature modules
 include(":feature:feature-auth")
