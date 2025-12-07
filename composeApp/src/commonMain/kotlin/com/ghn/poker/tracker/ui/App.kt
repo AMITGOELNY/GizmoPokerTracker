@@ -104,7 +104,7 @@ fun App(
                     onShowBottomBar = { bottomBarState.value = it }
                 )
 
-                // Cards feature navigation (Profile tab)
+                // Cards feature navigation (Cards tab)
                 cardsNavGraph()
 
                 // Bottom nav item routes that map to feature routes
@@ -133,11 +133,11 @@ fun App(
                     }
                 }
 
-                composable<BottomNavItem.Profile> {
+                composable<BottomNavItem.Cards> {
                     bottomBarState.value = true
                     LaunchedEffect(Unit) {
                         navController.navigate(CardsHome) {
-                            popUpTo(BottomNavItem.Profile) { inclusive = true }
+                            popUpTo(BottomNavItem.Cards) { inclusive = true }
                         }
                     }
                 }
@@ -170,7 +170,7 @@ private fun AppStateListener(
 @Composable
 fun BottomNavigationBar(navController: NavHostController, bottomBarState: MutableState<Boolean>) {
     val items = remember {
-        listOf(BottomNavItem.Home, BottomNavItem.News, BottomNavItem.Profile)
+        listOf(BottomNavItem.Home, BottomNavItem.News, BottomNavItem.Cards)
     }
     AnimatedVisibility(
         visible = bottomBarState.value,
