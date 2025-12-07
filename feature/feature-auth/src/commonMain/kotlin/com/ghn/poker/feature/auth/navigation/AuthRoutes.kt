@@ -13,3 +13,6 @@ data object Login
 
 @Serializable
 data object CreateAccount
+
+@Serializable
+data object SettingsHome

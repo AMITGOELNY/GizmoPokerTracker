@@ -25,8 +25,11 @@ class UserStore(
                 preferenceManager.tokenFlow
                     .onEach { Logger.d { "flow updated with $it" } }
                     .collect { token ->
-                        val state =
-                            if (token.isNullOrBlank()) AppState.LoggedOut else AppState.LoggedIn
+                        val state = if (token.isNullOrBlank()) {
+                            AppState.LoggedOut
+                        } else {
+                            AppState.LoggedIn
+                        }
                         _userState.update { state }
                     }
             }

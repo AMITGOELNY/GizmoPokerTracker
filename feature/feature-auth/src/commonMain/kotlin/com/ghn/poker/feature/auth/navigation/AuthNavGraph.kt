@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.ghn.poker.feature.auth.ui.GetStartedScreen
 import com.ghn.poker.feature.auth.ui.LoginScreen
+import com.ghn.poker.feature.auth.ui.SettingsScreen
 import com.ghn.poker.feature.auth.ui.SignUpScreen
 import com.ghn.poker.feature.auth.ui.SplashScreen
 
@@ -11,7 +12,9 @@ fun NavGraphBuilder.authNavGraph(
     onSplashScreenFinished: () -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToCreateAccount: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onSignOutClick: () -> Unit,
+    onShowBottomBar: (Boolean) -> Unit
 ) {
     composable<SplashScreen> {
         SplashScreen(onSplashScreenFinished = onSplashScreenFinished)
@@ -30,5 +33,10 @@ fun NavGraphBuilder.authNavGraph(
 
     composable<CreateAccount> {
         SignUpScreen(onBackClick = onBackClick)
+    }
+
+    composable<SettingsHome> {
+        onShowBottomBar(true)
+        SettingsScreen(onSignOutClick = onSignOutClick)
     }
 }

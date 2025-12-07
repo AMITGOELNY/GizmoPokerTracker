@@ -33,6 +33,7 @@ import com.ghn.poker.feature.auth.domain.usecase.impl.AppState
 import com.ghn.poker.feature.auth.domain.usecase.impl.Store
 import com.ghn.poker.feature.auth.navigation.CreateAccount
 import com.ghn.poker.feature.auth.navigation.Login
+import com.ghn.poker.feature.auth.navigation.SettingsHome
 import com.ghn.poker.feature.auth.navigation.SplashScreen
 import com.ghn.poker.feature.auth.navigation.Welcome
 import com.ghn.poker.feature.auth.navigation.authNavGraph
@@ -86,13 +87,14 @@ fun App(
                     onSplashScreenFinished = viewModel::checkForToken,
                     onNavigateToLogin = { navController.navigate(Login) },
                     onNavigateToCreateAccount = { navController.navigate(CreateAccount) },
-                    onBackClick = navController::popBackStack
+                    onBackClick = navController::popBackStack,
+                    onSignOutClick = viewModel::signout,
+                    onShowBottomBar = { bottomBarState.value = it }
                 )
 
                 // Tracker feature navigation (Home tab)
                 trackerNavGraph(
                     onCreateSessionClick = { navController.navigate(SessionInsert) },
-                    onSignOutClick = { viewModel.signout() },
                     onBackClick = navController::popBackStack,
                     onShowBottomBar = { bottomBarState.value = it }
                 )
@@ -141,6 +143,15 @@ fun App(
                         }
                     }
                 }
+
+                composable<BottomNavItem.Settings> {
+                    bottomBarState.value = true
+                    LaunchedEffect(Unit) {
+                        navController.navigate(SettingsHome) {
+                            popUpTo(BottomNavItem.Settings) { inclusive = true }
+                        }
+                    }
+                }
             }
         }
     }
@@ -170,7 +181,7 @@ private fun AppStateListener(
 @Composable
 fun BottomNavigationBar(navController: NavHostController, bottomBarState: MutableState<Boolean>) {
     val items = remember {
-        listOf(BottomNavItem.Home, BottomNavItem.News, BottomNavItem.Cards)
+        listOf(BottomNavItem.Home, BottomNavItem.News, BottomNavItem.Cards, BottomNavItem.Settings)
     }
     AnimatedVisibility(
         visible = bottomBarState.value,
@@ -187,6 +198,7 @@ fun BottomNavigationBar(navController: NavHostController, bottomBarState: Mutabl
                         0 -> TrackerHome::class.qualifiedName
                         1 -> FeedHome::class.qualifiedName
                         2 -> CardsHome::class.qualifiedName
+                        3 -> SettingsHome::class.qualifiedName
                         else -> null
                     }
                     val selected by remember(currentRoute) {
@@ -207,6 +219,7 @@ fun BottomNavigationBar(navController: NavHostController, bottomBarState: Mutabl
                                 0 -> TrackerHome
                                 1 -> FeedHome
                                 2 -> CardsHome
+                                3 -> SettingsHome
                                 else -> return@NavigationBarItem
                             }
                             navController.navigate(destination) {

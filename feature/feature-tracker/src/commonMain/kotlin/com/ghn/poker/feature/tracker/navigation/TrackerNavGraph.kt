@@ -9,7 +9,6 @@ import com.ghn.poker.feature.tracker.ui.TrackerLandingPage
 
 fun NavGraphBuilder.trackerNavGraph(
     onCreateSessionClick: () -> Unit,
-    onSignOutClick: () -> Unit,
     onBackClick: () -> Unit,
     onShowBottomBar: (Boolean) -> Unit
 ) {
@@ -22,8 +21,7 @@ fun NavGraphBuilder.trackerNavGraph(
             onCreateSessionClick = {
                 onShowBottomBar(false)
                 onCreateSessionClick()
-            },
-            onSignOutClick = onSignOutClick
+            }
         )
     }
 
