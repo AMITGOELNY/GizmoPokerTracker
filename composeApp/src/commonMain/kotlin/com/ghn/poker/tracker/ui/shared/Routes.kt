@@ -3,7 +3,7 @@ package com.ghn.poker.tracker.ui.shared
 import gizmopoker.core.core_ui.generated.resources.Res
 import gizmopoker.core.core_ui.generated.resources.ic_baseline_assignment
 import gizmopoker.core.core_ui.generated.resources.ic_home
-import gizmopoker.core.core_ui.generated.resources.ic_person
+import gizmopoker.core.core_ui.generated.resources.ic_spade
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -19,13 +19,13 @@ sealed class BottomNavItem(
     data object News : BottomNavItem("news", "News")
 
     @Serializable
-    data object Profile : BottomNavItem("profile", "Account")
+    data object Cards : BottomNavItem("cards", "Cards")
 
     fun icon(): DrawableResource {
         return when (this) {
             Home -> Res.drawable.ic_home
             News -> Res.drawable.ic_baseline_assignment
-            Profile -> Res.drawable.ic_person
+            Cards -> Res.drawable.ic_spade
         }
     }
 }
