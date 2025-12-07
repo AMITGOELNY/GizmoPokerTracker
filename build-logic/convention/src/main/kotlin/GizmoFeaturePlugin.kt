@@ -22,6 +22,12 @@ class GizmoFeaturePlugin : Plugin<Project> {
             val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
             extensions.configure<KotlinMultiplatformExtension> {
+                sourceSets.configureEach {
+                    languageSettings {
+                        optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+                    }
+                }
+
                 sourceSets.named("commonMain") {
                     dependencies {
                         // Navigation
@@ -50,6 +56,7 @@ class GizmoFeaturePlugin : Plugin<Project> {
                         implementation(kotlin("test"))
                         implementation(libs.findLibrary("coroutines-test").get())
                         implementation(libs.findLibrary("kotest-assertions-core").get())
+                        implementation(project(":core:core-testing"))
                     }
                 }
             }
