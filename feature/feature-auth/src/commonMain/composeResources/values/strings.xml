@@ -16,4 +16,16 @@
     <!-- Sign Up Screen -->
     <string name="create_your_account_title">Create Your Account</string>
     <string name="join_gizmopoker">Sign up to get started</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_dark_mode">Dark Mode</string>
+    <string name="settings_dark_mode_desc">Always enabled for optimal viewing</string>
+    <string name="settings_app_info">App Info</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_build">Build</string>
+    <string name="settings_account">Account</string>
+    <string name="settings_sign_out">Sign Out</string>
+    <string name="settings_sign_out_desc">Sign out of your account</string>
 </resources>

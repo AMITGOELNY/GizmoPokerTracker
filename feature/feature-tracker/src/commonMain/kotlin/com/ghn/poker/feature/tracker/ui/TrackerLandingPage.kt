@@ -31,7 +31,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.EventNote
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
@@ -72,7 +71,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ghn.gizmodb.common.models.Venue
-import com.ghn.poker.core.ui.components.GizmoIconButton
 import com.ghn.poker.core.ui.components.GizmoLoadingIndicator
 import com.ghn.poker.core.ui.components.GizmoPrimaryButton
 import com.ghn.poker.core.ui.preview.SurfacePreview
@@ -120,14 +118,12 @@ import gizmopoker.core.core_resources.generated.resources.Res as CoreRes
 fun TrackerLandingPage(
     viewModel: SessionListViewModel = koinInject<SessionListViewModel>(),
     onCreateSessionClick: () -> Unit,
-    onSignOutClick: () -> Unit,
 ) {
     val state = viewModel.state.collectAsState().value
 
     TrackerLandingPageContent(
         sessionsState = state.sessions,
         onCreateSessionClick = onCreateSessionClick,
-        onSignOutClick = onSignOutClick,
         onRetry = { viewModel.onDispatch(SessionListAction.Retry) }
     )
 }
@@ -136,7 +132,6 @@ fun TrackerLandingPage(
 internal fun TrackerLandingPageContent(
     sessionsState: LoadableDataState<List<SessionData>>,
     onCreateSessionClick: () -> Unit,
-    onSignOutClick: () -> Unit,
     onRetry: () -> Unit,
 ) {
     var tabIndex by remember { mutableIntStateOf(0) }
@@ -177,16 +172,6 @@ internal fun TrackerLandingPageContent(
                                 color = Platinum
                             )
                         }
-                    },
-                    actions = {
-                        GizmoIconButton(
-                            icon = Icons.AutoMirrored.Default.ExitToApp,
-                            onClick = onSignOutClick,
-                            contentDescription = "Sign out",
-                            tint = Silver,
-                            backgroundColor = Slate.copy(alpha = 0.5f)
-                        )
-                        Spacer(Modifier.width(Dimens.grid_1))
                     }
                 )
             }
@@ -719,7 +704,6 @@ private fun TrackerLandingPageContentPreview() = SurfacePreview {
     TrackerLandingPageContent(
         sessionsState = LoadableDataState.Loaded(sampleSessions),
         onCreateSessionClick = {},
-        onSignOutClick = {},
         onRetry = {}
     )
 }
@@ -730,7 +714,6 @@ private fun TrackerLandingPageContentLoadingPreview() = SurfacePreview {
     TrackerLandingPageContent(
         sessionsState = LoadableDataState.Loading,
         onCreateSessionClick = {},
-        onSignOutClick = {},
         onRetry = {}
     )
 }
@@ -741,7 +724,6 @@ private fun TrackerLandingPageContentEmptyPreview() = SurfacePreview {
     TrackerLandingPageContent(
         sessionsState = LoadableDataState.Empty,
         onCreateSessionClick = {},
-        onSignOutClick = {},
         onRetry = {}
     )
 }
@@ -752,7 +734,6 @@ private fun TrackerLandingPageContentErrorPreview() = SurfacePreview {
     TrackerLandingPageContent(
         sessionsState = LoadableDataState.Error,
         onCreateSessionClick = {},
-        onSignOutClick = {},
         onRetry = {}
     )
 }
