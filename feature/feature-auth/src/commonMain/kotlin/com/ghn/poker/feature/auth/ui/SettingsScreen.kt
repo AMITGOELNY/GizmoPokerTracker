@@ -233,30 +233,32 @@ private fun AppInfoSection() {
         title = stringResource(Res.string.settings_app_info),
         icon = Icons.Default.Info
     ) {
-        SettingsRow(
-            title = stringResource(Res.string.settings_version),
-            trailing = {
-                Text(
-                    text = APP_VERSION,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = ChampagneGold
-                )
-            }
-        )
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = Dimens.grid_2),
-            color = Onyx.copy(alpha = 0.5f)
-        )
-        SettingsRow(
-            title = stringResource(Res.string.settings_build),
-            trailing = {
-                Text(
-                    text = BUILD_NUMBER,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Silver
-                )
-            }
-        )
+        Column {
+            SettingsRow(
+                title = stringResource(Res.string.settings_version),
+                trailing = {
+                    Text(
+                        text = APP_VERSION,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = ChampagneGold
+                    )
+                }
+            )
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = Dimens.grid_2),
+                color = Onyx.copy(alpha = 0.5f)
+            )
+            SettingsRow(
+                title = stringResource(Res.string.settings_build),
+                trailing = {
+                    Text(
+                        text = BUILD_NUMBER,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Silver
+                    )
+                }
+            )
+        }
     }
 }
 
