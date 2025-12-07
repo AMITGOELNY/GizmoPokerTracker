@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.mokkery)
+//    alias(libs.plugins.mokkery)
     alias(libs.plugins.serialization)
 }
 
@@ -144,8 +144,8 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation(libs.coroutines.test)
                 implementation(libs.kotest.assertions.core)
-                implementation(libs.mokkery.core)
-                implementation(libs.mokkery.coroutines)
+//                implementation(libs.mokkery.core)
+//                implementation(libs.mokkery.coroutines)
             }
         }
 
