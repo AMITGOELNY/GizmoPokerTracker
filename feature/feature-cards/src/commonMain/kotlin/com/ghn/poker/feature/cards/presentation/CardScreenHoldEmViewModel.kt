@@ -1,29 +1,50 @@
 package com.ghn.poker.feature.cards.presentation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.ghn.gizmodb.common.models.Card
 import com.ghn.gizmodb.common.models.Deck
-import com.ghn.poker.core.common.presentation.MviViewModel
 import com.ghn.poker.core.network.ApiResponse
 import com.ghn.poker.feature.cards.domain.usecase.FiveCardSimulatedEvaluationUseCase
 import com.ghn.poker.feature.cards.presentation.model.CardState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
+// TODO: Migrate to MviViewModel base class once Koin annotations (currently 2.3.3)
+//  properly supports iOS targets with IR linking for classes inheriting from generic base classes.
 @KoinViewModel
 class CardScreenHoldEmViewModel(
     private val fiveCardSimulatedEvaluationUseCase: FiveCardSimulatedEvaluationUseCase
-) : MviViewModel<CardScreenHoldEmState, CardScreenHoldEmAction, CardScreenHoldEmEffect>() {
+) : ViewModel() {
 
     private val deck: List<CardState> = Deck.cards.map { CardState(it, false) }
 
-    override val initialState = CardScreenHoldEmState()
+    private val _state = MutableStateFlow(CardScreenHoldEmState())
+    val state = _state.asStateFlow()
+
+    private val actions = MutableSharedFlow<CardScreenHoldEmAction>(replay = 1)
 
     init {
+        viewModelScope.launch {
+            actions.collect { action ->
+                Logger.d("CardScreenHoldEmViewModel") { "Action: $action" }
+                handleAction(action)
+            }
+        }
         onDispatch(CardScreenHoldEmAction.Init)
     }
 
-    override suspend fun handleAction(action: CardScreenHoldEmAction) {
+    fun onDispatch(action: CardScreenHoldEmAction) {
+        actions.tryEmit(action)
+    }
+
+    private suspend fun handleAction(action: CardScreenHoldEmAction) {
         when (action) {
             CardScreenHoldEmAction.Init -> distributeCards()
             CardScreenHoldEmAction.NewGame -> {
@@ -35,13 +56,13 @@ class CardScreenHoldEmViewModel(
 
     private suspend fun distributeCards() {
         val shuffled = deck.shuffled()
-        val playerCards = (0 until (currentState.players)).map { playerIndex ->
+        val playerCards = (0 until (_state.value.players)).map { playerIndex ->
             (0 until (2)).map { playerCardNumber ->
-                shuffled[playerIndex + (currentState.players * playerCardNumber)].card
+                shuffled[playerIndex + (_state.value.players * playerCardNumber)].card
             }
         }
 
-        updateState { copy(playerCard = playerCards) }
+        _state.update { it.copy(playerCard = playerCards) }
 
         delay(2000)
         val startIndex = (playerCards.count() * 2) // dealt index
@@ -75,7 +96,7 @@ class CardScreenHoldEmViewModel(
             null
         }
 
-        updateState { copy(boardCards = boardCards, winnerInfo = winnerInfo) }
+        _state.update { it.copy(boardCards = boardCards, winnerInfo = winnerInfo) }
     }
 }
 
