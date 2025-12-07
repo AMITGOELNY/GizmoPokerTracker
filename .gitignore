@@ -23,7 +23,6 @@ composeApp/DawnCache/
 composeApp/GPUCache/
 .fleet
 CLAUDE.md
-Agents.md
 DEPLOYMENT.md
 
 .kotlin/

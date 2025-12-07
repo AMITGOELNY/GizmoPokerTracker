@@ -26,7 +26,6 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FilterChipDefaults.filterChipBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -44,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ghn.gizmodb.common.models.Card
 import com.ghn.gizmodb.common.models.CardSuit
+import com.ghn.poker.core.ui.components.AnimatedBottomSheet
 import com.ghn.poker.core.ui.components.PrimaryButton
 import com.ghn.poker.core.ui.preview.SurfacePreview
 import com.ghn.poker.core.ui.theme.Dimens
@@ -160,88 +160,87 @@ private fun EquityCalculatorContent(
 
     val itemsList by remember { mutableStateOf(CardSuit.entries) }
 
-    if (showBottomSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { onDispatch(EquityCalculatorAction.BottomSheetClose) },
-            sheetState = sheetState,
-            containerColor = Color(0xFF1F2438)
+    AnimatedBottomSheet(
+        isVisible = showBottomSheet,
+        onDismissRequest = { onDispatch(EquityCalculatorAction.BottomSheetClose) },
+        sheetState = sheetState,
+        containerColor = Color(0xFF1F2438)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(bottom = Dimens.grid_3),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(bottom = Dimens.grid_3),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = stringResource(Res.string.pick_a_suit),
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(Modifier.height(Dimens.grid_2))
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(Dimens.grid_1_5)) {
-                    items(itemsList) { item ->
-                        FilterChip(
-                            modifier = Modifier
-                                .height(70.dp)
-                                .aspectRatio(.75f),
-                            selected = (item == selectedSuit),
-                            onClick = {
-                                onDispatch(EquityCalculatorAction.UpdateSuit(item))
-                            },
-                            label = {
-                                Box(
-                                    Modifier.height(50.dp).aspectRatio(.65f),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        painter = painterResource(item.drawable),
-                                        contentDescription = null,
-                                        tint = Color.Unspecified,
-                                        modifier = Modifier.size(Dimens.grid_3)
-                                    )
-                                }
-                            },
-                            colors = FilterChipDefaults.filterChipColors(
-                                containerColor = Color(0xFF2A3142),
-                                selectedContainerColor = MaterialTheme.colorScheme.primary.copy(
-                                    alpha = 0.2f
-                                ),
+            Text(
+                text = stringResource(Res.string.pick_a_suit),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(Modifier.height(Dimens.grid_2))
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(Dimens.grid_1_5)) {
+                items(itemsList) { item ->
+                    FilterChip(
+                        modifier = Modifier
+                            .height(70.dp)
+                            .aspectRatio(.75f),
+                        selected = (item == selectedSuit),
+                        onClick = {
+                            onDispatch(EquityCalculatorAction.UpdateSuit(item))
+                        },
+                        label = {
+                            Box(
+                                Modifier.height(50.dp).aspectRatio(.65f),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(item.drawable),
+                                    contentDescription = null,
+                                    tint = Color.Unspecified,
+                                    modifier = Modifier.size(Dimens.grid_3)
+                                )
+                            }
+                        },
+                        colors = FilterChipDefaults.filterChipColors(
+                            containerColor = Color(0xFF2A3142),
+                            selectedContainerColor = MaterialTheme.colorScheme.primary.copy(
+                                alpha = 0.2f
                             ),
-                            border = filterChipBorder(
-                                enabled = true,
-                                selected = (item == selectedSuit),
-                                selectedBorderColor = MaterialTheme.colorScheme.primary,
-                                selectedBorderWidth = 2.dp,
-                                borderColor = Color(0xFF3A4152)
-                            )
+                        ),
+                        border = filterChipBorder(
+                            enabled = true,
+                            selected = (item == selectedSuit),
+                            selectedBorderColor = MaterialTheme.colorScheme.primary,
+                            selectedBorderWidth = 2.dp,
+                            borderColor = Color(0xFF3A4152)
                         )
-                    }
+                    )
                 }
-
-                Spacer(Modifier.height(Dimens.grid_3))
-
-                LazyRow(
-                    modifier = Modifier.padding(horizontal = Dimens.grid_3),
-                    horizontalArrangement = Arrangement.spacedBy(Dimens.grid_1)
-                ) {
-                    items(sheetDisplayCards) {
-                        PlayerCard(
-                            it.card,
-                            CardSize.EXTRA_SMALL,
-                            disabled = it.disabled,
-                            selected = it.card == selectedCard
-                        ) {
-                            onDispatch(EquityCalculatorAction.OnCardSelected(it.card))
-                        }
-                    }
-                }
-                Spacer(Modifier.height(Dimens.grid_3))
-                PrimaryButton(
-                    buttonText = stringResource(Res.string.confirm),
-                    onClick = { onDispatch(EquityCalculatorAction.OnConfirmSelected) },
-                    isEnabled = selectedCard != null,
-                    modifier = Modifier.padding(horizontal = Dimens.grid_3)
-                )
-                Spacer(Modifier.height(Dimens.grid_3))
             }
+
+            Spacer(Modifier.height(Dimens.grid_3))
+
+            LazyRow(
+                modifier = Modifier.padding(horizontal = Dimens.grid_3),
+                horizontalArrangement = Arrangement.spacedBy(Dimens.grid_1)
+            ) {
+                items(sheetDisplayCards) {
+                    PlayerCard(
+                        it.card,
+                        CardSize.EXTRA_SMALL,
+                        disabled = it.disabled,
+                        selected = it.card == selectedCard
+                    ) {
+                        onDispatch(EquityCalculatorAction.OnCardSelected(it.card))
+                    }
+                }
+            }
+            Spacer(Modifier.height(Dimens.grid_3))
+            PrimaryButton(
+                buttonText = stringResource(Res.string.confirm),
+                onClick = { onDispatch(EquityCalculatorAction.OnConfirmSelected) },
+                isEnabled = selectedCard != null,
+                modifier = Modifier.padding(horizontal = Dimens.grid_3)
+            )
+            Spacer(Modifier.height(Dimens.grid_3))
         }
     }
 }
