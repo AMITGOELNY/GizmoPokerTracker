@@ -1,10 +1,11 @@
 package com.ghn.poker.feature.cards.presentation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.ghn.gizmodb.common.models.Card
 import com.ghn.gizmodb.common.models.CardSuit
 import com.ghn.gizmodb.common.models.Deck
-import com.ghn.poker.core.common.presentation.MviViewModel
 import com.ghn.poker.core.common.util.DecimalFormat
 import com.ghn.poker.core.network.ApiResponse
 import com.ghn.poker.feature.cards.domain.usecase.EquityCalculationUseCase
@@ -13,45 +14,65 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
+// TODO: Migrate to MviViewModel base class once Koin annotations (currently 2.3.3)
+//  properly supports iOS targets with IR linking for classes inheriting from generic base classes.
 @KoinViewModel
 class EquityCalculatorViewModel(
     private val calculatorUseCase: EquityCalculationUseCase
-) : MviViewModel<EquityCalculatorState, EquityCalculatorAction, EquityCalculatorEffect>() {
+) : ViewModel() {
 
-    override val initialState = EquityCalculatorState()
+    private val _state = MutableStateFlow(EquityCalculatorState())
+    val state = _state.asStateFlow()
+
+    private val actions = MutableSharedFlow<EquityCalculatorAction>(replay = 1)
 
     init {
+        viewModelScope.launch {
+            actions.collect { action ->
+                Logger.d("EquityCalculatorViewModel") { "Action: $action" }
+                handleAction(action)
+            }
+        }
         onDispatch(EquityCalculatorAction.Init)
     }
 
-    override suspend fun handleAction(action: EquityCalculatorAction) {
+    fun onDispatch(action: EquityCalculatorAction) {
+        actions.tryEmit(action)
+    }
+
+    private suspend fun handleAction(action: EquityCalculatorAction) {
         when (action) {
             EquityCalculatorAction.Init -> distributeCards()
             is EquityCalculatorAction.BottomSheetUpdate -> bottomSheetUpdate(action)
             is EquityCalculatorAction.OnCardSelected -> onCardSelected(action)
             EquityCalculatorAction.OnConfirmSelected -> onConfirmSelected()
-            is EquityCalculatorAction.UpdateSuit -> updateState { copy(selectedSuit = action.cardSuit) }
-            EquityCalculatorAction.BottomSheetClose -> updateState { copy(showBottomSheet = false, selectorInfo = null) }
+            is EquityCalculatorAction.UpdateSuit -> _state.update { it.copy(selectedSuit = action.cardSuit) }
+            EquityCalculatorAction.BottomSheetClose -> _state.update { it.copy(showBottomSheet = false, selectorInfo = null) }
             EquityCalculatorAction.CalculateEquity -> calculateEquity()
         }
     }
 
     private suspend fun calculateEquity() {
-        updateState { copy(isCalculating = true, results = null) }
+        _state.update { it.copy(isCalculating = true, results = null) }
 
         val simulationCount = 50000
         val result = calculatorUseCase.getResults(
-            heroCards = currentState.heroCard.filterNotNull(),
-            boardCardsFiltered = currentState.boardCards.filterNotNull(),
-            villainCards = currentState.villainCard.filterNotNull(),
+            heroCards = _state.value.heroCard.filterNotNull(),
+            boardCardsFiltered = _state.value.boardCards.filterNotNull(),
+            villainCards = _state.value.villainCard.filterNotNull(),
             simulationCount = simulationCount
         )
 
         when (result) {
             is ApiResponse.Error -> {
-                updateState { copy(isCalculating = false) }
+                _state.update { it.copy(isCalculating = false) }
             }
 
             is ApiResponse.Success -> {
@@ -66,8 +87,8 @@ class EquityCalculatorViewModel(
                 val tiePercentFormatted = formatter.format(tiePercent * 100)
                 Logger.d { "totalCount: ${hero + villain + tied}" }
                 Logger.d { "Win: $winPercentFormatted%, Loss: $lossPercentFormatted%" }
-                updateState {
-                    copy(
+                _state.update {
+                    it.copy(
                         isCalculating = false,
                         results = HandResults(
                             winPercent = winPercentFormatted,
@@ -81,10 +102,10 @@ class EquityCalculatorViewModel(
     }
 
     private fun onConfirmSelected() {
-        val (type, index, card) = currentState.selectorInfo ?: return
+        val (type, index, card) = _state.value.selectorInfo ?: return
         card ?: error("Can't be null")
 
-        val deck = currentState.deck.mutate {
+        val deck = _state.value.deck.mutate {
             val computedIndex = when (card.suit) {
                 CardSuit.HEARTS -> card.value - 2 + (13 * 0)
                 CardSuit.DIAMONDS -> card.value - 2 + (13 * 1)
@@ -96,27 +117,27 @@ class EquityCalculatorViewModel(
 
         when (type) {
             CardRowType.BOARD -> {
-                val cards = currentState.boardCards.mutate { it[index] = card }
-                updateState { copy(deck = deck, boardCards = cards) }
+                val cards = _state.value.boardCards.mutate { it[index] = card }
+                _state.update { it.copy(deck = deck, boardCards = cards) }
             }
 
             CardRowType.HERO -> {
-                val cards = currentState.heroCard.mutate { it[index] = card }
-                updateState { copy(deck = deck, heroCard = cards) }
+                val cards = _state.value.heroCard.mutate { it[index] = card }
+                _state.update { it.copy(deck = deck, heroCard = cards) }
             }
 
             CardRowType.VILLAIN -> {
-                val cards = currentState.villainCard.mutate { it[index] = card }
-                updateState { copy(deck = deck, villainCard = cards) }
+                val cards = _state.value.villainCard.mutate { it[index] = card }
+                _state.update { it.copy(deck = deck, villainCard = cards) }
             }
         }
 
-        updateState { copy(showBottomSheet = false, selectorInfo = null) }
+        _state.update { it.copy(showBottomSheet = false, selectorInfo = null) }
     }
 
     private fun onCardSelected(action: EquityCalculatorAction.OnCardSelected) {
-        val selectedCard = currentState.selectorInfo?.selectedCard
-        val deck = currentState.deck.mutate {
+        val selectedCard = _state.value.selectorInfo?.selectedCard
+        val deck = _state.value.deck.mutate {
             if (selectedCard != null) {
                 val computedIndex = when (selectedCard.suit) {
                     CardSuit.HEARTS -> selectedCard.value - 2 + (13 * 0)
@@ -128,23 +149,23 @@ class EquityCalculatorViewModel(
             }
         }
 
-        updateState {
-            copy(
+        _state.update {
+            it.copy(
                 deck = deck,
-                selectorInfo = selectorInfo?.copy(selectedCard = action.card)
+                selectorInfo = it.selectorInfo?.copy(selectedCard = action.card)
             )
         }
     }
 
     private fun bottomSheetUpdate(action: EquityCalculatorAction.BottomSheetUpdate) {
         val selectedCard = when (action.cardRowType) {
-            CardRowType.BOARD -> currentState.boardCards.getOrNull(action.index)
-            CardRowType.HERO -> currentState.heroCard.getOrNull(action.index)
-            CardRowType.VILLAIN -> currentState.villainCard.getOrNull(action.index)
+            CardRowType.BOARD -> _state.value.boardCards.getOrNull(action.index)
+            CardRowType.HERO -> _state.value.heroCard.getOrNull(action.index)
+            CardRowType.VILLAIN -> _state.value.villainCard.getOrNull(action.index)
         }
 
-        updateState {
-            copy(
+        _state.update {
+            it.copy(
                 showBottomSheet = action.showBottomSheet,
                 selectorInfo = SelectorInfo(
                     cardRowType = action.cardRowType,
@@ -156,7 +177,7 @@ class EquityCalculatorViewModel(
     }
 
     private fun distributeCards() {
-        currentState.deck.shuffled()
+        _state.value.deck.shuffled()
     }
 }
 

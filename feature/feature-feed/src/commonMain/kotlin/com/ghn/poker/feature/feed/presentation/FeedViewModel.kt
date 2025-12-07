@@ -1,28 +1,49 @@
 package com.ghn.poker.feature.feed.presentation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.ghn.gizmodb.common.models.NewsCategory
-import com.ghn.poker.core.common.presentation.MviViewModel
 import com.ghn.poker.core.network.ApiResponse
 import com.ghn.poker.feature.feed.domain.model.FeedItem
 import com.ghn.poker.feature.feed.domain.usecase.FeedUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
+// TODO: Migrate to MviViewModel base class once Koin annotations (currently 2.3.3)
+//  properly supports iOS targets with IR linking for classes inheriting from generic base classes.
 @KoinViewModel
 class FeedViewModel(
     private val feedUseCase: FeedUseCase
-) : MviViewModel<FeedState, FeedAction, FeedEffect>() {
+) : ViewModel() {
 
-    override val initialState = FeedState()
+    private val _state = MutableStateFlow(FeedState())
+    val state = _state.asStateFlow()
+
+    private val actions = MutableSharedFlow<FeedAction>(replay = 1)
 
     init {
+        viewModelScope.launch {
+            actions.collect { action ->
+                Logger.d("FeedViewModel") { "Action: $action" }
+                handleAction(action)
+            }
+        }
         onDispatch(FeedAction.Init)
     }
 
-    override suspend fun handleAction(action: FeedAction) {
+    fun onDispatch(action: FeedAction) {
+        actions.tryEmit(action)
+    }
+
+    private suspend fun handleAction(action: FeedAction) {
         when (action) {
             FeedAction.Init -> getFeed()
-            is FeedAction.OnTabItemClick -> updateState { copy(tabIndex = action.index) }
+            is FeedAction.OnTabItemClick -> _state.update { it.copy(tabIndex = action.index) }
             FeedAction.Refresh -> refresh()
         }
     }
@@ -31,7 +52,7 @@ class FeedViewModel(
         when (val result = feedUseCase.getFeed()) {
             is ApiResponse.Error -> {
                 Logger.e { "Rss fetch failed $result" }
-                updateState { copy(feed = LoadableDataState.Error) }
+                _state.update { it.copy(feed = LoadableDataState.Error) }
             }
 
             is ApiResponse.Success -> {
@@ -39,8 +60,8 @@ class FeedViewModel(
                 val group = result.body.groupBy { it.category }
                 val articles = group.getOrElse(NewsCategory.NEWS) { emptyList() }
                 val strategy = group.getOrElse(NewsCategory.STRATEGY) { emptyList() }
-                updateState {
-                    copy(
+                _state.update {
+                    it.copy(
                         feed = LoadableDataState.Loaded(
                             FeedsContainer(
                                 featured = articles.take(7),
@@ -56,7 +77,7 @@ class FeedViewModel(
     }
 
     private suspend fun refresh() {
-        updateState { copy(isRefreshing = true) }
+        _state.update { it.copy(isRefreshing = true) }
         when (val result = feedUseCase.getFeed()) {
             is ApiResponse.Error -> {
                 Logger.e { "Rss refresh failed $result" }
@@ -67,8 +88,8 @@ class FeedViewModel(
                 val group = result.body.groupBy { it.category }
                 val articles = group.getOrElse(NewsCategory.NEWS) { emptyList() }
                 val strategy = group.getOrElse(NewsCategory.STRATEGY) { emptyList() }
-                updateState {
-                    copy(
+                _state.update {
+                    it.copy(
                         feed = LoadableDataState.Loaded(
                             FeedsContainer(
                                 featured = articles.take(7),
@@ -81,7 +102,7 @@ class FeedViewModel(
                 }
             }
         }
-        updateState { copy(isRefreshing = false) }
+        _state.update { it.copy(isRefreshing = false) }
     }
 }
 

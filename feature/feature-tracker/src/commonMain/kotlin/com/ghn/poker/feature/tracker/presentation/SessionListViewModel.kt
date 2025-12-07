@@ -1,34 +1,56 @@
 package com.ghn.poker.feature.tracker.presentation
 
-import com.ghn.poker.core.common.presentation.MviViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.ghn.poker.core.network.ApiResponse
 import com.ghn.poker.feature.tracker.domain.model.SessionData
 import com.ghn.poker.feature.tracker.domain.usecase.SessionUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
+// TODO: Migrate to MviViewModel base class once Koin annotations (currently 2.3.3)
+//  properly supports iOS targets with IR linking for classes inheriting from generic base classes.
 @KoinViewModel
 class SessionListViewModel(
     private val useCase: SessionUseCase
-) : MviViewModel<SessionListState, SessionListAction, SessionListEffect>() {
+) : ViewModel() {
 
-    override val initialState = SessionListState()
+    private val _state = MutableStateFlow(SessionListState())
+    val state = _state.asStateFlow()
+
+    private val actions = MutableSharedFlow<SessionListAction>(replay = 1)
 
     init {
+        viewModelScope.launch {
+            actions.collect { action ->
+                Logger.d("SessionListViewModel") { "Action: $action" }
+                handleAction(action)
+            }
+        }
         onDispatch(SessionListAction.Init)
     }
 
-    override suspend fun handleAction(action: SessionListAction) {
+    fun onDispatch(action: SessionListAction) {
+        actions.tryEmit(action)
+    }
+
+    private suspend fun handleAction(action: SessionListAction) {
         when (action) {
             SessionListAction.Init, SessionListAction.Retry -> loadSessions()
         }
     }
 
     private suspend fun loadSessions() {
-        updateState { copy(sessions = LoadableDataState.Loading) }
+        _state.update { it.copy(sessions = LoadableDataState.Loading) }
         when (val sessions = useCase.getSessions()) {
-            is ApiResponse.Error -> updateState { copy(sessions = LoadableDataState.Error) }
-            is ApiResponse.Success -> updateState {
-                copy(
+            is ApiResponse.Error -> _state.update { it.copy(sessions = LoadableDataState.Error) }
+            is ApiResponse.Success -> _state.update {
+                it.copy(
                     sessions = if (sessions.body.isNotEmpty()) {
                         LoadableDataState.Loaded(sessions.body)
                     } else {
