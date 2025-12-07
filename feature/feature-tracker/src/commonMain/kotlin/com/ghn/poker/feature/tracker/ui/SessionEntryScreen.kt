@@ -96,7 +96,7 @@ fun SessionEntryScreen(
     if (showDatePicker) {
         SimpleDateRangePickerInDatePickerDialog(
             onDismiss = { showDatePicker = false },
-            onDateSelected = { viewModel.dispatch(SessionEntryAction.UpdateDate(it)) }
+            onDateSelected = { viewModel.onDispatch(SessionEntryAction.UpdateDate(it)) }
         )
     }
 
@@ -145,27 +145,27 @@ fun SessionEntryScreen(
 
             InputRow(stringResource(Res.string.create_session_enter_amount)) {
                 TextEntryField(startAmount) { amount ->
-                    viewModel.dispatch(SessionEntryAction.UpdateStartAmount(amount.toDoubleOrNull()))
+                    viewModel.onDispatch(SessionEntryAction.UpdateStartAmount(amount.toDoubleOrNull()))
                     startAmount = amount
                 }
             }
 
             InputRow(stringResource(Res.string.create_session_end_amount)) {
                 TextEntryField(endAmount) { amount ->
-                    viewModel.dispatch(SessionEntryAction.UpdateEndAmount(amount.toDoubleOrNull()))
+                    viewModel.onDispatch(SessionEntryAction.UpdateEndAmount(amount.toDoubleOrNull()))
                     endAmount = amount
                 }
             }
 
             InputRow(stringResource(Res.string.create_session_game_type)) {
                 ExpandedDropDown(GameType.entries, state = state.gameType) {
-                    viewModel.dispatch(SessionEntryAction.UpdateGameType(it))
+                    viewModel.onDispatch(SessionEntryAction.UpdateGameType(it))
                 }
             }
 
             InputRow(stringResource(Res.string.create_session_location_type)) {
                 ExpandedDropDown(Venue.entries, state.venue) {
-                    viewModel.dispatch(SessionEntryAction.UpdateVenue(it))
+                    viewModel.onDispatch(SessionEntryAction.UpdateVenue(it))
                 }
             }
 
@@ -174,7 +174,7 @@ fun SessionEntryScreen(
                 buttonText = stringResource(Res.string.create_session_save),
                 isEnabled = !state.isCreatingSession,
                 showLoading = state.isCreatingSession,
-                onClick = { viewModel.dispatch(SessionEntryAction.SaveSession) }
+                onClick = { viewModel.onDispatch(SessionEntryAction.SaveSession) }
             )
         }
     }

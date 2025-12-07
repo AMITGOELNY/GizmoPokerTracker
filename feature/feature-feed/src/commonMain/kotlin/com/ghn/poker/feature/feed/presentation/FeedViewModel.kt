@@ -1,43 +1,29 @@
 package com.ghn.poker.feature.feed.presentation
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.ghn.gizmodb.common.models.NewsCategory
+import com.ghn.poker.core.common.presentation.MviViewModel
 import com.ghn.poker.core.network.ApiResponse
 import com.ghn.poker.feature.feed.domain.model.FeedItem
 import com.ghn.poker.feature.feed.domain.usecase.FeedUseCase
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class FeedViewModel(
     private val feedUseCase: FeedUseCase
-) : ViewModel() {
-    private val _state = MutableStateFlow(FeedState())
-    val state = _state.asStateFlow()
+) : MviViewModel<FeedState, FeedAction, FeedEffect>() {
 
-    private val viewStateTrigger = MutableSharedFlow<FeedActions>(replay = 1)
+    override val initialState = FeedState()
 
     init {
-        viewModelScope.launch {
-            viewStateTrigger.emit(FeedActions.Init)
+        onDispatch(FeedAction.Init)
+    }
 
-            viewStateTrigger
-                .onEach { Logger.d("FeedViewModel") { "action: $it" } }
-                .collect { action ->
-                    when (action) {
-                        FeedActions.Init -> getFeed()
-                        is FeedActions.OnTabItemClick ->
-                            _state.update { it.copy(tabIndex = action.index) }
-                        FeedActions.Refresh -> refresh()
-                    }
-                }
+    override suspend fun handleAction(action: FeedAction) {
+        when (action) {
+            FeedAction.Init -> getFeed()
+            is FeedAction.OnTabItemClick -> updateState { copy(tabIndex = action.index) }
+            FeedAction.Refresh -> refresh()
         }
     }
 
@@ -45,57 +31,57 @@ class FeedViewModel(
         when (val result = feedUseCase.getFeed()) {
             is ApiResponse.Error -> {
                 Logger.e { "Rss fetch failed $result" }
-                _state.update { it.copy(feed = LoadableDataState.Error) }
+                updateState { copy(feed = LoadableDataState.Error) }
             }
 
-            is ApiResponse.Success -> _state.update { state ->
+            is ApiResponse.Success -> {
                 Logger.d { "Rss fetch success ${result.body}" }
                 val group = result.body.groupBy { it.category }
                 val articles = group.getOrElse(NewsCategory.NEWS) { emptyList() }
                 val strategy = group.getOrElse(NewsCategory.STRATEGY) { emptyList() }
-                state.copy(
-                    feed = LoadableDataState.Loaded(
-                        FeedsContainer(
-                            featured = articles.take(7),
-                            items = articles,
-                            articles = articles.drop(7),
-                            strategy = strategy
+                updateState {
+                    copy(
+                        feed = LoadableDataState.Loaded(
+                            FeedsContainer(
+                                featured = articles.take(7),
+                                items = articles,
+                                articles = articles.drop(7),
+                                strategy = strategy
+                            )
                         )
                     )
-                )
+                }
             }
         }
     }
 
     private suspend fun refresh() {
-        _state.update { it.copy(isRefreshing = true) }
+        updateState { copy(isRefreshing = true) }
         when (val result = feedUseCase.getFeed()) {
             is ApiResponse.Error -> {
                 Logger.e { "Rss refresh failed $result" }
             }
 
-            is ApiResponse.Success -> _state.update { state ->
+            is ApiResponse.Success -> {
                 Logger.d { "Rss refresh success ${result.body}" }
                 val group = result.body.groupBy { it.category }
                 val articles = group.getOrElse(NewsCategory.NEWS) { emptyList() }
                 val strategy = group.getOrElse(NewsCategory.STRATEGY) { emptyList() }
-                state.copy(
-                    feed = LoadableDataState.Loaded(
-                        FeedsContainer(
-                            featured = articles.take(7),
-                            items = articles,
-                            articles = articles.drop(7),
-                            strategy = strategy
+                updateState {
+                    copy(
+                        feed = LoadableDataState.Loaded(
+                            FeedsContainer(
+                                featured = articles.take(7),
+                                items = articles,
+                                articles = articles.drop(7),
+                                strategy = strategy
+                            )
                         )
                     )
-                )
+                }
             }
         }
-        _state.update { it.copy(isRefreshing = false) }
-    }
-
-    fun dispatch(action: FeedActions) {
-        viewStateTrigger.tryEmit(action)
+        updateState { copy(isRefreshing = false) }
     }
 }
 
@@ -118,11 +104,13 @@ data class FeedsContainer(
     val strategy: List<FeedItem>,
 )
 
-sealed interface FeedActions {
-    data object Init : FeedActions
-    data class OnTabItemClick(val index: Int) : FeedActions
-    data object Refresh : FeedActions
+sealed interface FeedAction {
+    data object Init : FeedAction
+    data class OnTabItemClick(val index: Int) : FeedAction
+    data object Refresh : FeedAction
 }
+
+sealed interface FeedEffect
 
 sealed class LoadableDataState<out T> {
     data object Loading : LoadableDataState<Nothing>()

@@ -40,7 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ghn.poker.core.ui.theme.title200
-import com.ghn.poker.feature.auth.presentation.CreateAccountActions
+import com.ghn.poker.feature.auth.presentation.CreateAccountAction
 import com.ghn.poker.feature.auth.presentation.CreateAccountViewModel
 import gizmopoker.core.core_resources.generated.resources.app_name
 import gizmopoker.feature.feature_auth.generated.resources.Res
@@ -191,9 +191,9 @@ fun SignUpScreen(
                 ) {
                     FormBody(
                         loading = state.value.authenticating,
-                        onUsernameChange = { viewModel.dispatch(CreateAccountActions.OnUsernameChange(it)) },
-                        onPasswordChange = { viewModel.dispatch(CreateAccountActions.OnPasswordChange(it)) },
-                        onSubmit = { viewModel.dispatch(CreateAccountActions.OnSubmit) }
+                        onUsernameChange = { viewModel.onDispatch(CreateAccountAction.OnUsernameChange(it)) },
+                        onPasswordChange = { viewModel.onDispatch(CreateAccountAction.OnPasswordChange(it)) },
+                        onSubmit = { viewModel.onDispatch(CreateAccountAction.OnSubmit) }
                     )
                 }
 

@@ -41,7 +41,7 @@ class LoginViewModelTest : BaseViewModelTest() {
         val viewModel = LoginViewModel(loginUseCase)
         advanceUntilIdle()
 
-        viewModel.dispatch(LoginActions.OnUsernameChange("testuser"))
+        viewModel.onDispatch(LoginAction.OnUsernameChange("testuser"))
         advanceUntilIdle()
 
         viewModel.state.value.username shouldBe "testuser"
@@ -52,7 +52,7 @@ class LoginViewModelTest : BaseViewModelTest() {
         val viewModel = LoginViewModel(loginUseCase)
         advanceUntilIdle()
 
-        viewModel.dispatch(LoginActions.OnPasswordChange("secret123"))
+        viewModel.onDispatch(LoginAction.OnPasswordChange("secret123"))
         advanceUntilIdle()
 
         viewModel.state.value.password shouldBe "secret123"
@@ -65,12 +65,12 @@ class LoginViewModelTest : BaseViewModelTest() {
         val viewModel = LoginViewModel(loginUseCase)
         advanceUntilIdle()
 
-        viewModel.dispatch(LoginActions.OnUsernameChange("user"))
+        viewModel.onDispatch(LoginAction.OnUsernameChange("user"))
         advanceUntilIdle()
-        viewModel.dispatch(LoginActions.OnPasswordChange("pass"))
+        viewModel.onDispatch(LoginAction.OnPasswordChange("pass"))
         advanceUntilIdle()
 
-        viewModel.dispatch(LoginActions.OnSubmit)
+        viewModel.onDispatch(LoginAction.OnSubmit)
         advanceUntilIdle()
 
         verifySuspend { loginUseCase.login("user", "pass") }
@@ -83,12 +83,12 @@ class LoginViewModelTest : BaseViewModelTest() {
         val viewModel = LoginViewModel(loginUseCase)
         advanceUntilIdle()
 
-        viewModel.dispatch(LoginActions.OnUsernameChange("user"))
+        viewModel.onDispatch(LoginAction.OnUsernameChange("user"))
         advanceUntilIdle()
-        viewModel.dispatch(LoginActions.OnPasswordChange("pass"))
+        viewModel.onDispatch(LoginAction.OnPasswordChange("pass"))
         advanceUntilIdle()
 
-        viewModel.dispatch(LoginActions.OnSubmit)
+        viewModel.onDispatch(LoginAction.OnSubmit)
         advanceUntilIdle()
 
         // After login completes, authenticating should be false
@@ -103,22 +103,22 @@ class LoginViewModelTest : BaseViewModelTest() {
         advanceUntilIdle()
 
         // Start collecting effects before triggering the action
-        var receivedEffect: LoginEffects? = null
+        var receivedEffect: LoginEffect? = null
         val job = backgroundScope.launch {
-            viewModel.loginEffects.first().also { receivedEffect = it }
+            viewModel.effects.first().also { receivedEffect = it }
         }
         advanceUntilIdle()
 
-        viewModel.dispatch(LoginActions.OnUsernameChange("user"))
+        viewModel.onDispatch(LoginAction.OnUsernameChange("user"))
         advanceUntilIdle()
-        viewModel.dispatch(LoginActions.OnPasswordChange("pass"))
+        viewModel.onDispatch(LoginAction.OnPasswordChange("pass"))
         advanceUntilIdle()
 
-        viewModel.dispatch(LoginActions.OnSubmit)
+        viewModel.onDispatch(LoginAction.OnSubmit)
         advanceUntilIdle()
 
         job.join()
-        receivedEffect shouldBe LoginEffects.NavigateToDashboard
+        receivedEffect shouldBe LoginEffect.NavigateToDashboard
     }
 
     @Test
@@ -128,12 +128,12 @@ class LoginViewModelTest : BaseViewModelTest() {
         val viewModel = LoginViewModel(loginUseCase)
         advanceUntilIdle()
 
-        viewModel.dispatch(LoginActions.OnUsernameChange("user"))
+        viewModel.onDispatch(LoginAction.OnUsernameChange("user"))
         advanceUntilIdle()
-        viewModel.dispatch(LoginActions.OnPasswordChange("pass"))
+        viewModel.onDispatch(LoginAction.OnPasswordChange("pass"))
         advanceUntilIdle()
 
-        viewModel.dispatch(LoginActions.OnSubmit)
+        viewModel.onDispatch(LoginAction.OnSubmit)
         advanceUntilIdle()
 
         viewModel.state.value.authenticating.shouldBeFalse()

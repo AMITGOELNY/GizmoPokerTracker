@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ghn.gizmodb.common.models.Card
 import com.ghn.poker.core.ui.theme.Dimens
-import com.ghn.poker.feature.cards.presentation.CardScreenHoldEmActions
+import com.ghn.poker.feature.cards.presentation.CardScreenHoldEmAction
 import com.ghn.poker.feature.cards.presentation.CardScreenHoldEmViewModel
 import com.ghn.poker.feature.cards.presentation.model.CardSize
 import kotlinx.coroutines.delay
@@ -224,7 +224,7 @@ fun HoldemGame(
             onClick = {
                 cardsDealt = false
                 showBoardCards = false
-                viewModel.dispatch(CardScreenHoldEmActions.NewGame)
+                viewModel.onDispatch(CardScreenHoldEmAction.NewGame)
             },
             modifier = Modifier
                 .align(Alignment.BottomCenter)

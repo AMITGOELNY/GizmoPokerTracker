@@ -25,9 +25,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import com.ghn.poker.core.ui.preview.SurfacePreview
 import com.ghn.poker.core.ui.theme.Dimens
-import com.ghn.poker.feature.cards.presentation.CardScreenActions
+import com.ghn.poker.feature.cards.presentation.CardScreenAction
+import com.ghn.poker.feature.cards.presentation.CardScreenState
 import com.ghn.poker.feature.cards.presentation.CardScreenViewModel
-import com.ghn.poker.feature.cards.presentation.CardScreenViewState
 import com.ghn.poker.feature.cards.presentation.model.CardSize
 import gizmopoker.feature.feature_cards.generated.resources.Res
 import gizmopoker.feature.feature_cards.generated.resources.plus
@@ -44,13 +44,13 @@ internal fun FiveCardGame(
 
     FiveCardGameContent(
         state = state,
-        onNewGame = { viewModel.dispatch(CardScreenActions.NewGame) }
+        onNewGame = { viewModel.onDispatch(CardScreenAction.NewGame) }
     )
 }
 
 @Composable
 internal fun FiveCardGameContent(
-    state: CardScreenViewState,
+    state: CardScreenState,
     onNewGame: () -> Unit
 ) {
     var started by remember { mutableStateOf(false) }
@@ -149,7 +149,7 @@ internal fun FiveCardGameContent(
 @Composable
 private fun FiveCardGamePreview() = SurfacePreview {
     FiveCardGameContent(
-        state = CardScreenViewState(),
+        state = CardScreenState(),
         onNewGame = {}
     )
 }

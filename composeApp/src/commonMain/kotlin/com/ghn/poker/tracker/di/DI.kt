@@ -5,9 +5,7 @@ import com.ghn.poker.core.database.di.DatabaseModule
 import com.ghn.poker.core.network.di.NetworkModule
 import com.ghn.poker.core.preferences.di.PreferencesModule
 import com.ghn.poker.feature.auth.AuthModule
-import com.ghn.poker.feature.auth.domain.usecase.impl.AppState
-import com.ghn.poker.feature.auth.domain.usecase.impl.Store
-import com.ghn.poker.feature.auth.domain.usecase.impl.UserStore
+import com.ghn.poker.feature.auth.domain.usecase.impl.MainViewModel
 import com.ghn.poker.feature.cards.CardsModule
 import com.ghn.poker.feature.feed.FeedModule
 import com.ghn.poker.feature.tracker.TrackerModule
@@ -16,6 +14,7 @@ import io.ktor.client.engine.HttpClientEngine
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import org.koin.ksp.generated.module
 
@@ -39,14 +38,12 @@ fun initKoin(appModule: () -> Module): KoinApplication =
             TrackerModule().module,
             FeedModule().module,
             CardsModule().module,
-            sharedViewModelModule
+            module {
+                viewModel { MainViewModel(get(), get()) }
+            }
         ).also {
             Logger.d("KMM Koin init Complete")
         }
     }
 
 internal expect val platformModule: Module
-
-val sharedViewModelModule = module {
-    single<Store<AppState>> { UserStore(get(), get()) }
-}

@@ -1,76 +1,43 @@
 package com.ghn.poker.feature.auth.presentation
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import com.ghn.poker.core.common.presentation.MviViewModel
 import com.ghn.poker.core.network.ApiResponse
 import com.ghn.poker.feature.auth.domain.usecase.LoginUseCase
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class LoginViewModel(
     private val loginUseCase: LoginUseCase
-) : ViewModel() {
-    private val _state = MutableStateFlow(LoginState())
-    val state = _state.asStateFlow()
+) : MviViewModel<LoginState, LoginAction, LoginEffect>() {
 
-    private val viewStateTrigger = MutableSharedFlow<LoginActions>(replay = 1)
+    override val initialState = LoginState()
 
-    private val _loginEffects = Channel<LoginEffects>()
-    val loginEffects = _loginEffects.receiveAsFlow()
-        .shareIn(viewModelScope, SharingStarted.Eagerly)
-
-    init {
-        viewModelScope.launch {
-            viewStateTrigger
-                .collect { action ->
-                    when (action) {
-                        is LoginActions.OnUsernameChange -> onUsernameChange(action.username)
-                        is LoginActions.OnPasswordChange -> onPasswordChange(action.password)
-                        LoginActions.OnSubmit -> onSubmit()
-                    }
-                }
+    override suspend fun handleAction(action: LoginAction) {
+        when (action) {
+            is LoginAction.OnUsernameChange -> updateState { copy(username = action.username) }
+            is LoginAction.OnPasswordChange -> updateState { copy(password = action.password) }
+            LoginAction.OnSubmit -> onSubmit()
         }
     }
 
     private suspend fun onSubmit() {
         Logger.d {
-            "login with username: ${_state.value.username}, password: ${_state.value.password}"
+            "login with username: ${currentState.username}, password: ${currentState.password}"
         }
-        _state.update { it.copy(authenticating = true) }
+        updateState { copy(authenticating = true) }
 
-        val (username, password) = _state.value
+        val (username, password) = currentState
         when (val result = loginUseCase.login(username, password)) {
             is ApiResponse.Error -> {
-                _state.update { it.copy(authenticating = false) }
+                updateState { copy(authenticating = false) }
             }
 
             is ApiResponse.Success -> {
-                _state.update { it.copy(authenticating = false) }
-                _loginEffects.trySend(LoginEffects.NavigateToDashboard)
+                updateState { copy(authenticating = false) }
+                emitEffect(LoginEffect.NavigateToDashboard)
             }
         }
-    }
-
-    private fun onUsernameChange(username: String) {
-        _state.update { it.copy(username = username) }
-    }
-
-    private fun onPasswordChange(password: String) {
-        _state.update { it.copy(password = password) }
-    }
-
-    fun dispatch(action: LoginActions) {
-        viewStateTrigger.tryEmit(action)
     }
 }
 
@@ -80,12 +47,12 @@ data class LoginState(
     val authenticating: Boolean = false,
 )
 
-sealed interface LoginActions {
-    data class OnUsernameChange(val username: String) : LoginActions
-    data class OnPasswordChange(val password: String) : LoginActions
-    data object OnSubmit : LoginActions
+sealed interface LoginAction {
+    data class OnUsernameChange(val username: String) : LoginAction
+    data class OnPasswordChange(val password: String) : LoginAction
+    data object OnSubmit : LoginAction
 }
 
-sealed interface LoginEffects {
-    data object NavigateToDashboard : LoginEffects
+sealed interface LoginEffect {
+    data object NavigateToDashboard : LoginEffect
 }

@@ -1,78 +1,43 @@
 package com.ghn.poker.feature.auth.presentation
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import com.ghn.poker.core.common.presentation.MviViewModel
 import com.ghn.poker.core.network.ApiResponse
 import com.ghn.poker.feature.auth.domain.usecase.CreateAccountUseCase
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class CreateAccountViewModel(
     private val createAccountUseCase: CreateAccountUseCase
-) : ViewModel() {
-    private val _state = MutableStateFlow(CreateAccountState())
-    val state = _state.asStateFlow()
+) : MviViewModel<CreateAccountState, CreateAccountAction, CreateAccountEffect>() {
 
-    private val viewStateTrigger = MutableSharedFlow<CreateAccountActions>(replay = 1)
+    override val initialState = CreateAccountState()
 
-    private val _loginEffects = Channel<CreateAccountEffects>()
-    val loginEffects = _loginEffects.receiveAsFlow()
-        .shareIn(viewModelScope, SharingStarted.Eagerly)
-
-    init {
-        viewModelScope.launch {
-            viewStateTrigger
-                .onEach { Logger.d { "Triggered new action: $it." } }
-                .collect { action ->
-                    when (action) {
-                        is CreateAccountActions.OnUsernameChange -> onUsernameChange(action.username)
-                        is CreateAccountActions.OnPasswordChange -> onPasswordChange(action.password)
-                        CreateAccountActions.OnSubmit -> onSubmit()
-                    }
-                }
+    override suspend fun handleAction(action: CreateAccountAction) {
+        when (action) {
+            is CreateAccountAction.OnUsernameChange -> updateState { copy(username = action.username) }
+            is CreateAccountAction.OnPasswordChange -> updateState { copy(password = action.password) }
+            CreateAccountAction.OnSubmit -> onSubmit()
         }
     }
 
     private suspend fun onSubmit() {
         Logger.d {
-            "login with username: ${_state.value.username}, password: ${_state.value.password}"
+            "login with username: ${currentState.username}, password: ${currentState.password}"
         }
-        _state.update { it.copy(authenticating = true) }
+        updateState { copy(authenticating = true) }
 
-        val (username, password) = _state.value
+        val (username, password) = currentState
         when (val result = createAccountUseCase.create(username, password)) {
             is ApiResponse.Error -> {
-                _state.update { it.copy(authenticating = false) }
+                updateState { copy(authenticating = false) }
             }
 
             is ApiResponse.Success -> {
-                _state.update { it.copy(authenticating = false) }
-                _loginEffects.trySend(CreateAccountEffects.NavigateToDashboard)
+                updateState { copy(authenticating = false) }
+                emitEffect(CreateAccountEffect.NavigateToDashboard)
             }
         }
-    }
-
-    private fun onUsernameChange(username: String) {
-        _state.update { it.copy(username = username) }
-    }
-
-    private fun onPasswordChange(password: String) {
-        _state.update { it.copy(password = password) }
-    }
-
-    fun dispatch(action: CreateAccountActions) {
-        viewStateTrigger.tryEmit(action)
     }
 }
 
@@ -82,12 +47,12 @@ data class CreateAccountState(
     val authenticating: Boolean = false,
 )
 
-sealed interface CreateAccountActions {
-    data class OnUsernameChange(val username: String) : CreateAccountActions
-    data class OnPasswordChange(val password: String) : CreateAccountActions
-    data object OnSubmit : CreateAccountActions
+sealed interface CreateAccountAction {
+    data class OnUsernameChange(val username: String) : CreateAccountAction
+    data class OnPasswordChange(val password: String) : CreateAccountAction
+    data object OnSubmit : CreateAccountAction
 }
 
-sealed interface CreateAccountEffects {
-    data object NavigateToDashboard : CreateAccountEffects
+sealed interface CreateAccountEffect {
+    data object NavigateToDashboard : CreateAccountEffect
 }

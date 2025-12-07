@@ -81,7 +81,7 @@ class FeedViewModelTest : BaseViewModelTest() {
 
         viewModel.state.value.tabIndex shouldBe 0
 
-        viewModel.dispatch(FeedActions.OnTabItemClick(1))
+        viewModel.onDispatch(FeedAction.OnTabItemClick(1))
         advanceUntilIdle()
 
         viewModel.state.value.tabIndex shouldBe 1
@@ -102,7 +102,7 @@ class FeedViewModelTest : BaseViewModelTest() {
 
         everySuspend { feedUseCase.getFeed() } returns ApiResponse.Success(refreshedItems)
 
-        viewModel.dispatch(FeedActions.Refresh)
+        viewModel.onDispatch(FeedAction.Refresh)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -123,7 +123,7 @@ class FeedViewModelTest : BaseViewModelTest() {
 
         everySuspend { feedUseCase.getFeed() } returns ApiResponse.Error.NetworkError
 
-        viewModel.dispatch(FeedActions.Refresh)
+        viewModel.onDispatch(FeedAction.Refresh)
         advanceUntilIdle()
 
         viewModel.state.value.isRefreshing.shouldBeFalse()
@@ -156,7 +156,7 @@ class FeedViewModelTest : BaseViewModelTest() {
         val viewModel = FeedViewModel(feedUseCase)
         advanceUntilIdle()
 
-        viewModel.dispatch(FeedActions.OnTabItemClick(1))
+        viewModel.onDispatch(FeedAction.OnTabItemClick(1))
         advanceUntilIdle()
 
         viewModel.state.value.selectedFeed shouldBe strategyItems

@@ -48,7 +48,7 @@ import com.ghn.poker.core.ui.components.PrimaryButton
 import com.ghn.poker.core.ui.preview.SurfacePreview
 import com.ghn.poker.core.ui.theme.Dimens
 import com.ghn.poker.feature.cards.presentation.CardRowType
-import com.ghn.poker.feature.cards.presentation.EquityCalculatorActions
+import com.ghn.poker.feature.cards.presentation.EquityCalculatorAction
 import com.ghn.poker.feature.cards.presentation.EquityCalculatorViewModel
 import com.ghn.poker.feature.cards.presentation.HandResults
 import com.ghn.poker.feature.cards.presentation.model.CardSize
@@ -83,7 +83,7 @@ fun EquityCalculator(
         sheetDisplayCards = state.sheetDisplayCards,
         selectedCard = state.selectorInfo?.selectedCard,
         sheetState = sheetState,
-        onDispatch = { action -> viewModel.dispatch(action) }
+        onDispatch = { action -> viewModel.onDispatch(action) }
     )
 }
 
@@ -100,7 +100,7 @@ private fun EquityCalculatorContent(
     sheetDisplayCards: List<CardState>,
     selectedCard: Card?,
     sheetState: androidx.compose.material3.SheetState,
-    onDispatch: (EquityCalculatorActions) -> Unit
+    onDispatch: (EquityCalculatorAction) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -127,15 +127,15 @@ private fun EquityCalculatorContent(
 
             // Card Rows in Cards
             CardRowCard(CardRowType.BOARD, boardCards) { index, type ->
-                onDispatch(EquityCalculatorActions.BottomSheetUpdate(true, type, index))
+                onDispatch(EquityCalculatorAction.BottomSheetUpdate(true, type, index))
             }
             Spacer(Modifier.height(Dimens.grid_1_5))
             CardRowCard(CardRowType.HERO, heroCard) { index, type ->
-                onDispatch(EquityCalculatorActions.BottomSheetUpdate(true, type, index))
+                onDispatch(EquityCalculatorAction.BottomSheetUpdate(true, type, index))
             }
             Spacer(Modifier.height(Dimens.grid_1_5))
             CardRowCard(CardRowType.VILLAIN, villainCard) { index, type ->
-                onDispatch(EquityCalculatorActions.BottomSheetUpdate(true, type, index))
+                onDispatch(EquityCalculatorAction.BottomSheetUpdate(true, type, index))
             }
 
             Spacer(Modifier.height(Dimens.grid_1_5))
@@ -150,7 +150,7 @@ private fun EquityCalculatorContent(
             AnimatedVisibility(calculateEnabled) {
                 PrimaryButton(
                     buttonText = stringResource(Res.string.calculate),
-                    onClick = { onDispatch(EquityCalculatorActions.CalculateEquity) },
+                    onClick = { onDispatch(EquityCalculatorAction.CalculateEquity) },
                     isEnabled = !isCalculating,
                     showLoading = isCalculating
                 )
@@ -162,7 +162,7 @@ private fun EquityCalculatorContent(
 
     if (showBottomSheet) {
         ModalBottomSheet(
-            onDismissRequest = { onDispatch(EquityCalculatorActions.BottomSheetClose) },
+            onDismissRequest = { onDispatch(EquityCalculatorAction.BottomSheetClose) },
             sheetState = sheetState,
             containerColor = Color(0xFF1F2438)
         ) {
@@ -184,7 +184,7 @@ private fun EquityCalculatorContent(
                                 .aspectRatio(.75f),
                             selected = (item == selectedSuit),
                             onClick = {
-                                onDispatch(EquityCalculatorActions.UpdateSuit(item))
+                                onDispatch(EquityCalculatorAction.UpdateSuit(item))
                             },
                             label = {
                                 Box(
@@ -229,14 +229,14 @@ private fun EquityCalculatorContent(
                             disabled = it.disabled,
                             selected = it.card == selectedCard
                         ) {
-                            onDispatch(EquityCalculatorActions.OnCardSelected(it.card))
+                            onDispatch(EquityCalculatorAction.OnCardSelected(it.card))
                         }
                     }
                 }
                 Spacer(Modifier.height(Dimens.grid_3))
                 PrimaryButton(
                     buttonText = stringResource(Res.string.confirm),
-                    onClick = { onDispatch(EquityCalculatorActions.OnConfirmSelected) },
+                    onClick = { onDispatch(EquityCalculatorAction.OnConfirmSelected) },
                     isEnabled = selectedCard != null,
                     modifier = Modifier.padding(horizontal = Dimens.grid_3)
                 )

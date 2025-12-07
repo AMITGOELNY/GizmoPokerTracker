@@ -30,7 +30,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ghn.poker.core.ui.theme.GizmoTheme
 import com.ghn.poker.feature.auth.domain.usecase.impl.AppState
-import com.ghn.poker.feature.auth.domain.usecase.impl.Store
+import com.ghn.poker.feature.auth.domain.usecase.impl.MainAction
+import com.ghn.poker.feature.auth.domain.usecase.impl.MainViewModel
 import com.ghn.poker.feature.auth.navigation.CreateAccount
 import com.ghn.poker.feature.auth.navigation.Login
 import com.ghn.poker.feature.auth.navigation.SettingsHome
@@ -51,7 +52,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun App(
-    viewModel: Store<AppState> = koinInject(),
+    viewModel: MainViewModel = koinInject(),
     navController: NavHostController = rememberNavController()
 ) {
     GizmoTheme {
@@ -84,11 +85,11 @@ fun App(
             ) {
                 // Auth feature navigation
                 authNavGraph(
-                    onSplashScreenFinished = viewModel::checkForToken,
+                    onSplashScreenFinished = { viewModel.onDispatch(MainAction.CheckForToken) },
                     onNavigateToLogin = { navController.navigate(Login) },
                     onNavigateToCreateAccount = { navController.navigate(CreateAccount) },
                     onBackClick = navController::popBackStack,
-                    onSignOutClick = viewModel::signout,
+                    onSignOutClick = { viewModel.onDispatch(MainAction.SignOut) },
                     onShowBottomBar = { bottomBarState.value = it }
                 )
 
@@ -159,12 +160,12 @@ fun App(
 
 @Composable
 private fun AppStateListener(
-    viewModel: Store<AppState>,
+    viewModel: MainViewModel,
     navController: NavHostController
 ) {
     LaunchedEffect(Unit) {
-        viewModel.userState.collect { state ->
-            when (state) {
+        viewModel.state.collect { state ->
+            when (state.appState) {
                 AppState.Init -> Unit
                 AppState.LoggedIn -> navController.navigate(
                     route = TrackerHome,
