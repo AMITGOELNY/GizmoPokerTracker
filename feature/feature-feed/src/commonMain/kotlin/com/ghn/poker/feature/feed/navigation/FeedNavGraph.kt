@@ -1,7 +1,5 @@
 package com.ghn.poker.feature.feed.navigation
 
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,9 +17,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
+import androidx.navigation3.runtime.EntryProviderScope
+import com.ghn.poker.core.common.navigation.GizmoNavKey
 import com.ghn.poker.feature.feed.ui.FeedScreen
 import com.multiplatform.webview.web.LoadingState
 import com.multiplatform.webview.web.WebView
@@ -30,21 +27,15 @@ import gizmopoker.feature.feature_feed.generated.resources.Res
 import gizmopoker.feature.feature_feed.generated.resources.news_feed
 import org.jetbrains.compose.resources.stringResource
 
-fun NavGraphBuilder.feedNavGraph(
+fun EntryProviderScope<GizmoNavKey>.feedEntryBuilder(
     onNavigateToWebView: (String) -> Unit,
-    onBackClick: () -> Unit,
-    onShowBottomBar: (Boolean) -> Unit
+    onBackClick: () -> Unit
 ) {
-    composable<FeedHome>(
-        enterTransition = { fadeIn() },
-        exitTransition = { fadeOut() }
-    ) {
-        onShowBottomBar(true)
+    entry<FeedHome> {
         FeedScreen(onFeedItemClick = onNavigateToWebView)
     }
 
-    composable<WebView> { backStackEntry ->
-        val webView: WebView = backStackEntry.toRoute()
+    entry<WebView> { webView ->
         WebViewCompose(
             url = webView.url,
             onBackClick = onBackClick

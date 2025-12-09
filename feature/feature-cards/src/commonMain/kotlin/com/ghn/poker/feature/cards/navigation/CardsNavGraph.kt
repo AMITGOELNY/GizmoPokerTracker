@@ -1,11 +1,11 @@
 package com.ghn.poker.feature.cards.navigation
 
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderScope
+import com.ghn.poker.core.common.navigation.GizmoNavKey
 import com.ghn.poker.feature.cards.ui.CardsScreen
 
-fun NavGraphBuilder.cardsNavGraph() {
-    composable<CardsHome> {
+fun EntryProviderScope<GizmoNavKey>.cardsEntryBuilder() {
+    entry<CardsHome> {
         CardsScreen()
     }
 }

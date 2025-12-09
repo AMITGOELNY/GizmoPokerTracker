@@ -1,8 +1,6 @@
 package com.ghn.poker.tracker.ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.WindowInsets
@@ -16,53 +14,48 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.ui.NavDisplay
+import com.ghn.poker.core.common.navigation.TabDestination
 import com.ghn.poker.core.ui.theme.GizmoTheme
 import com.ghn.poker.feature.auth.domain.usecase.impl.AppState
 import com.ghn.poker.feature.auth.domain.usecase.impl.MainAction
 import com.ghn.poker.feature.auth.domain.usecase.impl.MainViewModel
 import com.ghn.poker.feature.auth.navigation.CreateAccount
 import com.ghn.poker.feature.auth.navigation.Login
-import com.ghn.poker.feature.auth.navigation.SettingsHome
 import com.ghn.poker.feature.auth.navigation.SplashScreen
 import com.ghn.poker.feature.auth.navigation.Welcome
-import com.ghn.poker.feature.auth.navigation.authNavGraph
-import com.ghn.poker.feature.cards.navigation.CardsHome
-import com.ghn.poker.feature.cards.navigation.cardsNavGraph
-import com.ghn.poker.feature.feed.navigation.FeedHome
+import com.ghn.poker.feature.auth.navigation.authEntryBuilder
+import com.ghn.poker.feature.cards.navigation.cardsEntryBuilder
 import com.ghn.poker.feature.feed.navigation.WebView
-import com.ghn.poker.feature.feed.navigation.feedNavGraph
+import com.ghn.poker.feature.feed.navigation.feedEntryBuilder
 import com.ghn.poker.feature.tracker.navigation.SessionInsert
 import com.ghn.poker.feature.tracker.navigation.TrackerHome
-import com.ghn.poker.feature.tracker.navigation.trackerNavGraph
-import com.ghn.poker.tracker.ui.shared.BottomNavItem
+import com.ghn.poker.feature.tracker.navigation.trackerEntryBuilder
+import com.ghn.poker.tracker.navigation.AppNavigationState
+import com.ghn.poker.tracker.navigation.rememberAppNavigationState
+import com.ghn.poker.tracker.ui.shared.bottomNavTabs
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 
 @Composable
 fun App(
-    viewModel: MainViewModel = koinInject(),
-    navController: NavHostController = rememberNavController()
+    viewModel: MainViewModel = koinInject()
 ) {
+    val navState = rememberAppNavigationState()
+
     GizmoTheme {
-        val bottomBarState = rememberSaveable { (mutableStateOf(false)) }
-        val currentBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = currentBackStackEntry?.destination?.route
+        val showBottomBar by remember {
+            derivedStateOf { navState.shouldShowBottomBar() }
+        }
         val isFullScreen by remember {
             derivedStateOf {
-                currentRoute == SplashScreen::class.qualifiedName ||
-                    currentRoute == Welcome::class.qualifiedName
+                val current = navState.currentDestination
+                current == SplashScreen || current == Welcome
             }
         }
 
@@ -70,90 +63,43 @@ fun App(
             modifier = Modifier.fillMaxSize(),
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
             bottomBar = {
-                BottomNavigationBar(navController, bottomBarState)
+                BottomNavigationBar(navState, showBottomBar)
             },
         ) { padding ->
-            AppStateListener(viewModel, navController)
-            NavHost(
-                navController = navController,
-                startDestination = SplashScreen,
+            AppStateListener(viewModel, navState)
+            NavDisplay(
+                backStack = navState.backStack,
                 modifier = if (isFullScreen) {
                     Modifier.fillMaxSize()
                 } else {
                     Modifier.padding(bottom = padding.calculateBottomPadding())
+                },
+                entryProvider = entryProvider {
+                    // Auth feature navigation
+                    authEntryBuilder(
+                        onSplashScreenFinished = { viewModel.onDispatch(MainAction.CheckForToken) },
+                        onNavigateToLogin = { navState.navigate(Login) },
+                        onNavigateToCreateAccount = { navState.navigate(CreateAccount) },
+                        onBackClick = { navState.popBackStack() },
+                        onSignOutClick = { viewModel.onDispatch(MainAction.SignOut) }
+                    )
+
+                    // Tracker feature navigation (Home tab)
+                    trackerEntryBuilder(
+                        onCreateSessionClick = { navState.navigate(SessionInsert) },
+                        onBackClick = { navState.popBackStack() }
+                    )
+
+                    // Feed feature navigation (News tab)
+                    feedEntryBuilder(
+                        onNavigateToWebView = { url -> navState.navigate(WebView(url)) },
+                        onBackClick = { navState.popBackStack() }
+                    )
+
+                    // Cards feature navigation (Cards tab)
+                    cardsEntryBuilder()
                 }
-            ) {
-                // Auth feature navigation
-                authNavGraph(
-                    onSplashScreenFinished = { viewModel.onDispatch(MainAction.CheckForToken) },
-                    onNavigateToLogin = { navController.navigate(Login) },
-                    onNavigateToCreateAccount = { navController.navigate(CreateAccount) },
-                    onBackClick = navController::popBackStack,
-                    onSignOutClick = { viewModel.onDispatch(MainAction.SignOut) },
-                    onShowBottomBar = { bottomBarState.value = it }
-                )
-
-                // Tracker feature navigation (Home tab)
-                trackerNavGraph(
-                    onCreateSessionClick = { navController.navigate(SessionInsert) },
-                    onBackClick = navController::popBackStack,
-                    onShowBottomBar = { bottomBarState.value = it }
-                )
-
-                // Feed feature navigation (News tab)
-                feedNavGraph(
-                    onNavigateToWebView = { url -> navController.navigate(WebView(url)) },
-                    onBackClick = navController::popBackStack,
-                    onShowBottomBar = { bottomBarState.value = it }
-                )
-
-                // Cards feature navigation (Cards tab)
-                cardsNavGraph()
-
-                // Bottom nav item routes that map to feature routes
-                composable<BottomNavItem.Home>(
-                    enterTransition = { fadeIn() },
-                    exitTransition = { fadeOut() }
-                ) {
-                    bottomBarState.value = true
-                    // Navigate to tracker home internally
-                    LaunchedEffect(Unit) {
-                        navController.navigate(TrackerHome) {
-                            popUpTo(BottomNavItem.Home) { inclusive = true }
-                        }
-                    }
-                }
-
-                composable<BottomNavItem.News>(
-                    enterTransition = { fadeIn() },
-                    exitTransition = { fadeOut() }
-                ) {
-                    bottomBarState.value = true
-                    LaunchedEffect(Unit) {
-                        navController.navigate(FeedHome) {
-                            popUpTo(BottomNavItem.News) { inclusive = true }
-                        }
-                    }
-                }
-
-                composable<BottomNavItem.Cards> {
-                    bottomBarState.value = true
-                    LaunchedEffect(Unit) {
-                        navController.navigate(CardsHome) {
-                            popUpTo(BottomNavItem.Cards) { inclusive = true }
-                        }
-                    }
-                }
-
-                composable<BottomNavItem.Settings> {
-                    bottomBarState.value = true
-                    LaunchedEffect(Unit) {
-                        navController.navigate(SettingsHome) {
-                            popUpTo(BottomNavItem.Settings) { inclusive = true }
-                        }
-                    }
-                }
-            }
+            )
         }
     }
 }
@@ -161,52 +107,38 @@ fun App(
 @Composable
 private fun AppStateListener(
     viewModel: MainViewModel,
-    navController: NavHostController
+    navState: AppNavigationState
 ) {
     LaunchedEffect(Unit) {
         viewModel.state.collect { state ->
             when (state.appState) {
                 AppState.Init -> Unit
-                AppState.LoggedIn -> navController.navigate(
-                    route = TrackerHome,
-                )
-
-                AppState.LoggedOut -> navController.navigate(
-                    route = Welcome,
-                )
+                AppState.LoggedIn -> navState.navigateAndClearBackStack(TrackerHome)
+                AppState.LoggedOut -> navState.navigateAndClearBackStack(Welcome)
             }
         }
     }
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController, bottomBarState: MutableState<Boolean>) {
-    val items = remember {
-        listOf(BottomNavItem.Home, BottomNavItem.News, BottomNavItem.Cards, BottomNavItem.Settings)
-    }
+fun BottomNavigationBar(navState: AppNavigationState, visible: Boolean) {
     AnimatedVisibility(
-        visible = bottomBarState.value,
+        visible = visible,
         enter = slideInVertically(initialOffsetY = { it }),
         exit = slideOutVertically(targetOffsetY = { it }),
         content = {
             NavigationBar {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentRoute = navBackStackEntry?.destination?.route
-                    ?: TrackerHome::class.qualifiedName.orEmpty()
+                val currentDestination = navState.currentDestination
 
-                items.forEachIndexed { index, item ->
-                    val featureRoute = when (index) {
-                        0 -> TrackerHome::class.qualifiedName
-                        1 -> FeedHome::class.qualifiedName
-                        2 -> CardsHome::class.qualifiedName
-                        3 -> SettingsHome::class.qualifiedName
-                        else -> null
-                    }
-                    val selected by remember(currentRoute) {
-                        derivedStateOf { currentRoute == featureRoute }
+                bottomNavTabs.forEach { tab ->
+                    val selected by remember(currentDestination) {
+                        derivedStateOf {
+                            currentDestination is TabDestination &&
+                                (currentDestination as TabDestination).tabIndex == tab.destination.tabIndex
+                        }
                     }
                     NavigationBarItem(
-                        icon = { Icon(painterResource(item.icon()), contentDescription = null) },
+                        icon = { Icon(painterResource(tab.icon), contentDescription = tab.title) },
                         label = null,
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = MaterialTheme.colorScheme.onBackground,
@@ -216,19 +148,7 @@ fun BottomNavigationBar(navController: NavHostController, bottomBarState: Mutabl
                         alwaysShowLabel = true,
                         selected = selected,
                         onClick = {
-                            val destination = when (index) {
-                                0 -> TrackerHome
-                                1 -> FeedHome
-                                2 -> CardsHome
-                                3 -> SettingsHome
-                                else -> return@NavigationBarItem
-                            }
-                            navController.navigate(destination) {
-                                launchSingleTop = true
-                                popUpTo(TrackerHome) {
-                                    inclusive = false
-                                }
-                            }
+                            navState.navigateToTab(tab.destination)
                         },
                     )
                 }
