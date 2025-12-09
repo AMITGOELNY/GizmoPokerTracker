@@ -1,42 +1,40 @@
 package com.ghn.poker.feature.auth.navigation
 
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderScope
+import com.ghn.poker.core.common.navigation.GizmoNavKey
 import com.ghn.poker.feature.auth.ui.GetStartedScreen
 import com.ghn.poker.feature.auth.ui.LoginScreen
 import com.ghn.poker.feature.auth.ui.SettingsScreen
 import com.ghn.poker.feature.auth.ui.SignUpScreen
 import com.ghn.poker.feature.auth.ui.SplashScreen
 
-fun NavGraphBuilder.authNavGraph(
+fun EntryProviderScope<GizmoNavKey>.authEntryBuilder(
     onSplashScreenFinished: () -> Unit,
     onNavigateToLogin: () -> Unit,
     onNavigateToCreateAccount: () -> Unit,
     onBackClick: () -> Unit,
-    onSignOutClick: () -> Unit,
-    onShowBottomBar: (Boolean) -> Unit
+    onSignOutClick: () -> Unit
 ) {
-    composable<SplashScreen> {
+    entry<SplashScreen> {
         SplashScreen(onSplashScreenFinished = onSplashScreenFinished)
     }
 
-    composable<Welcome> {
+    entry<Welcome> {
         GetStartedScreen(
             onSignInClick = onNavigateToLogin,
             onCreateAccountClick = onNavigateToCreateAccount
         )
     }
 
-    composable<Login> {
+    entry<Login> {
         LoginScreen(onBackClick = onBackClick)
     }
 
-    composable<CreateAccount> {
+    entry<CreateAccount> {
         SignUpScreen(onBackClick = onBackClick)
     }
 
-    composable<SettingsHome> {
-        onShowBottomBar(true)
+    entry<SettingsHome> {
         SettingsScreen(onSignOutClick = onSignOutClick)
     }
 }

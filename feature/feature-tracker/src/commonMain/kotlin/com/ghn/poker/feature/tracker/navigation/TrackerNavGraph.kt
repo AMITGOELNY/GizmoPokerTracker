@@ -1,31 +1,19 @@
 package com.ghn.poker.feature.tracker.navigation
 
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderScope
+import com.ghn.poker.core.common.navigation.GizmoNavKey
 import com.ghn.poker.feature.tracker.ui.SessionEntryScreen
 import com.ghn.poker.feature.tracker.ui.TrackerLandingPage
 
-fun NavGraphBuilder.trackerNavGraph(
+fun EntryProviderScope<GizmoNavKey>.trackerEntryBuilder(
     onCreateSessionClick: () -> Unit,
-    onBackClick: () -> Unit,
-    onShowBottomBar: (Boolean) -> Unit
+    onBackClick: () -> Unit
 ) {
-    composable<TrackerHome>(
-        enterTransition = { fadeIn() },
-        exitTransition = { fadeOut() }
-    ) {
-        onShowBottomBar(true)
-        TrackerLandingPage(
-            onCreateSessionClick = {
-                onShowBottomBar(false)
-                onCreateSessionClick()
-            }
-        )
+    entry<TrackerHome> {
+        TrackerLandingPage(onCreateSessionClick = onCreateSessionClick)
     }
 
-    composable<SessionInsert> {
+    entry<SessionInsert> {
         SessionEntryScreen(onBackClick = onBackClick)
     }
 }

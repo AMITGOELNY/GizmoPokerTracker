@@ -33,8 +33,8 @@ class GizmoFeaturePlugin : Plugin<Project> {
                         // Core common (MviViewModel, utilities)
                         api(project(":core:core-common"))
 
-                        // Navigation
-                        implementation(libs.findLibrary("navigation-compose").get())
+                        // Navigation3
+                        implementation(libs.findLibrary("navigation3-ui").get())
 
                         // Lifecycle
                         api(libs.findLibrary("lifecycle-viewmodel-compose").get())

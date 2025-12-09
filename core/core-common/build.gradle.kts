@@ -15,6 +15,7 @@ kotlin {
             api(libs.datetime)
             api(libs.kermit)
             api(libs.lifecycle.viewmodel.compose)
+            api(libs.navigation3.ui)
             implementation(libs.kotlinx.serialization.json)
         }
     }

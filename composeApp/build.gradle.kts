@@ -111,7 +111,8 @@ kotlin {
                 implementation(compose.materialIconsExtended)
                 implementation(compose.animation)
 
-                implementation(libs.navigation.compose)
+                implementation(libs.navigation3.lifecycle.viewmodel)
+                implementation(libs.navigation3.ui)
                 api(libs.lifecycle.viewmodel.compose)
 
                 implementation(compose.components.resources)
