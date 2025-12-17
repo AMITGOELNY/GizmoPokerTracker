@@ -1,9 +1,5 @@
-@file:Suppress("ktlint:standard:no-empty-file")
-
 package com.ghn.poker.feature.feed.data.repository
 
-// TODO: Re-enable once mokkery is updated for kotlin 2.3+ support
-/*
 import com.ghn.gizmodb.common.models.FeedDTO
 import com.ghn.gizmodb.common.models.NewsCategory
 import com.ghn.poker.core.network.ApiResponse
@@ -106,4 +102,3 @@ class FeedRepositoryImplTest {
         )
     }
 }
-*/

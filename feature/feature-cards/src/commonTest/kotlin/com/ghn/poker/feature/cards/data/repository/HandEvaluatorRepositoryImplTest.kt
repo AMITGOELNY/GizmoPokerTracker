@@ -1,9 +1,5 @@
-@file:Suppress("ktlint:standard:no-empty-file")
-
 package com.ghn.poker.feature.cards.data.repository
 
-// TODO: Re-enable once mokkery is updated for kotlin 2.3+ support
-/*
 import com.ghn.gizmodb.common.models.Card
 import com.ghn.gizmodb.common.models.CardSuit
 import com.ghn.gizmodb.common.models.EvaluatorResponse
@@ -155,4 +151,3 @@ class HandEvaluatorRepositoryImplTest {
         result shouldBe ApiResponse.Success(expectedResponse)
     }
 }
-*/

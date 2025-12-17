@@ -14,12 +14,12 @@ scrapeIt = [
 ]
 
 [versions]
-kotlin = "2.3.0-RC2"
+kotlin = "2.3.0"
 
-agp = "8.13.1"
+agp = "8.13.2"
 
 compose = "1.10.0"
-compose-plugin = "1.10.0-rc01"
+compose-plugin = "1.10.0-rc02"
 
 android-minSdk = "26"
 android-compileSdk = "36"
@@ -37,19 +37,20 @@ kotlinxCoroutinesCore = "1.10.2"
 kotlinxSerializationJson = "1.9.0"
 multiplatformSettings = "1.3.0"
 navigation3 = "1.0.0-alpha06"
-lifecycleViewmodelNav3 = "2.10.0-alpha06"
+lifecycleViewmodelNav3 = "2.10.0-alpha07"
 sqldelightVersion = "2.2.1"
 
 # Test
-mokkery = "3.0.0"
+mokkery = "3.1.0"
 mockk = "1.14.7"
 kotest = "6.0.7"
 
 ktor = "3.3.3"
 
 # Server
+flyway = "11.19.0"
 jdbc_sqlite = "3.43.2.2"
-jooq = "3.20.9"
+jooq = "3.20.10"
 logbackVersion = "1.4.11"
 jetbrainsKotlinJvm = "1.9.0"
 rssparser = "6.1.1"
@@ -134,7 +135,7 @@ jooq-coroutines = { module = "org.jooq:jooq-kotlin-coroutines", version.ref = "j
 jooq-test = { module = "org.jooq:jooq-test", version.ref = "jooq" }
 jooq-test-kotlin = { module = "org.jooq:jooq-test-kotlin", version.ref = "jooq" }
 bouncyCastle = { module = "org.bouncycastle:bcprov-jdk15on", version = "1.70" }
-flyway-core = { module = "org.flywaydb:flyway-core", version = "11.18.0" }
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 jdbc-sqlite = { module = "org.xerial:sqlite-jdbc", version = "3.51.1.0" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 ktor-client-core-v203 = { module = "io.ktor:ktor-client-core", version = "2.0.3" }
@@ -155,12 +156,12 @@ mokkery-coroutines = { module = "dev.mokkery:mokkery-coroutines", version.ref = 
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-flyway = { id = "org.flywaydb.flyway", version = "11.18.0" }
+flyway = { id = "org.flywaydb.flyway", version.ref = "flyway" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 jetbrainsKotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 jooq = { id = "nu.studer.jooq", version = "10.1.1" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.3" }
+kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.4" }
 ksp = { id = "com.google.devtools.ksp", version = "2.3.3" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.0.2" }
 mokkery = { id = "dev.mokkery", version.ref = "mokkery" }
