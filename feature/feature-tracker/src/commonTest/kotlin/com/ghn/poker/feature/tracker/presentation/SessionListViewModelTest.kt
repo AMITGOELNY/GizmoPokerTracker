@@ -1,9 +1,5 @@
-@file:Suppress("ktlint:standard:no-empty-file")
-
 package com.ghn.poker.feature.tracker.presentation
 
-// TODO: Re-enable once mokkery is updated for kotlin 2.3+ support
-/*
 import com.ghn.gizmodb.common.models.Venue
 import com.ghn.poker.core.network.ApiResponse
 import com.ghn.poker.core.testing.BaseViewModelTest
@@ -163,4 +159,3 @@ class SessionListViewModelTest : BaseViewModelTest() {
         )
     }
 }
-*/

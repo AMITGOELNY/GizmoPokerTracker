@@ -1,6 +1,6 @@
 plugins {
     id("gizmo.feature")
-//    alias(libs.plugins.mokkery)
+    alias(libs.plugins.mokkery)
 }
 
 android {
@@ -23,8 +23,8 @@ kotlin {
             api(libs.webview.multiplatform)
         }
         commonTest.dependencies {
-//            implementation(libs.mokkery.core)
-//            implementation(libs.mokkery.coroutines)
+            implementation(libs.mokkery.core)
+            implementation(libs.mokkery.coroutines)
         }
     }
 }

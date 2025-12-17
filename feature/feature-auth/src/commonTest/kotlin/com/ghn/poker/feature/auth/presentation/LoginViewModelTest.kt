@@ -1,9 +1,5 @@
-@file:Suppress("ktlint:standard:no-empty-file")
-
 package com.ghn.poker.feature.auth.presentation
 
-// TODO: Re-enable once mokkery is updated for kotlin 2.3+ support
-/*
 import com.ghn.poker.core.network.ApiResponse
 import com.ghn.poker.core.testing.BaseViewModelTest
 import com.ghn.poker.feature.auth.domain.usecase.LoginUseCase
@@ -143,4 +139,3 @@ class LoginViewModelTest : BaseViewModelTest() {
         viewModel.state.value.authenticating.shouldBeFalse()
     }
 }
-*/

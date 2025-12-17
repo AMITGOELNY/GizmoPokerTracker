@@ -1,9 +1,5 @@
-@file:Suppress("ktlint:standard:no-empty-file")
-
 package com.ghn.poker.feature.auth.data.repository
 
-// TODO: Re-enable once mokkery is updated for kotlin 2.3+ support
-/*
 import com.ghn.model.TokenResponse
 import com.ghn.poker.core.network.ApiResponse
 import com.ghn.poker.feature.auth.data.sources.remote.LoginRemoteDataSource
@@ -117,4 +113,3 @@ class LoginRepositoryImplTest {
         verifySuspend { remoteDataSource.logout() }
     }
 }
-*/
