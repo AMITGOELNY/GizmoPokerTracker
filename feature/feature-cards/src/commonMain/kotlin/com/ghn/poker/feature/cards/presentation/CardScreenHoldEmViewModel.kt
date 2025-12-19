@@ -11,7 +11,7 @@ import com.ghn.poker.feature.cards.presentation.model.CardState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
@@ -25,8 +25,8 @@ class CardScreenHoldEmViewModel(
 
     private val deck: List<CardState> = Deck.cards.map { CardState(it, false) }
 
-    private val _state = MutableStateFlow(CardScreenHoldEmState())
-    val state = _state.asStateFlow()
+    val state: StateFlow<CardScreenHoldEmState>
+        field = MutableStateFlow(CardScreenHoldEmState())
 
     private val actions = MutableSharedFlow<CardScreenHoldEmAction>(replay = 1)
 
@@ -56,13 +56,13 @@ class CardScreenHoldEmViewModel(
 
     private suspend fun distributeCards() {
         val shuffled = deck.shuffled()
-        val playerCards = (0 until (_state.value.players)).map { playerIndex ->
+        val playerCards = (0 until (state.value.players)).map { playerIndex ->
             (0 until (2)).map { playerCardNumber ->
-                shuffled[playerIndex + (_state.value.players * playerCardNumber)].card
+                shuffled[playerIndex + (state.value.players * playerCardNumber)].card
             }
         }
 
-        _state.update { it.copy(playerCard = playerCards) }
+        state.update { it.copy(playerCard = playerCards) }
 
         delay(2000)
         val startIndex = (playerCards.count() * 2) // dealt index
@@ -96,7 +96,7 @@ class CardScreenHoldEmViewModel(
             null
         }
 
-        _state.update { it.copy(boardCards = boardCards, winnerInfo = winnerInfo) }
+        state.update { it.copy(boardCards = boardCards, winnerInfo = winnerInfo) }
     }
 }
 

@@ -11,7 +11,7 @@ import com.ghn.poker.feature.cards.presentation.model.CardState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
@@ -25,8 +25,8 @@ class CardScreenViewModel(
 
     private val deck: List<CardState> = Deck.cards.map { CardState(it, false) }
 
-    private val _state = MutableStateFlow(CardScreenState())
-    val state = _state.asStateFlow()
+    val state: StateFlow<CardScreenState>
+        field = MutableStateFlow(CardScreenState())
 
     private val actions = MutableSharedFlow<CardScreenAction>(replay = 1)
 
@@ -56,13 +56,13 @@ class CardScreenViewModel(
 
     private suspend fun distributeCards() {
         val shuffled = deck.shuffled()
-        val playerCards = (0 until (_state.value.players)).map { playerIndex ->
+        val playerCards = (0 until (state.value.players)).map { playerIndex ->
             (0 until (5)).map { playerCardNumber ->
-                shuffled[playerIndex + (_state.value.players * playerCardNumber)].card
+                shuffled[playerIndex + (state.value.players * playerCardNumber)].card
             }
         }
 
-        _state.update { it.copy(playerCard = playerCards) }
+        state.update { it.copy(playerCard = playerCards) }
 
         var winnerInfo = WinnerInfo(-1, "")
 
@@ -83,7 +83,7 @@ class CardScreenViewModel(
         }
         Logger.d { "Player${winnerInfo.winnerIndex + 1} has the high rank: ${winnerInfo.winningHand}" }
 
-        _state.update { it.copy(winnerInfo = winnerInfo) }
+        state.update { it.copy(winnerInfo = winnerInfo) }
     }
 }
 
