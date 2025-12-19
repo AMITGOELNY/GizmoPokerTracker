@@ -9,7 +9,7 @@ import com.ghn.poker.feature.feed.domain.model.FeedItem
 import com.ghn.poker.feature.feed.domain.usecase.FeedUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
@@ -21,8 +21,8 @@ class FeedViewModel(
     private val feedUseCase: FeedUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(FeedState())
-    val state = _state.asStateFlow()
+    val state: StateFlow<FeedState>
+        field = MutableStateFlow(FeedState())
 
     private val actions = MutableSharedFlow<FeedAction>(replay = 1)
 
@@ -43,7 +43,7 @@ class FeedViewModel(
     private suspend fun handleAction(action: FeedAction) {
         when (action) {
             FeedAction.Init -> getFeed()
-            is FeedAction.OnTabItemClick -> _state.update { it.copy(tabIndex = action.index) }
+            is FeedAction.OnTabItemClick -> state.update { it.copy(tabIndex = action.index) }
             FeedAction.Refresh -> refresh()
         }
     }
@@ -52,7 +52,7 @@ class FeedViewModel(
         when (val result = feedUseCase.getFeed()) {
             is ApiResponse.Error -> {
                 Logger.e { "Rss fetch failed $result" }
-                _state.update { it.copy(feed = LoadableDataState.Error) }
+                state.update { it.copy(feed = LoadableDataState.Error) }
             }
 
             is ApiResponse.Success -> {
@@ -60,7 +60,7 @@ class FeedViewModel(
                 val group = result.body.groupBy { it.category }
                 val articles = group.getOrElse(NewsCategory.NEWS) { emptyList() }
                 val strategy = group.getOrElse(NewsCategory.STRATEGY) { emptyList() }
-                _state.update {
+                state.update {
                     it.copy(
                         feed = LoadableDataState.Loaded(
                             FeedsContainer(
@@ -77,7 +77,7 @@ class FeedViewModel(
     }
 
     private suspend fun refresh() {
-        _state.update { it.copy(isRefreshing = true) }
+        state.update { it.copy(isRefreshing = true) }
         when (val result = feedUseCase.getFeed()) {
             is ApiResponse.Error -> {
                 Logger.e { "Rss refresh failed $result" }
@@ -88,7 +88,7 @@ class FeedViewModel(
                 val group = result.body.groupBy { it.category }
                 val articles = group.getOrElse(NewsCategory.NEWS) { emptyList() }
                 val strategy = group.getOrElse(NewsCategory.STRATEGY) { emptyList() }
-                _state.update {
+                state.update {
                     it.copy(
                         feed = LoadableDataState.Loaded(
                             FeedsContainer(
@@ -102,7 +102,7 @@ class FeedViewModel(
                 }
             }
         }
-        _state.update { it.copy(isRefreshing = false) }
+        state.update { it.copy(isRefreshing = false) }
     }
 }
 

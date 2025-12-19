@@ -47,6 +47,7 @@ class GizmoKmpLibraryPlugin : Plugin<Project> {
 
                 compilerOptions {
                     freeCompilerArgs.add("-Xexpect-actual-classes")
+                    freeCompilerArgs.add("-Xexplicit-backing-fields")
                 }
             }
 

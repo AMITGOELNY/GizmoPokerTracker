@@ -8,7 +8,7 @@ import com.ghn.poker.feature.tracker.domain.model.SessionData
 import com.ghn.poker.feature.tracker.domain.usecase.SessionUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
@@ -20,8 +20,8 @@ class SessionListViewModel(
     private val useCase: SessionUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(SessionListState())
-    val state = _state.asStateFlow()
+    val state: StateFlow<SessionListState>
+        field = MutableStateFlow(SessionListState())
 
     private val actions = MutableSharedFlow<SessionListAction>(replay = 1)
 
@@ -46,10 +46,10 @@ class SessionListViewModel(
     }
 
     private suspend fun loadSessions() {
-        _state.update { it.copy(sessions = LoadableDataState.Loading) }
+        state.update { it.copy(sessions = LoadableDataState.Loading) }
         when (val sessions = useCase.getSessions()) {
-            is ApiResponse.Error -> _state.update { it.copy(sessions = LoadableDataState.Error) }
-            is ApiResponse.Success -> _state.update {
+            is ApiResponse.Error -> state.update { it.copy(sessions = LoadableDataState.Error) }
+            is ApiResponse.Success -> state.update {
                 it.copy(
                     sessions = if (sessions.body.isNotEmpty()) {
                         LoadableDataState.Loaded(sessions.body)

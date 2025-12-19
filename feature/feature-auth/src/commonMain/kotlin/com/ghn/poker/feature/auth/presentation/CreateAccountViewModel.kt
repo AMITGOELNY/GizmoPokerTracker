@@ -9,7 +9,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
@@ -23,8 +23,8 @@ class CreateAccountViewModel(
     private val createAccountUseCase: CreateAccountUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(CreateAccountState())
-    val state = _state.asStateFlow()
+    val state: StateFlow<CreateAccountState>
+        field = MutableStateFlow(CreateAccountState())
 
     private val actions = MutableSharedFlow<CreateAccountAction>(replay = 1)
 
@@ -47,26 +47,26 @@ class CreateAccountViewModel(
 
     private suspend fun handleAction(action: CreateAccountAction) {
         when (action) {
-            is CreateAccountAction.OnUsernameChange -> _state.update { it.copy(username = action.username) }
-            is CreateAccountAction.OnPasswordChange -> _state.update { it.copy(password = action.password) }
+            is CreateAccountAction.OnUsernameChange -> state.update { it.copy(username = action.username) }
+            is CreateAccountAction.OnPasswordChange -> state.update { it.copy(password = action.password) }
             CreateAccountAction.OnSubmit -> onSubmit()
         }
     }
 
     private suspend fun onSubmit() {
         Logger.d {
-            "login with username: ${_state.value.username}, password: ${_state.value.password}"
+            "login with username: ${state.value.username}, password: ${state.value.password}"
         }
-        _state.update { it.copy(authenticating = true) }
+        state.update { it.copy(authenticating = true) }
 
-        val (username, password) = _state.value
+        val (username, password) = state.value
         when (val result = createAccountUseCase.create(username, password)) {
             is ApiResponse.Error -> {
-                _state.update { it.copy(authenticating = false) }
+                state.update { it.copy(authenticating = false) }
             }
 
             is ApiResponse.Success -> {
-                _state.update { it.copy(authenticating = false) }
+                state.update { it.copy(authenticating = false) }
                 _effects.send(CreateAccountEffect.NavigateToDashboard)
             }
         }

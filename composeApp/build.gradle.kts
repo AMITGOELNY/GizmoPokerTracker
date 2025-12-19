@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
@@ -79,6 +80,7 @@ kotlin {
             compilerOptions {
                 // Common compiler options applied to all Kotlin source sets
                 freeCompilerArgs.add("-Xexpect-actual-classes")
+                freeCompilerArgs.add("-Xexplicit-backing-fields")
             }
         }
 
@@ -105,18 +107,18 @@ kotlin {
                 implementation(project(":feature:feature-tracker"))
                 implementation(project(":feature:feature-feed"))
                 implementation(project(":feature:feature-cards"))
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material3)
-                implementation(compose.materialIconsExtended)
-                implementation(compose.animation)
+                implementation("org.jetbrains.compose.runtime:runtime:1.10.0-rc02")
+                implementation("org.jetbrains.compose.foundation:foundation:1.10.0-rc02")
+                implementation("org.jetbrains.compose.material3:material3:1.9.0")
+                implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
+                implementation("org.jetbrains.compose.animation:animation:1.10.0-rc02")
 
                 implementation(libs.navigation3.lifecycle.viewmodel)
                 implementation(libs.navigation3.ui)
                 api(libs.lifecycle.viewmodel.compose)
 
-                implementation(compose.components.resources)
-                implementation(compose.components.uiToolingPreview)
+                implementation("org.jetbrains.compose.components:components-resources:1.10.0-rc02")
+                implementation("org.jetbrains.compose.ui:ui-tooling-preview:1.10.0-rc02")
 
                 implementation(libs.coroutines.core)
 

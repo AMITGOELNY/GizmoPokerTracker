@@ -13,7 +13,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
@@ -30,8 +30,8 @@ class SessionEntryViewModel(
     private val useCase: SessionUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(SessionEntryState())
-    val state = _state.asStateFlow()
+    val state: StateFlow<SessionEntryState>
+        field = MutableStateFlow(SessionEntryState())
 
     private val actions = MutableSharedFlow<SessionEntryAction>(replay = 1)
 
@@ -55,26 +55,26 @@ class SessionEntryViewModel(
     private suspend fun handleAction(action: SessionEntryAction) {
         when (action) {
             SessionEntryAction.Init -> Unit
-            is SessionEntryAction.UpdateDate -> _state.update { it.copy(date = action.date) }
-            is SessionEntryAction.UpdateStartAmount -> _state.update { it.copy(startAmount = action.startAmount) }
-            is SessionEntryAction.UpdateEndAmount -> _state.update { it.copy(endAmount = action.endAmount) }
+            is SessionEntryAction.UpdateDate -> state.update { it.copy(date = action.date) }
+            is SessionEntryAction.UpdateStartAmount -> state.update { it.copy(startAmount = action.startAmount) }
+            is SessionEntryAction.UpdateEndAmount -> state.update { it.copy(endAmount = action.endAmount) }
             is SessionEntryAction.UpdateLocation -> TODO()
-            is SessionEntryAction.UpdateGameType -> _state.update { it.copy(gameType = action.gameType) }
-            is SessionEntryAction.UpdateVenue -> _state.update { it.copy(venue = action.venue) }
+            is SessionEntryAction.UpdateGameType -> state.update { it.copy(gameType = action.gameType) }
+            is SessionEntryAction.UpdateVenue -> state.update { it.copy(venue = action.venue) }
             SessionEntryAction.SaveSession -> saveSession()
         }
     }
 
     private suspend fun saveSession() {
-        _state.update { it.copy(isCreatingSession = true) }
+        state.update { it.copy(isCreatingSession = true) }
         val result = useCase.createSession(
-            date = _state.value.date,
-            startAmount = _state.value.startAmount,
-            endAmount = _state.value.endAmount,
-            gameType = _state.value.gameType,
-            venue = _state.value.venue,
+            date = state.value.date,
+            startAmount = state.value.startAmount,
+            endAmount = state.value.endAmount,
+            gameType = state.value.gameType,
+            venue = state.value.venue,
         )
-        _state.update { it.copy(isCreatingSession = false) }
+        state.update { it.copy(isCreatingSession = false) }
         when (result) {
             is ApiResponse.Error -> Unit
             is ApiResponse.Success -> _effects.send(SessionEntryEffect.OnSessionCreated)
