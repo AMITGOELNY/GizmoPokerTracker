@@ -11,7 +11,8 @@ services:
   # NEW: Gitea Service
   # ════════════════════════════════════════
   gitea-service:
-    image: ${GITEA_IMAGE:-gitea/gitea:1.24}
+    # Pinned on purpose (not via GITEA_IMAGE env) so a stale env var can't roll back a security upgrade
+    image: gitea/gitea:28.3.0
     container_name: gitea
     restart: ${RESTART_POLICY:-always}
     logging: *default-logging
@@ -26,6 +27,8 @@ services:
       - GITEA__server__SSH_PORT=${GITEA_SSH_PORT:-2222}
       - GITEA__server__LFS_START_SERVER=${GITEA_LFS_ENABLED:-true}
       - GITEA__service__DISABLE_REGISTRATION=${GITEA_DISABLE_REGISTRATION:-true}
+      - GITEA__service__REQUIRE_SIGNIN_VIEW=true
+      - GITEA__security__INSTALL_LOCK=true
     volumes:
       - ${GITEA_DATA_DIR:-../files/gitea-data}:/data
       - /etc/timezone:/etc/timezone:ro
