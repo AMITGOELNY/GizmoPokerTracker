@@ -1,5 +1,8 @@
 version: "3.9"
 
+# Routing: ALL Traefik routes live in this file. Do not add domains in Dokploy's Domains tab —
+# Dokploy injects extra Traefik services per domain, which breaks routers without an explicit
+# `.service=` ("cannot be linked automatically with multiple Services"). Every router below sets one.
 x-logging: &default-logging
   driver: json-file
   options:
@@ -7,9 +10,6 @@ x-logging: &default-logging
     max-file: "3"
 
 services:
-  # ════════════════════════════════════════
-  # NEW: Gitea Service
-  # ════════════════════════════════════════
   gitea-service:
     # Pinned on purpose (not via GITEA_IMAGE env) so a stale env var can't roll back a security upgrade
     image: gitea/gitea:28.3.0
@@ -37,22 +37,22 @@ services:
       - "${GITEA_SSH_PORT:-2222}:22"
     labels:
       - "traefik.enable=${TRAEFIK_ENABLE:-true}"
+      - "traefik.docker.network=dokploy-network"
       - "traefik.http.services.gitea-service.loadbalancer.server.port=${GITEA_WEB_PORT:-3000}"
 
-      # HTTP Router (redirect to HTTPS)
-      - "traefik.http.routers.gitea-http.rule=Host(`${GITEA_DOMAIN:-gitea.gizmopoker.online}`)"
-      - "traefik.http.routers.gitea-http.entrypoints=web"
-      - "traefik.http.routers.gitea-http.middlewares=redirect-to-https@docker"
+      # HTTP -> HTTPS redirect (Dokploy's built-in file-provider middleware)
+      - "traefik.http.routers.gitea-service-http.rule=Host(`${GITEA_DOMAIN:-gitea.gizmopoker.online}`)"
+      - "traefik.http.routers.gitea-service-http.entrypoints=web"
+      - "traefik.http.routers.gitea-service-http.middlewares=redirect-to-https@file"
+      - "traefik.http.routers.gitea-service-http.service=gitea-service"
 
-      # HTTPS Router
-      - "traefik.http.routers.gitea-secure.rule=Host(`${GITEA_DOMAIN:-gitea.gizmopoker.online}`)"
-      - "traefik.http.routers.gitea-secure.entrypoints=websecure"
-      - "traefik.http.routers.gitea-secure.tls=${TLS_ENABLE:-true}"
-      - "traefik.http.routers.gitea-secure.tls.certresolver=letsencrypt"
+      # HTTPS
+      - "traefik.http.routers.gitea-service-https.rule=Host(`${GITEA_DOMAIN:-gitea.gizmopoker.online}`)"
+      - "traefik.http.routers.gitea-service-https.entrypoints=websecure"
+      - "traefik.http.routers.gitea-service-https.tls=${TLS_ENABLE:-true}"
+      - "traefik.http.routers.gitea-service-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.gitea-service-https.service=gitea-service"
 
-  # ════════════════════════════════════════
-  # Existing Services
-  # ════════════════════════════════════════
   ktor-service:
     image: ${POKER_IMAGE:-ghcr.io/amitgoelny/gizmopokertracker:latest}
     pull_policy: ${PULL_POLICY:-always}
@@ -67,46 +67,23 @@ services:
       - ${POKER_DATA_DIR:-../files/poker-data}:/app/data
     labels:
       - "traefik.enable=${TRAEFIK_ENABLE:-true}"
+      - "traefik.docker.network=dokploy-network"
       - "traefik.http.services.ktor-service.loadbalancer.server.port=${POKER_PORT:-8080}"
 
-      # HTTP Router - non-www (redirect to HTTPS)
-      - "traefik.http.routers.ktor-service-http.rule=Host(`${POKER_DOMAIN:-gizmopoker.online}`)"
+      # HTTP -> HTTPS redirect (Dokploy's built-in file-provider middleware)
+      - "traefik.http.routers.ktor-service-http.rule=Host(`${POKER_DOMAIN:-gizmopoker.online}`) || Host(`www.${POKER_DOMAIN:-gizmopoker.online}`)"
       - "traefik.http.routers.ktor-service-http.entrypoints=web"
-      - "traefik.http.routers.ktor-service-http.middlewares=redirect-to-https@docker"
+      - "traefik.http.routers.ktor-service-http.middlewares=redirect-to-https@file"
+      - "traefik.http.routers.ktor-service-http.service=ktor-service"
 
-      # HTTP Router - www (redirect to HTTPS)
-      - "traefik.http.routers.ktor-service-http-www.rule=Host(`www.${POKER_DOMAIN:-gizmopoker.online}`)"
-      - "traefik.http.routers.ktor-service-http-www.entrypoints=web"
-      - "traefik.http.routers.ktor-service-http-www.middlewares=redirect-to-https@docker"
-
-      # HTTPS Router - Main (non-www)
-      - "traefik.http.routers.ktor-service.rule=Host(`${POKER_DOMAIN:-gizmopoker.online}`) && PathPrefix(`/poker-api`)"
-      - "traefik.http.routers.ktor-service.entrypoints=websecure"
-      - "traefik.http.routers.ktor-service.tls=${TLS_ENABLE:-true}"
-      - "traefik.http.routers.ktor-service.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.ktor-service.middlewares=poker-strip@docker"
-      - "traefik.http.routers.ktor-service.priority=100"
-
-      # HTTPS Router - WWW (works same as non-www)
-      - "traefik.http.routers.ktor-service-www.rule=Host(`www.${POKER_DOMAIN:-gizmopoker.online}`) && PathPrefix(`/poker-api`)"
-      - "traefik.http.routers.ktor-service-www.entrypoints=websecure"
-      - "traefik.http.routers.ktor-service-www.tls=${TLS_ENABLE:-true}"
-      - "traefik.http.routers.ktor-service-www.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.ktor-service-www.middlewares=poker-strip@docker"
-      - "traefik.http.routers.ktor-service-www.service=ktor-service"
-      - "traefik.http.routers.ktor-service-www.priority=99"
-
-      # Middleware: Strip /poker-api prefix
+      # HTTPS
+      - "traefik.http.routers.ktor-service-https.rule=(Host(`${POKER_DOMAIN:-gizmopoker.online}`) || Host(`www.${POKER_DOMAIN:-gizmopoker.online}`)) && PathPrefix(`/poker-api`)"
+      - "traefik.http.routers.ktor-service-https.entrypoints=websecure"
+      - "traefik.http.routers.ktor-service-https.tls=${TLS_ENABLE:-true}"
+      - "traefik.http.routers.ktor-service-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.ktor-service-https.service=ktor-service"
+      - "traefik.http.routers.ktor-service-https.middlewares=poker-strip@docker"
       - "traefik.http.middlewares.poker-strip.stripprefix.prefixes=/poker-api"
-
-      # Middleware: HTTP to HTTPS redirect
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
-
-      # Middleware: WWW to non-WWW redirect (simple version)
-      - "traefik.http.middlewares.www-to-non-www.redirectregex.regex=^https?://www\\.(.*)"
-      - "traefik.http.middlewares.www-to-non-www.redirectregex.replacement=https://$${1}"
-      - "traefik.http.middlewares.www-to-non-www.redirectregex.permanent=true"
 
   swim-service:
     image: ${SWIM_IMAGE:-ghcr.io/amitgoelny/swimmasterapp-backend:latest}
@@ -125,11 +102,23 @@ services:
       - ${SWIM_DATA_DIR:-../files/swim-data}:/app/data
     labels:
       - "traefik.enable=${TRAEFIK_ENABLE:-true}"
+      - "traefik.docker.network=dokploy-network"
       - "traefik.http.services.swim-service.loadbalancer.server.port=${SWIM_PORT:-8080}"
-      - "traefik.http.routers.swim-service.rule=PathPrefix(`/swim-api`)"
-      - "traefik.http.routers.swim-service.entrypoints=web"
+
+      # HTTP -> HTTPS redirect (Dokploy's built-in file-provider middleware)
+      - "traefik.http.routers.swim-service-http.rule=Host(`${SWIM_DOMAIN:-swim.gizmopoker.online}`)"
+      - "traefik.http.routers.swim-service-http.entrypoints=web"
+      - "traefik.http.routers.swim-service-http.middlewares=redirect-to-https@file"
+      - "traefik.http.routers.swim-service-http.service=swim-service"
+
+      # HTTPS
+      - "traefik.http.routers.swim-service-https.rule=Host(`${SWIM_DOMAIN:-swim.gizmopoker.online}`) && PathPrefix(`/swim-api`)"
+      - "traefik.http.routers.swim-service-https.entrypoints=websecure"
+      - "traefik.http.routers.swim-service-https.tls=${TLS_ENABLE:-true}"
+      - "traefik.http.routers.swim-service-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.swim-service-https.service=swim-service"
+      - "traefik.http.routers.swim-service-https.middlewares=swim-strip@docker"
       - "traefik.http.middlewares.swim-strip.stripprefix.prefixes=/swim-api"
-      - "traefik.http.routers.swim-service.middlewares=swim-strip@docker"
 
   homerun-service:
     image: ${HOMERUN_IMAGE:-ghcr.io/amitgoelny/homerun-hitter-server:latest}
@@ -148,11 +137,23 @@ services:
       - ${HOMERUN_DATA_DIR:-../files/homerun-data}:/app/data
     labels:
       - "traefik.enable=${TRAEFIK_ENABLE:-true}"
+      - "traefik.docker.network=dokploy-network"
       - "traefik.http.services.homerun-service.loadbalancer.server.port=${HOMERUN_PORT:-8080}"
-      - "traefik.http.routers.homerun-service.rule=PathPrefix(`/homerun-api`)"
-      - "traefik.http.routers.homerun-service.entrypoints=web"
+
+      # HTTP -> HTTPS redirect (Dokploy's built-in file-provider middleware)
+      - "traefik.http.routers.homerun-service-http.rule=Host(`${HOMERUN_DOMAIN:-homerun.gizmopoker.online}`)"
+      - "traefik.http.routers.homerun-service-http.entrypoints=web"
+      - "traefik.http.routers.homerun-service-http.middlewares=redirect-to-https@file"
+      - "traefik.http.routers.homerun-service-http.service=homerun-service"
+
+      # HTTPS
+      - "traefik.http.routers.homerun-service-https.rule=Host(`${HOMERUN_DOMAIN:-homerun.gizmopoker.online}`) && PathPrefix(`/homerun-api`)"
+      - "traefik.http.routers.homerun-service-https.entrypoints=websecure"
+      - "traefik.http.routers.homerun-service-https.tls=${TLS_ENABLE:-true}"
+      - "traefik.http.routers.homerun-service-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.homerun-service-https.service=homerun-service"
+      - "traefik.http.routers.homerun-service-https.middlewares=homerun-strip@docker"
       - "traefik.http.middlewares.homerun-strip.stripprefix.prefixes=/homerun-api"
-      - "traefik.http.routers.homerun-service.middlewares=homerun-strip@docker"
 
   guiltfree-service:
     image: ${GUILTFREE_IMAGE:-ghcr.io/amitgoelny/guiltfree-server:latest}
@@ -175,18 +176,21 @@ services:
       - ${GUILTFREE_DATA_DIR:-../files/guiltfree-data}:/app/data
     labels:
       - "traefik.enable=${TRAEFIK_ENABLE:-true}"
+      - "traefik.docker.network=dokploy-network"
       - "traefik.http.services.guiltfree-service.loadbalancer.server.port=${GUILTFREE_PORT:-8080}"
 
-      # HTTP Router (redirect to HTTPS)
-      - "traefik.http.routers.guiltfree-http.rule=Host(`${GUILTFREE_DOMAIN:-guiltfree.gizmopoker.online}`)"
-      - "traefik.http.routers.guiltfree-http.entrypoints=web"
-      - "traefik.http.routers.guiltfree-http.middlewares=redirect-to-https@docker"
+      # HTTP -> HTTPS redirect (Dokploy's built-in file-provider middleware)
+      - "traefik.http.routers.guiltfree-service-http.rule=Host(`${GUILTFREE_DOMAIN:-guiltfree.gizmopoker.online}`)"
+      - "traefik.http.routers.guiltfree-service-http.entrypoints=web"
+      - "traefik.http.routers.guiltfree-service-http.middlewares=redirect-to-https@file"
+      - "traefik.http.routers.guiltfree-service-http.service=guiltfree-service"
 
-      # HTTPS Router
-      - "traefik.http.routers.guiltfree.rule=Host(`${GUILTFREE_DOMAIN:-guiltfree.gizmopoker.online}`)"
-      - "traefik.http.routers.guiltfree.entrypoints=websecure"
-      - "traefik.http.routers.guiltfree.tls=${TLS_ENABLE:-true}"
-      - "traefik.http.routers.guiltfree.tls.certresolver=letsencrypt"
+      # HTTPS
+      - "traefik.http.routers.guiltfree-service-https.rule=Host(`${GUILTFREE_DOMAIN:-guiltfree.gizmopoker.online}`)"
+      - "traefik.http.routers.guiltfree-service-https.entrypoints=websecure"
+      - "traefik.http.routers.guiltfree-service-https.tls=${TLS_ENABLE:-true}"
+      - "traefik.http.routers.guiltfree-service-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.guiltfree-service-https.service=guiltfree-service"
 
   cookbook-service:
     image: ${COOKBOOK_IMAGE:-ghcr.io/amitgoelny/cookbook-server:latest}
@@ -204,18 +208,21 @@ services:
       - ${COOKBOOK_DATA_DIR:-../files/cookbook-data}:/app/data
     labels:
       - "traefik.enable=${TRAEFIK_ENABLE:-true}"
+      - "traefik.docker.network=dokploy-network"
       - "traefik.http.services.cookbook-service.loadbalancer.server.port=${COOKBOOK_PORT:-8080}"
 
-      # HTTP Router (redirect to HTTPS)
-      - "traefik.http.routers.cookbook-http.rule=Host(`${COOKBOOK_DOMAIN:-cookbook.gizmopoker.online}`)"
-      - "traefik.http.routers.cookbook-http.entrypoints=web"
-      - "traefik.http.routers.cookbook-http.middlewares=redirect-to-https@docker"
+      # HTTP -> HTTPS redirect (Dokploy's built-in file-provider middleware)
+      - "traefik.http.routers.cookbook-service-http.rule=Host(`${COOKBOOK_DOMAIN:-cookbook.gizmopoker.online}`)"
+      - "traefik.http.routers.cookbook-service-http.entrypoints=web"
+      - "traefik.http.routers.cookbook-service-http.middlewares=redirect-to-https@file"
+      - "traefik.http.routers.cookbook-service-http.service=cookbook-service"
 
-      # HTTPS Router
-      - "traefik.http.routers.cookbook.rule=Host(`${COOKBOOK_DOMAIN:-cookbook.gizmopoker.online}`)"
-      - "traefik.http.routers.cookbook.entrypoints=websecure"
-      - "traefik.http.routers.cookbook.tls=${TLS_ENABLE:-true}"
-      - "traefik.http.routers.cookbook.tls.certresolver=letsencrypt"
+      # HTTPS
+      - "traefik.http.routers.cookbook-service-https.rule=Host(`${COOKBOOK_DOMAIN:-cookbook.gizmopoker.online}`)"
+      - "traefik.http.routers.cookbook-service-https.entrypoints=websecure"
+      - "traefik.http.routers.cookbook-service-https.tls=${TLS_ENABLE:-true}"
+      - "traefik.http.routers.cookbook-service-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.cookbook-service-https.service=cookbook-service"
 
 networks:
   dokploy-network:
