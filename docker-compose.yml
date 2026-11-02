@@ -1,8 +1,59 @@
+version: "3.9"
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
+  # ════════════════════════════════════════
+  # NEW: Gitea Service
+  # ════════════════════════════════════════
+  gitea-service:
+    image: ${GITEA_IMAGE:-gitea/gitea:1.24}
+    container_name: gitea
+    restart: ${RESTART_POLICY:-always}
+    logging: *default-logging
+    networks:
+      - dokploy-network
+    environment:
+      - USER_UID=${GITEA_USER_UID:-1000}
+      - USER_GID=${GITEA_USER_GID:-1000}
+      - GITEA__database__DB_TYPE=${GITEA_DB_TYPE:-sqlite3}
+      - GITEA__server__ROOT_URL=https://${GITEA_DOMAIN:-gitea.gizmopoker.online}/
+      - GITEA__server__SSH_DOMAIN=${GITEA_DOMAIN:-gitea.gizmopoker.online}
+      - GITEA__server__SSH_PORT=${GITEA_SSH_PORT:-2222}
+      - GITEA__server__LFS_START_SERVER=${GITEA_LFS_ENABLED:-true}
+    volumes:
+      - ${GITEA_DATA_DIR:-../files/gitea-data}:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "${GITEA_SSH_PORT:-2222}:22"
+    labels:
+      - "traefik.enable=${TRAEFIK_ENABLE:-true}"
+      - "traefik.http.services.gitea-service.loadbalancer.server.port=${GITEA_WEB_PORT:-3000}"
+
+      # HTTP Router (redirect to HTTPS)
+      - "traefik.http.routers.gitea-http.rule=Host(`${GITEA_DOMAIN:-gitea.gizmopoker.online}`)"
+      - "traefik.http.routers.gitea-http.entrypoints=web"
+      - "traefik.http.routers.gitea-http.middlewares=redirect-to-https@docker"
+
+      # HTTPS Router
+      - "traefik.http.routers.gitea-secure.rule=Host(`${GITEA_DOMAIN:-gitea.gizmopoker.online}`)"
+      - "traefik.http.routers.gitea-secure.entrypoints=websecure"
+      - "traefik.http.routers.gitea-secure.tls=${TLS_ENABLE:-true}"
+      - "traefik.http.routers.gitea-secure.tls.certresolver=letsencrypt"
+
+  # ════════════════════════════════════════
+  # Existing Services
+  # ════════════════════════════════════════
   ktor-service:
     image: ${POKER_IMAGE:-ghcr.io/amitgoelny/gizmopokertracker:latest}
     pull_policy: ${PULL_POLICY:-always}
     restart: ${RESTART_POLICY:-always}
+    logging: *default-logging
     networks:
       - dokploy-network
     environment:
@@ -15,17 +66,17 @@ services:
       - "traefik.http.services.ktor-service.loadbalancer.server.port=${POKER_PORT:-8080}"
 
       # HTTP Router - non-www (redirect to HTTPS)
-      - "traefik.http.routers.ktor-service-http.rule=Host(`${POKER_DOMAIN:-gizmopoker.xyz}`)"
+      - "traefik.http.routers.ktor-service-http.rule=Host(`${POKER_DOMAIN:-gizmopoker.online}`)"
       - "traefik.http.routers.ktor-service-http.entrypoints=web"
       - "traefik.http.routers.ktor-service-http.middlewares=redirect-to-https@docker"
 
       # HTTP Router - www (redirect to HTTPS)
-      - "traefik.http.routers.ktor-service-http-www.rule=Host(`www.${POKER_DOMAIN:-gizmopoker.xyz}`)"
+      - "traefik.http.routers.ktor-service-http-www.rule=Host(`www.${POKER_DOMAIN:-gizmopoker.online}`)"
       - "traefik.http.routers.ktor-service-http-www.entrypoints=web"
       - "traefik.http.routers.ktor-service-http-www.middlewares=redirect-to-https@docker"
 
       # HTTPS Router - Main (non-www)
-      - "traefik.http.routers.ktor-service.rule=Host(`${POKER_DOMAIN:-gizmopoker.xyz}`) && PathPrefix(`/poker-api`)"
+      - "traefik.http.routers.ktor-service.rule=Host(`${POKER_DOMAIN:-gizmopoker.online}`) && PathPrefix(`/poker-api`)"
       - "traefik.http.routers.ktor-service.entrypoints=websecure"
       - "traefik.http.routers.ktor-service.tls=${TLS_ENABLE:-true}"
       - "traefik.http.routers.ktor-service.tls.certresolver=letsencrypt"
@@ -33,7 +84,7 @@ services:
       - "traefik.http.routers.ktor-service.priority=100"
 
       # HTTPS Router - WWW (works same as non-www)
-      - "traefik.http.routers.ktor-service-www.rule=Host(`www.${POKER_DOMAIN:-gizmopoker.xyz}`) && PathPrefix(`/poker-api`)"
+      - "traefik.http.routers.ktor-service-www.rule=Host(`www.${POKER_DOMAIN:-gizmopoker.online}`) && PathPrefix(`/poker-api`)"
       - "traefik.http.routers.ktor-service-www.entrypoints=websecure"
       - "traefik.http.routers.ktor-service-www.tls=${TLS_ENABLE:-true}"
       - "traefik.http.routers.ktor-service-www.tls.certresolver=letsencrypt"
@@ -57,6 +108,7 @@ services:
     image: ${SWIM_IMAGE:-ghcr.io/amitgoelny/swimmasterapp-backend:latest}
     pull_policy: ${PULL_POLICY:-always}
     restart: ${RESTART_POLICY:-always}
+    logging: *default-logging
     networks:
       - dokploy-network
     environment:
@@ -79,6 +131,7 @@ services:
     image: ${HOMERUN_IMAGE:-ghcr.io/amitgoelny/homerun-hitter-server:latest}
     pull_policy: ${PULL_POLICY:-always}
     restart: ${RESTART_POLICY:-always}
+    logging: *default-logging
     networks:
       - dokploy-network
     environment:
@@ -96,6 +149,69 @@ services:
       - "traefik.http.routers.homerun-service.entrypoints=web"
       - "traefik.http.middlewares.homerun-strip.stripprefix.prefixes=/homerun-api"
       - "traefik.http.routers.homerun-service.middlewares=homerun-strip@docker"
+
+  guiltfree-service:
+    image: ${GUILTFREE_IMAGE:-ghcr.io/amitgoelny/guiltfree-server:latest}
+    pull_policy: ${PULL_POLICY:-always}
+    restart: ${RESTART_POLICY:-always}
+    logging: *default-logging
+    networks:
+      - dokploy-network
+    environment:
+      - DATABASE_URL=${GUILTFREE_DATABASE_URL:-jdbc:sqlite:/app/data/guiltfree.db}
+      - JWT_SECRET=${GUILTFREE_JWT_SECRET}
+      - JWT_ISSUER=${GUILTFREE_JWT_ISSUER:-guiltfree-api}
+      - JWT_AUDIENCE=${GUILTFREE_JWT_AUDIENCE:-guiltfree-app}
+      - JWT_REALM=${GUILTFREE_JWT_REALM:-Guilt Free API}
+      - JWT_ACCESS_TOKEN_EXPIRY_MINUTES=${GUILTFREE_JWT_ACCESS_TOKEN_EXPIRY_MINUTES:-15}
+      - JWT_REFRESH_TOKEN_EXPIRY_DAYS=${GUILTFREE_JWT_REFRESH_TOKEN_EXPIRY_DAYS:-30}
+      - KTOR_ENV=${GUILTFREE_KTOR_ENV:-production}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-nokey}
+    volumes:
+      - ${GUILTFREE_DATA_DIR:-../files/guiltfree-data}:/app/data
+    labels:
+      - "traefik.enable=${TRAEFIK_ENABLE:-true}"
+      - "traefik.http.services.guiltfree-service.loadbalancer.server.port=${GUILTFREE_PORT:-8080}"
+
+      # HTTP Router (redirect to HTTPS)
+      - "traefik.http.routers.guiltfree-http.rule=Host(`${GUILTFREE_DOMAIN:-guiltfree.gizmopoker.online}`)"
+      - "traefik.http.routers.guiltfree-http.entrypoints=web"
+      - "traefik.http.routers.guiltfree-http.middlewares=redirect-to-https@docker"
+
+      # HTTPS Router
+      - "traefik.http.routers.guiltfree.rule=Host(`${GUILTFREE_DOMAIN:-guiltfree.gizmopoker.online}`)"
+      - "traefik.http.routers.guiltfree.entrypoints=websecure"
+      - "traefik.http.routers.guiltfree.tls=${TLS_ENABLE:-true}"
+      - "traefik.http.routers.guiltfree.tls.certresolver=letsencrypt"
+
+  cookbook-service:
+    image: ${COOKBOOK_IMAGE:-ghcr.io/amitgoelny/cookbook-server:latest}
+    pull_policy: ${PULL_POLICY:-always}
+    restart: ${RESTART_POLICY:-always}
+    logging: *default-logging
+    networks:
+      - dokploy-network
+    environment:
+      - DATABASE_URL=${COOKBOOK_DATABASE_URL:-jdbc:sqlite:/app/data/cookbook.db}
+      - AUTH_TOKEN=${COOKBOOK_AUTH_TOKEN}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - ALLOWED_HOST=*
+    volumes:
+      - ${COOKBOOK_DATA_DIR:-../files/cookbook-data}:/app/data
+    labels:
+      - "traefik.enable=${TRAEFIK_ENABLE:-true}"
+      - "traefik.http.services.cookbook-service.loadbalancer.server.port=${COOKBOOK_PORT:-8080}"
+
+      # HTTP Router (redirect to HTTPS)
+      - "traefik.http.routers.cookbook-http.rule=Host(`${COOKBOOK_DOMAIN:-cookbook.gizmopoker.online}`)"
+      - "traefik.http.routers.cookbook-http.entrypoints=web"
+      - "traefik.http.routers.cookbook-http.middlewares=redirect-to-https@docker"
+
+      # HTTPS Router
+      - "traefik.http.routers.cookbook.rule=Host(`${COOKBOOK_DOMAIN:-cookbook.gizmopoker.online}`)"
+      - "traefik.http.routers.cookbook.entrypoints=websecure"
+      - "traefik.http.routers.cookbook.tls=${TLS_ENABLE:-true}"
+      - "traefik.http.routers.cookbook.tls.certresolver=letsencrypt"
 
 networks:
   dokploy-network:
