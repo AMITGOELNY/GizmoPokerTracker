@@ -25,6 +25,7 @@ services:
       - GITEA__server__SSH_DOMAIN=${GITEA_DOMAIN:-gitea.gizmopoker.online}
       - GITEA__server__SSH_PORT=${GITEA_SSH_PORT:-2222}
       - GITEA__server__LFS_START_SERVER=${GITEA_LFS_ENABLED:-true}
+      - GITEA__service__DISABLE_REGISTRATION=${GITEA_DISABLE_REGISTRATION:-true}
     volumes:
       - ${GITEA_DATA_DIR:-../files/gitea-data}:/data
       - /etc/timezone:/etc/timezone:ro
